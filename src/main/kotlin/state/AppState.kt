@@ -26,7 +26,7 @@ object AppState {
                     backStack.removeAt(0)
                 }
                 backStack.add(currentExplorerDirectory)
-                forwardStack.clear()
+                forwardStack.clear()  // TODO: fix logic here later
                 currentExplorerDirectory = newExplorerDirectory
             }
         } else {
@@ -35,6 +35,16 @@ object AppState {
             println("Error! Target directory ${newExplorerDirectory.path} does not exist")
             // TODO: show ERR in UI
             currentExplorerDirectory = ExplorerDirectory(System.getProperty("user.home"))
+        }
+    }
+
+    fun goUp() {
+        val parentPath = Paths.get(currentExplorerDirectory.path).parent
+        if (parentPath != null) {
+            updateDirectory(ExplorerDirectory(parentPath.toString()))
+        } else {
+            // TODO: handle in the UI
+            println("Already at root")
         }
     }
 

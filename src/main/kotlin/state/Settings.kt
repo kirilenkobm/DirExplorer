@@ -4,7 +4,7 @@ package state
 object Settings {
     var showHiddenFiles: Boolean = false
     var colorTheme: ColorTheme = ColorTheme.SYSTEM
-    var defaultViewMode: ViewMode = ViewMode.ICONS
+    var defaultViewMode: ViewMode = ViewMode.TABLE
 
     fun loadSettings() {
         // Implement logic to load settings from persistent storage

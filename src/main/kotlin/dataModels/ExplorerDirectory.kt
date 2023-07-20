@@ -37,6 +37,9 @@ open class ExplorerDirectory(override val path: String): FileSystemEntity {
         return explorerFiles + directories + symLinks
     }
 
+    val name: String
+        get() = Paths.get(path).fileName.toString()
+
     val isHidden: Boolean
         get() = Files.isHidden(Paths.get(path))
 
