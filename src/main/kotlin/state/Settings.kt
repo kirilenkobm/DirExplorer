@@ -1,30 +1,57 @@
 // Settings, especially defined by user
 package state
+import java.io.FileInputStream
+import java.io.FileOutputStream
+import java.util.Properties
 
 object Settings {
+    // TODO: implement a smarter persistent storage
+    private const val SETTINGS_FILE = "settings.properties"
+
     var showHiddenFiles: Boolean = false
     var colorTheme: ColorTheme = ColorTheme.SYSTEM
-    var defaultViewMode: ViewMode = ViewMode.TABLE
-
-    fun loadSettings() {
-        // Implement logic to load settings from persistent storage
-    }
-
-    fun saveSettings() {
-        // Implement logic to save settings to persistent storage
-    }
+    var viewMode: ViewMode = ViewMode.TABLE
+    var iconSize: Int = 64  // default icon size: to establish later
 
     fun toggleShowHiddenFiles() {
-        // Implement logic to toggle show hidden files setting
+        showHiddenFiles = !showHiddenFiles
     }
 
     fun changeColorTheme(newColorTheme: ColorTheme) {
-        // Implement logic to change color theme
+        colorTheme = newColorTheme
     }
 
-    fun changeDefaultViewMode(newViewMode: ViewMode) {
-        // Implement logic to change default view mode
+    fun updateViewMode(newViewMode: ViewMode) {
+        viewMode = newViewMode
     }
 
-    // TODO: icon size
+    fun updateIconSize(newIconSize: Int) {
+        iconSize = newIconSize
+    }
+
+    fun loadSettings() {
+        val properties = Properties()
+        try {
+            FileInputStream(SETTINGS_FILE).use { properties.load(it) }
+            showHiddenFiles = properties.getProperty("showHiddenFiles", "false").toBoolean()
+            colorTheme = ColorTheme.valueOf(properties.getProperty("colorTheme", "SYSTEM"))
+            viewMode = ViewMode.valueOf(properties.getProperty("viewMode", "TABLE"))
+        } catch (e: Exception) {
+            // TODO: handle exception, just pass?
+            println("Error! Could not load settings")
+        }
+    }
+
+    fun saveSettings() {
+        val properties = Properties()
+        properties.setProperty("showHiddenFiles", showHiddenFiles.toString())
+        properties.setProperty("colorTheme", colorTheme.name)
+        properties.setProperty("viewMode", viewMode.name)
+
+        try {
+            FileOutputStream(SETTINGS_FILE).use { properties.store(it, null) }
+        } catch (e: Exception) {
+            println("Error! Could ot save settings!")
+        }
+    }
 }

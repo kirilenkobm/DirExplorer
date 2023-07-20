@@ -11,10 +11,7 @@ const val HISTORY_SIZE = 40
 object AppState {
     var currentExplorerDirectory: ExplorerDirectory = ExplorerDirectory(System.getProperty("user.home"))
     var currentFilter: String = ""
-    var currentViewMode: ViewMode = ViewMode.ICONS
     var selectedExplorerFile: ExplorerFile? = null
-    var showHiddenFiles: Boolean = false
-    var colorTheme: ColorTheme = ColorTheme.SYSTEM
     var backStack: MutableList<ExplorerDirectory> = mutableListOf()
     var forwardStack: MutableList<ExplorerDirectory> = mutableListOf()
 
@@ -36,6 +33,10 @@ object AppState {
             // TODO: show ERR in UI
             currentExplorerDirectory = ExplorerDirectory(System.getProperty("user.home"))
         }
+    }
+
+    fun goHome() {
+        updateDirectory(ExplorerDirectory(System.getProperty("user.home")))
     }
 
     fun goUp() {
@@ -79,19 +80,7 @@ object AppState {
         currentFilter = ""
     }
 
-    fun updateViewMode(newViewMode: ViewMode) {
-        currentViewMode = newViewMode
-    }
-
     fun updateSelectedFile(newExplorerFile: ExplorerFile) {
         selectedExplorerFile = newExplorerFile
-    }
-
-    fun toggleShowHiddenFiles() {
-        showHiddenFiles = !showHiddenFiles
-    }
-
-    fun changeColorTheme(newColorTheme: ColorTheme) {
-        colorTheme = newColorTheme
     }
 }
