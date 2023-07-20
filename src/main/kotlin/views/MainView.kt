@@ -2,30 +2,51 @@ package views
 import dataModels.ExplorerFile
 import dataModels.ExplorerDirectory
 import state.AppState
+import java.awt.BorderLayout
+import java.awt.FlowLayout
+import java.awt.event.MouseAdapter
+import java.awt.event.MouseEvent
+import javax.swing.BorderFactory
+import javax.swing.JButton
 import javax.swing.JFrame
+import javax.swing.JLabel
 import javax.swing.JScrollPane
 import javax.swing.JTable
+import javax.swing.JPanel
+import javax.swing.JTextField
 import javax.swing.table.DefaultTableModel
+import dataModels.FileSystemEntity
+import state.Settings
+import state.ViewMode
+import javax.swing.ButtonGroup
+import javax.swing.JToggleButton
+import javax.swing.SwingUtilities
 
 class MainView {
+    // TODO: better manage view updates and triggers
+    // TODO: coroutines to get content of the current dir
+    private val topBarView = TopBarView(this)
+    private val directoryView = DirectoryView(topBarView)
+
+    fun updateView() {
+        directoryView.updateTableView()
+        topBarView.updateView()
+    }
+
     fun createAndShowGUI() {
-        val frame = JFrame("Explorer")
+        val frame = JFrame("DirExplorer")
         frame.defaultCloseOperation = JFrame.EXIT_ON_CLOSE
 
-        val columnNames = arrayOf("Type", "Name", "Size", "Last Modified")
-        val data = AppState.currentExplorerDirectory.getContents().map {entity ->
-            when (entity) {
-                is ExplorerFile -> arrayOf<Any>("File", entity.name, "${entity.size} bytes", entity.lastModified)
-                is ExplorerDirectory -> arrayOf<Any>("Directory", entity.name, "-", "-")
-                else -> arrayOf<Any>("Unknown", "-", "-", "-")
-            }
-        }.toTypedArray()
+        // Main Panel
+        val mainPanel = JPanel(BorderLayout())
+        mainPanel.add(JScrollPane(directoryView.getTable()), BorderLayout.CENTER)
 
-        val model = DefaultTableModel(data, columnNames)
-        val table = JTable(model)
+        // Status bar
 
-        frame.add(JScrollPane(table))
-
+        // Compose views together
+        frame.add(topBarView.getPanel(), BorderLayout.NORTH)
+        frame.add(mainPanel, BorderLayout.CENTER)
+        // frame.add(statusBar, BorderLayout.SOUTH)
         frame.pack()
         frame.isVisible = true
     }

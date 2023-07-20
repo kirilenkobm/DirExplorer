@@ -18,6 +18,7 @@ object AppState {
     fun updateDirectory(newExplorerDirectory: ExplorerDirectory) {
         if (Files.exists(Paths.get(newExplorerDirectory.path))) {
             if (currentExplorerDirectory.path != newExplorerDirectory.path) {
+
                 if (backStack.size >= HISTORY_SIZE) {
                     // otherwise the history stack can get unlimited size
                     backStack.removeAt(0)

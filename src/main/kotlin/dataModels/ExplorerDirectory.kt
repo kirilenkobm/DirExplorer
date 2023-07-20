@@ -2,40 +2,38 @@
 package dataModels
 import java.nio.file.Files
 import java.nio.file.Paths
-
+import kotlin.streams.asSequence
+import state.Settings
+import state.SortOrder
 
 // Open to allow inheritance in ZipArchive
 open class ExplorerDirectory(override val path: String): FileSystemEntity {
     val zipExtensions = setOf(".zip", ".jar", ".war", ".ear", ".apk", ".gz")
+    val sortOrder: SortOrder = SortOrder.NAME
 
-    open val explorerFiles: List<FileSystemEntity>
-        get() = Files.list(Paths.get(path))
-            .filter { Files.isRegularFile(it) }
-            .map {
-                // not the most reliable way to check whether it is an archive
-                if (zipExtensions.any { ext -> it.toString().endsWith(ext) }) {
-                    ZipArchive(it.toString())
-                } else {
-                    ExplorerFile(it.toString())
+    open val contents: List<FileSystemEntity>
+        get() = Files.list(Paths.get(path)).asSequence().mapNotNull { path ->
+            when {
+                Files.isHidden(path) && !Settings.showHiddenFiles -> null
+                Files.isRegularFile(path) -> {
+                    // not the most reliable way to check whether it is an archive
+                    if (zipExtensions.any { ext -> path.toString().endsWith(ext) }) {
+                        ZipArchive(path.toString())
+                    } else {
+                        ExplorerFile(path.toString())
+                    }
                 }
+                Files.isDirectory(path) -> ExplorerDirectory(path.toString())
+                Files.isSymbolicLink(path) -> ExplorerSymLink(path.toString())
+                // else -> UnknownEntity(path.toString())  # TODO: handle this case
+                else -> null
             }
-            .toList()
-
-    open val directories: List<ExplorerDirectory>
-        get() = Files.list(Paths.get(path))
-            .filter { Files.isDirectory(it) }
-            .map { ExplorerDirectory(it.toString()) }
-            .toList()
-
-    open val symLinks: List<ExplorerSymLink>
-        get() = Files.list(Paths.get(path))
-            .filter { Files.isSymbolicLink(it) }
-            .map { ExplorerSymLink(it.toString()) }
-            .toList()
-
-    open fun getContents(): List<FileSystemEntity> {
-        return explorerFiles + directories + symLinks
-    }
+        }.toList()  // TODO: implement sorting
+    //        }.sortedWith(when (sortOrder) {
+    //            SortOrder.NAME -> compareBy { it.name }
+    //            SortOrder.TYPE -> compareBy { it.type }
+    //            SortOrder.DATE_CREATED -> compareBy { it.dateCreated }
+    //        }).toList()
 
     val name: String
         get() = Paths.get(path).fileName.toString()
@@ -57,7 +55,7 @@ open class ExplorerDirectory(override val path: String): FileSystemEntity {
     }
 
     fun showAllContents() {
-        getContents().sortedBy { it.path }.forEach { entity ->
+        contents.sortedBy { it.path }.forEach { entity ->
             when (entity) {
                 is ExplorerFile -> println("File: ${entity.path}, Size: ${entity.size}")
                 is ExplorerDirectory -> println("Directory: ${entity.path}")
