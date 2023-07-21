@@ -10,6 +10,7 @@ import java.nio.file.Paths
 import java.nio.file.StandardWatchEventKinds
 import java.nio.file.WatchEvent
 import java.nio.file.WatchKey
+import java.text.SimpleDateFormat
 import kotlin.coroutines.CoroutineContext
 
 // Abstract class that implements all the methods needed to show
@@ -64,7 +65,26 @@ abstract class AbstractDirectoryView : CoroutineScope {
 
     abstract fun updateView()
 
+    abstract fun setupTableMouseListener()
+
     fun dispose() {
         job.cancel()
+    }
+
+    val dateFormat = SimpleDateFormat("yyyy.MM.dd 'at' HH:mm:ss")
+
+    fun humanReadableSize(bytes: Long): String {
+        val kilobyte = 1024.0
+        val megabyte = kilobyte * 1024
+        val gigabyte = megabyte * 1024
+        val terabyte = gigabyte * 1024
+
+        return when {
+            bytes < kilobyte -> "$bytes B"
+            bytes < megabyte -> String.format("%.1f KB", bytes / kilobyte)
+            bytes < gigabyte -> String.format("%.1f MB", bytes / megabyte)
+            bytes < terabyte -> String.format("%.1f GB", bytes / gigabyte)
+            else -> String.format("%.1f TB", bytes / terabyte)
+        }
     }
 }

@@ -15,6 +15,7 @@ object IconManager {
     val linkIcon: ImageIcon = loadImageIcon("/images/baseline_link_black_36dp.png")
     val movieIcon: ImageIcon = loadImageIcon("/images/baseline_movie_black_36dp.png")
     val pdfIcon: ImageIcon = loadImageIcon("/images/baseline_picture_as_pdf_black_36dp.png")
+    var fileIcon: ImageIcon = loadImageIcon("/images/baseline_text_snippet_black_36dp.png")
     val settingsIcon: ImageIcon = loadImageIcon("/images/baseline_settings_black_36dp.png")
     val tocIcon: ImageIcon = loadImageIcon("/images/baseline_toc_black_36dp.png")
     val viewModuleIcon: ImageIcon = loadImageIcon("/images/baseline_view_module_black_36dp.png")
@@ -26,5 +27,15 @@ object IconManager {
 
     private fun loadImageIcon(path: String): ImageIcon {
         return ImageIcon(javaClass.getResource(path))
+    }
+
+    fun getIconForFileType(fileType: String): ImageIcon {
+        return when {
+            fileType.startsWith("image/") -> imageIcon
+            fileType.startsWith("video/") -> movieIcon
+            fileType == "application/pdf" -> pdfIcon
+            fileType.startsWith("audio/") -> audioFileIcon
+            else -> fileIcon
+        }
     }
 }

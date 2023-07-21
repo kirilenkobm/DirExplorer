@@ -28,10 +28,12 @@ class MainView {
     // TODO: better manage view updates and triggers
     // TODO: coroutines to get content of the current dir
     private val topBarView = TopBarView(this)
-    private val directoryView = DirectoryView(topBarView)
+    // private val directoryView = DirectoryView(topBarView)
+    private val tableView = TableDirectoryView(topBarView)
 
     fun updateView() {
-        directoryView.updateTableView()
+        // directoryView.updateTableView()
+        tableView.updateView()
         topBarView.updateView()
     }
 
@@ -41,7 +43,7 @@ class MainView {
 
         // Main Panel
         val mainPanel = JPanel(BorderLayout())
-        mainPanel.add(JScrollPane(directoryView.getTable()), BorderLayout.CENTER)
+        mainPanel.add(JScrollPane(tableView.getTable()), BorderLayout.CENTER)
 
         // Status bar
 
