@@ -7,7 +7,6 @@ import java.nio.channels.FileChannel
 
 // Named ExplorerFile to avoid collision with java.io.File
 class ExplorerFile(override val path: String): FileSystemEntity {
-    val BUFFER_SIZE_TO_CHECK_IF_BINARY = 8192
 
     val size: Long  // Will be converted to human-readable in the UI
         get() = Files.size(Paths.get(path))
@@ -25,10 +24,9 @@ class ExplorerFile(override val path: String): FileSystemEntity {
     val isHidden: Boolean
         get() = Files.isHidden(Paths.get(path))
 
-    fun isBinary(): Boolean {
-        // TODO: implement a good method that checks whether file is binary or not
-        return false
-    }
+    val fileType: String
+        // Java built in method to determine file type
+        get() = Files.probeContentType(Paths.get(path)) ?: "unknown"
 
     fun readContents(): String {
         // Implement logic to read file contents

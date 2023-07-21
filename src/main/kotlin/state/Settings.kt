@@ -11,7 +11,7 @@ object Settings {
     var showHiddenFiles: Boolean = false
     var colorTheme: ColorTheme = ColorTheme.SYSTEM
     var viewMode: ViewMode = ViewMode.TABLE
-    var iconSize: Int = 64  // default icon size: to establish later
+    var iconSize: Int = 20  // default icon size: to establish later
 
     fun toggleShowHiddenFiles() {
         showHiddenFiles = !showHiddenFiles

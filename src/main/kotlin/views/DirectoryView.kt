@@ -102,18 +102,19 @@ class DirectoryView(private val topBarView: TopBarView) : CoroutineScope {
     }
 
     private fun createTableModel(): DefaultTableModel {
-        val columnNames = arrayOf("Type", "Name", "Size", "Last Modified")
+        val columnNames = arrayOf("Type", "MIME_TYPE", "Name", "Size", "Last Modified")
 
         val data = currentContents.map { entity ->
             when (entity) {
                 is ExplorerFile -> arrayOf<Any>(
                     "File",
+                    entity.fileType,
                     entity.name,
                     humanReadableSize(entity.size),
                     dateFormat.format(Date(entity.lastModified))
                 )
-                is ExplorerDirectory -> arrayOf<Any>("Directory", entity.name, "-", "-")
-                else -> arrayOf<Any>("Unknown", "-", "-", "-")
+                is ExplorerDirectory -> arrayOf<Any>("Directory", "-", entity.name, "-", "-")
+                else -> arrayOf<Any>("Unknown", "-", "-", "-", "-")
             }
         }.toTypedArray()
 
@@ -153,13 +154,14 @@ class DirectoryView(private val topBarView: TopBarView) : CoroutineScope {
             val data = currentContents.map { entity ->
                 when (entity) {
                     is ExplorerFile -> arrayOf<Any>(
-                        "file",
+                        "File",
+                        entity.fileType,
                         entity.name,
                         humanReadableSize(entity.size),
                         dateFormat.format(Date(entity.lastModified))
                     )
-                    is ExplorerDirectory -> arrayOf<Any>("dir", entity.name, "-", "-")
-                    else -> arrayOf<Any>("Unknown", "-", "-", "-")
+                    is ExplorerDirectory -> arrayOf<Any>("Directory", "-", entity.name, "-", "-")
+                    else -> arrayOf<Any>("Unknown", "-", "-", "-", "-")
                 }
             }.toTypedArray()
 

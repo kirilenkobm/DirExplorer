@@ -2,16 +2,15 @@ package views
 
 import dataModels.ExplorerDirectory
 import state.AppState
-import java.awt.BorderLayout
-import java.awt.Dimension
-import java.awt.FlowLayout
-import java.awt.GridBagConstraints
-import java.awt.GridBagLayout
+import java.awt.*
 import java.nio.file.Paths
+import javax.swing.BorderFactory
 import javax.swing.Box
 import javax.swing.BoxLayout
 import javax.swing.JButton
+import javax.swing.JLabel
 import javax.swing.JPanel
+import javax.swing.SwingConstants
 
 
 class AddressBarView(private val mainView: MainView) {
@@ -36,34 +35,40 @@ class AddressBarView(private val mainView: MainView) {
         constraints.weightx = 0.0 // set weightx to 0 for buttons
         constraints.fill = GridBagConstraints.NONE // do not resize buttons
 
-        // create a button for the root directory
-        val rootButton = JButton(rootPath.toString())
-        rootButton.addActionListener {
-            AppState.updateDirectory(ExplorerDirectory(rootPath.toString()))
-            mainView.updateView()
-        }
-        addressBar.add(rootButton, constraints)
-
         // create a button for each part of the path
         // TODO: is to be optimised
         // TODO: better design
         for (part in path) {
             // create a new currentPath that includes this part
             val newPath = currentPath.resolve(part)
-            val button = JButton(part.toString())
-            button.addActionListener {
-                AppState.updateDirectory(ExplorerDirectory(newPath.toString()))
-                mainView.updateView()
+            val button = JButton(part.toString()).apply {
+                isContentAreaFilled = false // make the button transparent
+                isBorderPainted = false // remove the border
+                isFocusPainted = false // remove the focus highlight
+                horizontalTextPosition = SwingConstants.CENTER // center the text
+                verticalTextPosition = SwingConstants.CENTER // center the text
+                foreground = Color.BLACK // set the text color
+                font = Font("Arial", Font.PLAIN, 14) // set the font
+                cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR) // change the cursor when hovering over the button
+                addActionListener {
+                    AppState.updateDirectory(ExplorerDirectory(newPath.toString()))
+                    mainView.updateView()
+                }
             }
             addressBar.add(button, constraints)
+            val separatorLabel = JLabel(">")
+            addressBar.add(separatorLabel, constraints)
             // update currentPath to the new path
             currentPath = newPath
         }
+
 
         // add a filler component that takes up the remaining space
         constraints.weightx = 1.0 // set weightx to 1 for filler
         constraints.fill = GridBagConstraints.HORIZONTAL // resize filler horizontally
         addressBar.add(Box.createHorizontalGlue(), constraints)
+        addressBar.border = BorderFactory.createMatteBorder(1, 1, 1, 1, Color.BLACK)
+
 
         addressBar.revalidate()
         addressBar.repaint()

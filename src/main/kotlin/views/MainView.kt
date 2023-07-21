@@ -1,4 +1,5 @@
 package views
+
 import dataModels.ExplorerFile
 import dataModels.ExplorerDirectory
 import state.AppState
@@ -21,6 +22,7 @@ import state.ViewMode
 import javax.swing.ButtonGroup
 import javax.swing.JToggleButton
 import javax.swing.SwingUtilities
+
 
 class MainView {
     // TODO: better manage view updates and triggers
