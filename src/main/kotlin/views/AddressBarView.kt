@@ -69,10 +69,6 @@ class AddressBarView(private val mainView: MainView) {
         addressBar.repaint()
     }
 
-
-
-
-
     fun getPanel(): JPanel {
         return addressBarPanel
     }
