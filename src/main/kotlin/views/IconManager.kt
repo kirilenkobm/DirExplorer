@@ -1,5 +1,6 @@
 package views
 
+import dataModels.ExplorerDirectory
 import javax.swing.ImageIcon
 
 //  that handles all the icons downloaded and provides an easy access to them
@@ -36,6 +37,13 @@ object IconManager {
             fileType == "application/pdf" -> pdfIcon
             fileType.startsWith("audio/") -> audioFileIcon
             else -> fileIcon
+        }
+    }
+
+    fun getIconForDir(dir: ExplorerDirectory): ImageIcon {
+        return when {
+            dir.isEmpty -> folderOpenIcon
+            else -> folderIcon
         }
     }
 }

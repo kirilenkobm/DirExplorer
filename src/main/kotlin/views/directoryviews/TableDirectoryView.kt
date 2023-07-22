@@ -3,6 +3,7 @@ package views.directoryviews
 import dataModels.*
 import kotlinx.coroutines.launch
 import state.AppState
+import state.Settings
 import views.IconManager
 import views.TopBarView
 import java.awt.Desktop
@@ -11,6 +12,7 @@ import java.awt.event.MouseEvent
 import java.io.File
 import java.io.IOException
 import java.util.*
+import javax.swing.Icon
 import javax.swing.ImageIcon
 import javax.swing.JTable
 import javax.swing.SwingUtilities
@@ -23,6 +25,7 @@ class TableDirectoryView(private val topBarView: TopBarView) : AbstractDirectory
     private var model: DefaultTableModel? = null
     private val entityIconSize: Int = 16
     private var filteredAndSortedContents: List<FileSystemEntity> = emptyList()
+    private val bundle = ResourceBundle.getBundle("languages/Messages", Settings.language.getLocale())
 
     init {
         setupTableMouseListener()
@@ -54,7 +57,7 @@ class TableDirectoryView(private val topBarView: TopBarView) : AbstractDirectory
                     dateFormat.format(Date(entity.lastModified))
                 )
                 is ExplorerDirectory -> arrayOf<Any>(
-                    resizeIcon(IconManager.folderIcon, entityIconSize),
+                    resizeIcon(IconManager.getIconForDir(entity), entityIconSize),
                     entity.name,
                     "-",
                     "-",
@@ -64,6 +67,12 @@ class TableDirectoryView(private val topBarView: TopBarView) : AbstractDirectory
                     entity.name,
                     "-",
                     "-"
+                )
+                is ZipArchive -> arrayOf<Any>(
+                    resizeIcon(IconManager.folderZipIcon, entityIconSize),
+                    entity.name,
+                    humanReadableSize(entity.size),
+                    dateFormat.format(Date(entity.lastModified))
                 )
                 is UnknownEntity -> arrayOf<Any>(
                     resizeIcon(IconManager.helpCenterIcon, entityIconSize),
@@ -82,7 +91,12 @@ class TableDirectoryView(private val topBarView: TopBarView) : AbstractDirectory
     }
 
     private fun createTableModel(): DefaultTableModel {
-        val columnNames = arrayOf("Type", "Name", "Size", "Last Modified")
+        val columnNames = arrayOf(
+            "",
+            bundle.getString("Name"),
+            bundle.getString("Size"),
+            bundle.getString("LastModified")
+        )
         val data = mapEntitiesToData()
         return object : DefaultTableModel(data, columnNames) {
             override fun getColumnClass(column: Int): Class<*> {

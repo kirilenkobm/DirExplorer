@@ -13,6 +13,7 @@ object Settings {
     var viewMode: ViewMode = ViewMode.TABLE
     var buttonSize: Int = 20
     var iconSize: Int = 48
+    var language: Language = Language.GERMAN
 
     fun toggleShowHiddenFiles() {
         showHiddenFiles = !showHiddenFiles
@@ -24,6 +25,10 @@ object Settings {
 
     fun updateViewMode(newViewMode: ViewMode) {
         viewMode = newViewMode
+    }
+
+    fun updateLanguage(newLanguage: Language) {
+        language = newLanguage
     }
 
     fun updateButtonSize(newButtonSize: Int) {

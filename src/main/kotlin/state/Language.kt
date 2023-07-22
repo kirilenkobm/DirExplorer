@@ -1,5 +1,11 @@
 package state
 
-object Language {
-    // TODO: ask whether is needed or not
+import java.util.Locale
+
+enum class Language(val code: String) {
+    ENGLISH("en"),
+    RUSSIAN("ru"),
+    GERMAN("de");
+
+    fun getLocale(): Locale = Locale(code)
 }

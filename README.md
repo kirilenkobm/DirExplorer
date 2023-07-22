@@ -12,3 +12,32 @@ Implementation details:
 - All details of the user interface are left to candidate's discretion
 - The program should be written in Java or Kotlin and work on various operating systems
 - The task evaluates not only the quality of the code, but also the convenience and functionality of the UI
+
+## Running the application
+
+AFAIK - just open the project in IDEA and run
+
+## Implemented functions
+
+### Navigation
+
+* back
+* forward
+* home -> using ***** as home directory (depending on OS)
+* level up
+
+
+### Settings
+
+* color theme: dark, light, system (is system supports, if not -> considered light)
+* show hidden files or not
+* (planned) language selection
+...
+
+### View mode
+
+* table
+* icons
+* (planned): columns
+
+

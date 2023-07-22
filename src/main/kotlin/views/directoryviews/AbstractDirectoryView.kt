@@ -46,7 +46,8 @@ abstract class AbstractDirectoryView : CoroutineScope {
                     }
                 }.thenBy { it.name }
             )
-            SortOrder.DATE_CREATED -> contents // TODO: Implement sorting by date created
+            SortOrder.SIZE -> contents  // TODO: Implement this kind of sorting
+            SortOrder.LAST_MODIFIED -> contents // TODO: Implement sorting by date created
         }
 
         if (AppState.currentFilter.isNotEmpty()) {

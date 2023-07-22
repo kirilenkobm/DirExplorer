@@ -6,6 +6,8 @@ import views.IconManager
 import views.directoryviews.DirectoryViewUpdater
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
+import java.nio.file.Files
+import java.nio.file.Paths
 
 class DirectoryIconView(
     entity: ExplorerDirectory,
@@ -14,8 +16,13 @@ class DirectoryIconView(
     private val dirEntity = entity
 
     override fun setIcon() {
-        iconLabel.icon = resizeIcon(IconManager.folderIcon)
+        iconLabel.icon = if (dirEntity.isEmpty) {
+            resizeIcon(IconManager.folderOpenIcon)
+        } else {
+            resizeIcon(IconManager.folderIcon)
+        }
     }
+
 
     init {
         entityPanel.addMouseListener(object : MouseAdapter() {

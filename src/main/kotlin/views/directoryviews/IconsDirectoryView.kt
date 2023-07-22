@@ -4,10 +4,7 @@ import dataModels.*
 import kotlinx.coroutines.launch
 import state.AppState
 import views.*
-import views.iconviews.DirectoryIconView
-import views.iconviews.FileIconView
-import views.iconviews.SymlinkIconView
-import views.iconviews.UnknownIconView
+import views.iconviews.*
 import java.awt.GridLayout
 import javax.swing.ImageIcon
 import javax.swing.JPanel
@@ -37,6 +34,7 @@ class IconsDirectoryView(private val topBarView: TopBarView) : AbstractDirectory
             is ExplorerFile -> FileIconView(entity).createView()
             is ExplorerDirectory -> DirectoryIconView(entity, this).createView()
             is ExplorerSymLink -> SymlinkIconView(entity).createView()
+            is ZipArchive -> ZipArchiveIconView(entity).createView()  // Add this line
             else -> {
                 // To handle type mismatch in else branch:
                 // UnknownEntity handles all other possible cases

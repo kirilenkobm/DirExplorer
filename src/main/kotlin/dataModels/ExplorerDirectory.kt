@@ -31,4 +31,12 @@ open class ExplorerDirectory(override val path: String): FileSystemEntity {
             }
         }.toList()
     }
+
+    val isEmpty: Boolean
+        // As I understand, the Files.list returns a Stream
+        // findAny() will stop once it meets a single document
+        // so, even if directory contains 10000s of files, it will not hurt the
+        // performance to check whether it's present or not.
+        // TODO: test this idea
+        get() = Files.list(Paths.get(path)).use { it.findAny().isPresent.not() }
 }

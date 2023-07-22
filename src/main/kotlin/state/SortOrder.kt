@@ -3,5 +3,6 @@ package state
 enum class SortOrder {
     NAME,
     TYPE,
-    DATE_CREATED
+    LAST_MODIFIED,
+    SIZE
 }
