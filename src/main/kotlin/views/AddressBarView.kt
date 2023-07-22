@@ -62,13 +62,11 @@ class AddressBarView(private val mainView: MainView) {
             currentPath = newPath
         }
 
-
         // add a filler component that takes up the remaining space
         constraints.weightx = 1.0 // set weightx to 1 for filler
         constraints.fill = GridBagConstraints.HORIZONTAL // resize filler horizontally
         addressBar.add(Box.createHorizontalGlue(), constraints)
         addressBar.border = BorderFactory.createMatteBorder(1, 1, 1, 1, Color.BLACK)
-
 
         addressBar.revalidate()
         addressBar.repaint()

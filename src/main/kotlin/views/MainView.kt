@@ -1,36 +1,21 @@
 package views
 
-import dataModels.ExplorerFile
-import dataModels.ExplorerDirectory
-import state.AppState
 import java.awt.BorderLayout
-import java.awt.FlowLayout
-import java.awt.event.MouseAdapter
-import java.awt.event.MouseEvent
-import javax.swing.BorderFactory
-import javax.swing.JButton
 import javax.swing.JFrame
-import javax.swing.JLabel
 import javax.swing.JScrollPane
-import javax.swing.JTable
 import javax.swing.JPanel
-import javax.swing.JTextField
-import javax.swing.table.DefaultTableModel
-import dataModels.FileSystemEntity
 import state.Settings
 import state.ViewMode
+import views.directoryviews.IconsDirectoryView
+import views.directoryviews.TableDirectoryView
 import java.awt.Dimension
-import java.awt.event.ComponentAdapter
-import java.awt.event.ComponentEvent
-import javax.swing.ButtonGroup
-import javax.swing.JToggleButton
-import javax.swing.SwingUtilities
 
 
 class MainView {
     // TODO: better manage view updates and triggers
     // TODO: coroutines to get content of the current dir
-    private val topBarView = TopBarView(this)
+    private val frame = JFrame("DirExplorer")
+    private val topBarView = TopBarView(this, frame)
     private val tableView = TableDirectoryView(topBarView)
     private val iconsView = IconsDirectoryView(topBarView)
     private val mainPanel = JPanel(BorderLayout())
@@ -45,7 +30,6 @@ class MainView {
     }
 
     fun createAndShowGUI() {
-        val frame = JFrame("DirExplorer")
         frame.defaultCloseOperation = JFrame.EXIT_ON_CLOSE
         // Main Panel
         mainPanel.preferredSize = Dimension(800, 600) // Set to your preferred width and height

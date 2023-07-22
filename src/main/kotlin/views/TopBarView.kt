@@ -4,15 +4,18 @@ import state.AppState
 import state.Settings
 import state.ViewMode
 import java.awt.*
+import java.awt.event.WindowAdapter
+import java.awt.event.WindowEvent
 import javax.swing.*
 import javax.swing.event.DocumentEvent
 import javax.swing.event.DocumentListener
 
-class TopBarView(private val mainView: MainView) {
+class TopBarView(private val mainView: MainView, private val frame: JFrame) {
     private val topBar = JSplitPane()
     private val leftPanel = JPanel()
     private val rightPanel = JPanel(FlowLayout(FlowLayout.RIGHT))
     private val addressBarView = AddressBarView(mainView)
+    private val settingsDialog: SettingsDialog? = null
 
     private fun createButton(icon: ImageIcon, size: Int, action: () -> Unit): JButton {
         val resizedIcon = ImageIcon(icon.image.getScaledInstance(size, size, Image.SCALE_SMOOTH))
@@ -84,19 +87,19 @@ class TopBarView(private val mainView: MainView) {
         leftPanel.layout = BoxLayout(leftPanel, BoxLayout.X_AXIS)
 
         // Buttons on the left: for navigation
-        val backButton = createButton(IconManager.backArrowIcon, Settings.iconSize) {
+        val backButton = createButton(IconManager.backArrowIcon, Settings.buttonSize) {
             AppState.goBack()
         }
 
-        val forwardButton = createButton(IconManager.forwardArrowIcon, Settings.iconSize) {
+        val forwardButton = createButton(IconManager.forwardArrowIcon, Settings.buttonSize) {
             AppState.goForward()
         }
 
-        val homeButton = createButton(IconManager.homeIcon, Settings.iconSize) {
+        val homeButton = createButton(IconManager.homeIcon, Settings.buttonSize) {
             AppState.goHome()
         }
 
-        val upButton = createButton(IconManager.upArrowIcon, Settings.iconSize) {
+        val upButton = createButton(IconManager.upArrowIcon, Settings.buttonSize) {
             AppState.goUp()
         }
         // >>>> Buttons on the left: navigation
@@ -112,14 +115,14 @@ class TopBarView(private val mainView: MainView) {
 
         // Buttons on the right: Settings
         val viewModeGroup = ButtonGroup()
-        val tableButton = createToggleButton(IconManager.tocIcon, Settings.iconSize) {
+        val tableButton = createToggleButton(IconManager.tocIcon, Settings.buttonSize) {
             Settings.updateViewMode(ViewMode.TABLE)
         }.apply {
             isSelected = Settings.viewMode == ViewMode.TABLE
         }
 
 
-        val iconButton = createToggleButton(IconManager.viewModuleIcon, Settings.iconSize) {
+        val iconButton = createToggleButton(IconManager.viewModuleIcon, Settings.buttonSize) {
             Settings.updateViewMode(ViewMode.ICONS)
         }.apply {
             isSelected = Settings.viewMode == ViewMode.ICONS
@@ -128,8 +131,25 @@ class TopBarView(private val mainView: MainView) {
         viewModeGroup.add(tableButton)
         viewModeGroup.add(iconButton)
 
-        val settingsButton = createButton(IconManager.settingsIcon, Settings.iconSize) {
-            // TODO: Define action for settings button
+        // TODO: save changes right after the window is closed
+        val settingsButton = createButton(IconManager.settingsIcon, Settings.buttonSize) {
+            if (settingsDialog?.isVisible != true)  // to ensure only one settings view is shown
+            {
+                val settingsDialog = SettingsDialog().apply {
+                    // to locate it in the middle of the main view, not in the
+                    // top left corner of the screen
+                    setLocationRelativeTo(frame)
+
+                    // ideally to apply changes after the window is closed
+                    addWindowListener(object : WindowAdapter() {
+                        override fun windowClosed(e: WindowEvent?) {
+                            mainView.updateView()
+                            mainView.updateMainPanel()
+                        }
+                    })
+                }
+                settingsDialog.isVisible = true
+            }
         }
         // >>>> Buttons on the right: Settings
 

@@ -15,10 +15,11 @@ open class ExplorerDirectory(override val path: String): FileSystemEntity {
     open suspend fun getContents(): List<FileSystemEntity> = withContext(Dispatchers.IO) {
         Files.list(Paths.get(path)).asSequence().mapNotNull { path ->
             when {
+                // TODO: filter hidden files out on the UI layer
                 Files.isHidden(path) && !Settings.showHiddenFiles -> null
                 Files.isSymbolicLink(path) -> ExplorerSymLink(path.toString())
                 Files.isRegularFile(path) -> {
-                    // not the most reliable way to check whether it is an archive
+                    // TODO: check using MIME types
                     if (zipExtensions.any { ext -> path.toString().endsWith(ext) }) {
                         ZipArchive(path.toString())
                     } else {

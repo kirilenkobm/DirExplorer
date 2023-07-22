@@ -1,9 +1,10 @@
-package views
+package views.directoryviews
 
 import dataModels.*
 import kotlinx.coroutines.launch
 import state.AppState
-import state.SortOrder
+import views.IconManager
+import views.TopBarView
 import java.awt.Desktop
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
@@ -79,7 +80,6 @@ class TableDirectoryView(private val topBarView: TopBarView) : AbstractDirectory
             }
         }.toTypedArray()
     }
-
 
     private fun createTableModel(): DefaultTableModel {
         val columnNames = arrayOf("Type", "Name", "Size", "Last Modified")

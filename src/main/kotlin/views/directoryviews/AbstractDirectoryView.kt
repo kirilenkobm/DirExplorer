@@ -1,4 +1,4 @@
-package views
+package views.directoryviews
 
 import dataModels.ExplorerDirectory
 import dataModels.ExplorerFile
@@ -8,7 +8,6 @@ import kotlinx.coroutines.*
 import state.AppState
 import state.SortOrder
 import java.nio.file.FileSystems
-import java.nio.file.Files
 import java.nio.file.Paths
 import java.nio.file.StandardWatchEventKinds
 import java.nio.file.WatchEvent
@@ -26,7 +25,6 @@ abstract class AbstractDirectoryView : CoroutineScope {
     protected var currentContents: List<FileSystemEntity> = emptyList()
     protected var watchKey: WatchKey? = null
     private var filteredAndSortedContents: List<FileSystemEntity> = emptyList()
-
 
     init {
         launch {
