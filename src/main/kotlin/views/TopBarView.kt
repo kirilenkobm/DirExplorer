@@ -49,16 +49,20 @@ class TopBarView(private val mainView: MainView) {
         filterField.document.addDocumentListener(object : DocumentListener {
             override fun insertUpdate(e: DocumentEvent?) {
                 AppState.currentFilter = filterField.text
+                updateView()
             }
 
             override fun removeUpdate(e: DocumentEvent?) {
                 AppState.currentFilter = filterField.text
+                updateView()
             }
 
             override fun changedUpdate(e: DocumentEvent?) {
                 AppState.currentFilter = filterField.text
+                updateView()
             }
         })
+
 
         // Add a clear button to the filter field
         val clearFilterButton = JButton("x")

@@ -11,18 +11,12 @@ class ExplorerFile(override val path: String): FileSystemEntity {
     val size: Long  // Will be converted to human-readable in the UI
         get() = Files.size(Paths.get(path))
 
-    val name: String
+    override val name: String
         get() = Paths.get(path).fileName.toString()
 
     val extension: String
         // TODO: ask whether extension of a file like *.txt.gz is .txt.gz or just .gz
         get() = Paths.get(path).fileName.toString().substringAfterLast(".", "")
-
-    val lastModified: Long
-        get() = Files.getLastModifiedTime(Paths.get(path)).toMillis()
-
-    val isHidden: Boolean
-        get() = Files.isHidden(Paths.get(path))
 
     val fileType: String
         // Java built in method to determine file type
