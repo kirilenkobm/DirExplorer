@@ -24,12 +24,16 @@ class TopBarView(private val mainView: MainView) {
         }
     }
 
-    private fun createToggleButton(icon: ImageIcon, size: Int, action: () -> Unit): JToggleButton {
+    private fun createToggleButton(icon: ImageIcon,
+                                   size: Int,
+                                   action: () -> Unit): JToggleButton
+    {
         val resizedIcon = ImageIcon(icon.image.getScaledInstance(size, size, Image.SCALE_SMOOTH))
         return JToggleButton(resizedIcon).apply {
             addActionListener {
                 action()
                 mainView.updateView()
+                mainView.updateMainPanel()
             }
         }
     }
@@ -110,15 +114,17 @@ class TopBarView(private val mainView: MainView) {
         val viewModeGroup = ButtonGroup()
         val tableButton = createToggleButton(IconManager.tocIcon, Settings.iconSize) {
             Settings.updateViewMode(ViewMode.TABLE)
-            mainView.updateView()
-            mainView.updateMainPanel()
+        }.apply {
+            isSelected = Settings.viewMode == ViewMode.TABLE
         }
+
 
         val iconButton = createToggleButton(IconManager.viewModuleIcon, Settings.iconSize) {
             Settings.updateViewMode(ViewMode.ICONS)
-            mainView.updateView()
-            mainView.updateMainPanel()
+        }.apply {
+            isSelected = Settings.viewMode == ViewMode.ICONS
         }
+
         viewModeGroup.add(tableButton)
         viewModeGroup.add(iconButton)
 

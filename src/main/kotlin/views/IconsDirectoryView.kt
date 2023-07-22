@@ -17,6 +17,7 @@ import javax.swing.JLabel
 import javax.swing.JPanel
 import javax.swing.SwingUtilities
 
+
 class IconsDirectoryView(private val topBarView: TopBarView) : AbstractDirectoryView() {
     private val panel = JPanel(GridLayout(0, 5)) // TODO: adaptive number of columns
     private var filteredAndSortedContents: List<FileSystemEntity> = emptyList()
