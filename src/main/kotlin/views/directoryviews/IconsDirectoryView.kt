@@ -1,7 +1,9 @@
 package views.directoryviews
 
 import dataModels.*
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Semaphore
 import state.AppState
 import views.*
 import views.iconviews.*
@@ -10,10 +12,16 @@ import javax.swing.ImageIcon
 import javax.swing.JPanel
 import javax.swing.SwingUtilities
 
+const val semaphorePermitsForThumbnailGeneration = 2
+
 
 class IconsDirectoryView(private val topBarView: TopBarView) : AbstractDirectoryView(), DirectoryViewUpdater {
     private val panel = JPanel(GridLayout(0, 5)) // TODO: adaptive number of columns
     private var filteredAndSortedContents: List<FileSystemEntity> = emptyList()
+    // If I render many thumbnails at once, I would like to avoid rendering many of them
+    // at once (for example, if directory contains 1000s of them)
+    private val thumbnailSemaphore = Semaphore(semaphorePermitsForThumbnailGeneration) // Limit to 10 concurrent tasks
+
 
     init {
         updateView()
@@ -31,7 +39,7 @@ class IconsDirectoryView(private val topBarView: TopBarView) : AbstractDirectory
 
     private fun createEntityView(entity: FileSystemEntity): JPanel {
         return when (entity) {
-            is ExplorerFile -> FileIconView(entity).createView()
+            is ExplorerFile -> FileIconView(entity, thumbnailSemaphore).createView()
             is ExplorerDirectory -> DirectoryIconView(entity, this).createView()
             is ExplorerSymLink -> SymlinkIconView(entity).createView()
             is ZipArchive -> ZipArchiveIconView(entity).createView()  // Add this line
@@ -49,6 +57,11 @@ class IconsDirectoryView(private val topBarView: TopBarView) : AbstractDirectory
         launch {
             currentContents = AppState.currentExplorerDirectory.getContents()
             filteredAndSortedContents = filterAndSortContents(currentContents)
+
+            // Wait for all thumbnail generation tasks to complete
+            while (thumbnailSemaphore.availablePermits < semaphorePermitsForThumbnailGeneration) {
+                delay(100) // Wait for a short time before checking again
+            }
 
             SwingUtilities.invokeLater {
                 panel.removeAll()

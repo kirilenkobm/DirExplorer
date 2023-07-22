@@ -10,10 +10,12 @@ object Settings {
 
     var showHiddenFiles: Boolean = false
     var colorTheme: ColorTheme = ColorTheme.SYSTEM
-    var viewMode: ViewMode = ViewMode.TABLE
+    var viewMode: ViewMode = ViewMode.ICONS
     var buttonSize: Int = 20
     var iconSize: Int = 48
     var language: Language = Language.GERMAN
+
+    var maxImageSizeToShowThumbnail = 6000
 
     fun toggleShowHiddenFiles() {
         showHiddenFiles = !showHiddenFiles

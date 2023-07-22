@@ -10,6 +10,7 @@ import javax.swing.*
 import javax.swing.event.DocumentEvent
 import javax.swing.event.DocumentListener
 
+
 class TopBarView(private val mainView: MainView, private val frame: JFrame) {
     private val topBar = JSplitPane()
     private val leftPanel = JPanel()
@@ -167,6 +168,7 @@ class TopBarView(private val mainView: MainView, private val frame: JFrame) {
         // right-aligned components
         rightPanel.add(tableButton)
         rightPanel.add(iconButton)
+        rightPanel.add(Box.createHorizontalStrut(20)) // add 100px of space
         rightPanel.add(settingsButton)
 
         topBar.leftComponent = leftPanel

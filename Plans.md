@@ -6,4 +6,4 @@
 * Thumbnails - ImageIO is enough
 * Settings
 * Cyrillic languages
-* 
+* PDF

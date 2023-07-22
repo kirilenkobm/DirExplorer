@@ -4,6 +4,7 @@ import com.drew.imaging.ImageMetadataReader
 import com.drew.metadata.exif.ExifThumbnailDirectory
 import dataModels.ExplorerFile
 import kotlinx.coroutines.*
+import kotlinx.coroutines.sync.Semaphore
 import state.Settings
 import views.IconManager
 import java.awt.Color
@@ -20,9 +21,10 @@ import javax.imageio.ImageIO
 import javax.swing.ImageIcon
 import javax.swing.SwingUtilities
 import kotlin.coroutines.CoroutineContext
+import kotlin.math.max
 
 
-class FileIconView(entity: ExplorerFile): AbstractIconEntityView(entity), CoroutineScope {
+class FileIconView(entity: ExplorerFile, private val thumbnailSemaphore: Semaphore): AbstractIconEntityView(entity), CoroutineScope {
     private val fileEntity = entity
     private val job = Job()
     override val coroutineContext: CoroutineContext
@@ -39,12 +41,18 @@ class FileIconView(entity: ExplorerFile): AbstractIconEntityView(entity), Corout
         if (fileType.startsWith("image/") && ImageIO.getReaderFileSuffixes().contains(fileExtension)) {
             //Start loading the thumbnail if possible
             launch(Dispatchers.IO) {
-                val thumbnail = createThumbnail(fileEntity.path)
-                if (thumbnail != null) {
-                    // If thumbnail created successfully -> apply it
-                    SwingUtilities.invokeLater {
-                        iconLabel.icon = resizeIcon(thumbnail)
+                try {
+                    thumbnailSemaphore.acquire()
+                    val thumbnail = createThumbnail(fileEntity.path)
+                    if (thumbnail != null) {
+                        // If thumbnail created successfully -> apply it
+                        SwingUtilities.invokeLater {
+                            iconLabel.icon = resizeIcon(thumbnail)
+                        }
                     }
+                } finally {
+                    // to ensure that semaphore is always released
+                    thumbnailSemaphore.release() // Release the permit
                 }
             }
         } else if (fileType.startsWith("text/") || fileExtension == "log") {
@@ -59,6 +67,7 @@ class FileIconView(entity: ExplorerFile): AbstractIconEntityView(entity), Corout
                 }
             }
         }
+        // TODO else if (fileType == "application/pdf") {
     }
 
     private fun createTextIcon(previewText: String): ImageIcon {
@@ -76,12 +85,12 @@ class FileIconView(entity: ExplorerFile): AbstractIconEntityView(entity), Corout
 
         // Draw the text
         g.color = Color.BLACK
-        g.font = g.font.deriveFont(10f)
+        g.font = g.font.deriveFont(8f)
 
         val lines = previewText.split("\n")
         for ((index, line) in lines.withIndex()) {
             // I found only a way to draw the text line by line
-            g.drawString(line, 5, 20 + index * 15)
+            g.drawString(line, 5, 15 + index * 10)
         }
 
         // Clean up
@@ -107,20 +116,57 @@ class FileIconView(entity: ExplorerFile): AbstractIconEntityView(entity), Corout
         return withContext(Dispatchers.IO) {
             try {
                 // TODO: try to extract already existing thumbnail if possible
-                // TODO: potentially skip huge images?
                 // TODO: preserve in scale like 128x128 (to allow rescaling UI)
                 // TODO: preserve aspect ratio
-                // TODO: maybe limit number of simultaneous threads here?
-                val thumbnailImage = ImageIO.read(File(path))
-                thumbnailImage.getScaledInstance(Settings.iconSize, Settings.iconSize, Image.SCALE_SMOOTH)
-                // return imageIcon
-                ImageIcon(thumbnailImage)
-            } catch (e: Exception) {
-                // if any error: return null
+                val file = File(path)
+                val imageInputStream = ImageIO.createImageInputStream(file)
+                val readers = ImageIO.getImageReaders(imageInputStream)
+
+                if (readers.hasNext()) {
+                    val reader = readers.next()
+
+                    try {
+                        reader.setInput(imageInputStream)
+
+                        val width = reader.getWidth(reader.minIndex)
+                        val height = reader.getHeight(reader.minIndex)
+
+                        // Skip huge images
+                        if (width > Settings.maxImageSizeToShowThumbnail
+                            || height > Settings.maxImageSizeToShowThumbnail)
+                        {
+                            return@withContext null
+                        }
+
+                        // Read the image
+                        val image = reader.read(reader.minIndex)
+
+                        // Calculate the new width and height
+                        val scaleFactor = Settings.iconSize.toDouble() / max(width, height)
+                        val newWidth = (width * scaleFactor).toInt()
+                        val newHeight = (height * scaleFactor).toInt()
+
+                        // Scale the image
+                        val thumbnailImage = image.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH)
+
+                        // Return the ImageIcon
+                        ImageIcon(thumbnailImage)
+                    } finally {
+                        reader.dispose()
+                    }
+                } else {
+                    null
+                }
+            } catch (e: IOException) {
+                // Handle IO errors
+                null
+            } catch (e: IllegalArgumentException) {
+                // Handle invalid arguments
                 null
             }
         }
     }
+
 
     init {
         entityPanel.addMouseListener(object : MouseAdapter() {
