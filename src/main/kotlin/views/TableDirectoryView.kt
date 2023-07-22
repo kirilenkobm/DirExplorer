@@ -20,11 +20,13 @@ class TableDirectoryView(private val topBarView: TopBarView) : AbstractDirectory
     private val table = JTable()
     private var model: DefaultTableModel? = null
     private val entityIconSize: Int = 16
+    private var filteredAndSortedContents: List<FileSystemEntity> = emptyList()
 
     init {
         setupTableMouseListener()
         launch {
             currentContents = AppState.currentExplorerDirectory.getContents()
+            filteredAndSortedContents = filterAndSortContents(currentContents)
             model = createTableModel()
             table.model = model
 
@@ -40,10 +42,10 @@ class TableDirectoryView(private val topBarView: TopBarView) : AbstractDirectory
         return ImageIcon(newImage)
     }
 
-    private fun mapEntitiesToData(): Array<Array<Any>> {
-        val sortedContents = when (AppState.currentExplorerDirectory.sortOrder) {
-            SortOrder.NAME -> currentContents.sortedBy { it.name }
-            SortOrder.TYPE -> currentContents.sortedWith(
+    private fun filterAndSortContents(contents: List<FileSystemEntity>): List<FileSystemEntity> {
+        var sortedContents = when (AppState.currentExplorerDirectory.sortOrder) {
+            SortOrder.NAME -> contents.sortedBy { it.name }
+            SortOrder.TYPE -> contents.sortedWith(
                 compareBy<FileSystemEntity> {
                     when (it) {
                         is ExplorerDirectory -> 0
@@ -53,16 +55,20 @@ class TableDirectoryView(private val topBarView: TopBarView) : AbstractDirectory
                     }
                 }.thenBy { it.name }
             )
-            SortOrder.DATE_CREATED -> currentContents // TODO: Implement sorting by date created
+            SortOrder.DATE_CREATED -> contents // TODO: Implement sorting by date created
         }
 
-        return sortedContents.filter { entity ->
-            if (AppState.currentFilter.isNotEmpty()) {
+        if (AppState.currentFilter.isNotEmpty()) {
+            sortedContents = sortedContents.filter { entity ->
                 entity is ExplorerFile && entity.extension == AppState.currentFilter
-            } else {
-                true
             }
-        }.map { entity ->
+        }
+
+        return sortedContents
+    }
+
+    private fun mapEntitiesToData(): Array<Array<Any>> {
+        return filteredAndSortedContents.map { entity ->
             when (entity) {
                 is ExplorerFile -> arrayOf<Any>(
                     resizeIcon(IconManager.getIconForFileType(entity.fileType), entityIconSize),
@@ -112,6 +118,7 @@ class TableDirectoryView(private val topBarView: TopBarView) : AbstractDirectory
     override fun updateView() {
         launch {
             currentContents = AppState.currentExplorerDirectory.getContents()
+            filteredAndSortedContents = filterAndSortContents(currentContents)
             val data = mapEntitiesToData()
 
             SwingUtilities.invokeLater {
@@ -133,8 +140,8 @@ class TableDirectoryView(private val topBarView: TopBarView) : AbstractDirectory
         table.addMouseListener(object : MouseAdapter() {
             override fun mouseClicked(e: MouseEvent) {
                 val row = table.rowAtPoint(e.point)
-                if (row >= 0 && row < currentContents.size) {
-                    val entity = currentContents[row]
+                if (row >= 0 && row < filteredAndSortedContents.size) {
+                    val entity = filteredAndSortedContents[row]
                     if (entity is ExplorerDirectory) {
                         AppState.updateDirectory(entity)
                         updateView()
