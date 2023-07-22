@@ -16,6 +16,7 @@ import javax.swing.SwingUtilities
 import javax.swing.table.DefaultTableModel
 
 
+// View that controls directory view in the table mode
 class TableDirectoryView(private val topBarView: TopBarView) : AbstractDirectoryView() {
     private val table = JTable()
     private var model: DefaultTableModel? = null
@@ -40,31 +41,6 @@ class TableDirectoryView(private val topBarView: TopBarView) : AbstractDirectory
         val image = icon.image
         val newImage = image.getScaledInstance(size, size, java.awt.Image.SCALE_SMOOTH)
         return ImageIcon(newImage)
-    }
-
-    private fun filterAndSortContents(contents: List<FileSystemEntity>): List<FileSystemEntity> {
-        var sortedContents = when (AppState.currentExplorerDirectory.sortOrder) {
-            SortOrder.NAME -> contents.sortedBy { it.name }
-            SortOrder.TYPE -> contents.sortedWith(
-                compareBy<FileSystemEntity> {
-                    when (it) {
-                        is ExplorerDirectory -> 0
-                        is ExplorerFile -> 1
-                        is ExplorerSymLink -> 2
-                        else -> 3
-                    }
-                }.thenBy { it.name }
-            )
-            SortOrder.DATE_CREATED -> contents // TODO: Implement sorting by date created
-        }
-
-        if (AppState.currentFilter.isNotEmpty()) {
-            sortedContents = sortedContents.filter { entity ->
-                entity is ExplorerFile && entity.extension == AppState.currentFilter
-            }
-        }
-
-        return sortedContents
     }
 
     private fun mapEntitiesToData(): Array<Array<Any>> {
@@ -136,7 +112,7 @@ class TableDirectoryView(private val topBarView: TopBarView) : AbstractDirectory
         onCurrentDirectoryChanged()
     }
 
-    override fun setupTableMouseListener() {
+    private fun setupTableMouseListener() {
         table.addMouseListener(object : MouseAdapter() {
             override fun mouseClicked(e: MouseEvent) {
                 val row = table.rowAtPoint(e.point)

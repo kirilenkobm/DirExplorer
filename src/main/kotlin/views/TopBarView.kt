@@ -110,10 +110,14 @@ class TopBarView(private val mainView: MainView) {
         val viewModeGroup = ButtonGroup()
         val tableButton = createToggleButton(IconManager.tocIcon, Settings.iconSize) {
             Settings.updateViewMode(ViewMode.TABLE)
+            mainView.updateView()
+            mainView.updateMainPanel()
         }
 
         val iconButton = createToggleButton(IconManager.viewModuleIcon, Settings.iconSize) {
             Settings.updateViewMode(ViewMode.ICONS)
+            mainView.updateView()
+            mainView.updateMainPanel()
         }
         viewModeGroup.add(tableButton)
         viewModeGroup.add(iconButton)

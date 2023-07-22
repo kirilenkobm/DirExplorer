@@ -1,9 +1,12 @@
 package views
 
 import dataModels.ExplorerDirectory
+import dataModels.ExplorerFile
+import dataModels.ExplorerSymLink
 import dataModels.FileSystemEntity
 import kotlinx.coroutines.*
 import state.AppState
+import state.SortOrder
 import java.nio.file.FileSystems
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -22,12 +25,39 @@ abstract class AbstractDirectoryView : CoroutineScope {
 
     protected var currentContents: List<FileSystemEntity> = emptyList()
     protected var watchKey: WatchKey? = null
+    private var filteredAndSortedContents: List<FileSystemEntity> = emptyList()
+
 
     init {
         launch {
             currentContents = AppState.currentExplorerDirectory.getContents()
         }
         startWatchingDirectory(AppState.currentExplorerDirectory)
+    }
+
+    protected fun filterAndSortContents(contents: List<FileSystemEntity>): List<FileSystemEntity> {
+        var sortedContents = when (AppState.currentExplorerDirectory.sortOrder) {
+            SortOrder.NAME -> contents.sortedBy { it.name }
+            SortOrder.TYPE -> contents.sortedWith(
+                compareBy<FileSystemEntity> {
+                    when (it) {
+                        is ExplorerDirectory -> 0
+                        is ExplorerFile -> 1
+                        is ExplorerSymLink -> 2
+                        else -> 3
+                    }
+                }.thenBy { it.name }
+            )
+            SortOrder.DATE_CREATED -> contents // TODO: Implement sorting by date created
+        }
+
+        if (AppState.currentFilter.isNotEmpty()) {
+            sortedContents = sortedContents.filter { entity ->
+                entity is ExplorerFile && entity.extension == AppState.currentFilter
+            }
+        }
+
+        return sortedContents
     }
 
     protected fun startWatchingDirectory(directory: ExplorerDirectory) {
@@ -65,7 +95,7 @@ abstract class AbstractDirectoryView : CoroutineScope {
 
     abstract fun updateView()
 
-    abstract fun setupTableMouseListener()
+    // abstract fun setupTableMouseListener()
 
     fun dispose() {
         job.cancel()
