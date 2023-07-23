@@ -131,7 +131,6 @@ class FileIconView(entity: ExplorerFile, private val thumbnailSemaphore: Semapho
             try {
                 // TODO: try to extract already existing thumbnail if possible
                 // TODO: preserve in scale like 128x128 (to allow rescaling UI)
-                // TODO: preserve aspect ratio
                 val file = File(path)
                 val imageInputStream = ImageIO.createImageInputStream(file)
                 val readers = ImageIO.getImageReaders(imageInputStream)
@@ -184,7 +183,6 @@ class FileIconView(entity: ExplorerFile, private val thumbnailSemaphore: Semapho
             }
         }
     }
-
 
     init {
         entityPanel.addMouseListener(object : MouseAdapter() {
