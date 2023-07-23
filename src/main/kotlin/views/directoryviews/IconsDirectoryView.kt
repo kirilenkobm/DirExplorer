@@ -16,11 +16,11 @@ const val semaphorePermitsForThumbnailGeneration = 2
 
 
 class IconsDirectoryView(private val topBarView: TopBarView) : AbstractDirectoryView(), DirectoryViewUpdater {
-    private val panel = JPanel(GridLayout(0, 5)) // TODO: adaptive number of columns
+    private val panel = JPanel(GridLayout(0, 8)) // TODO: adaptive number of columns
     private var filteredAndSortedContents: List<FileSystemEntity> = emptyList()
     // If I render many thumbnails at once, I would like to avoid rendering many of them
     // at once (for example, if directory contains 1000s of them)
-    private val thumbnailSemaphore = Semaphore(semaphorePermitsForThumbnailGeneration) // Limit to 10 concurrent tasks
+    private val thumbnailSemaphore = Semaphore(semaphorePermitsForThumbnailGeneration) // Limit to N concurrent tasks
 
 
     init {

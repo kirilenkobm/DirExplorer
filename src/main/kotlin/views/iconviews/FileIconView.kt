@@ -10,6 +10,7 @@ import views.IconManager
 import java.awt.Color
 import java.awt.Desktop
 import java.awt.Image
+import java.awt.RenderingHints
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
 import java.awt.image.BufferedImage
@@ -17,6 +18,7 @@ import java.io.ByteArrayInputStream
 import java.io.File
 import java.io.IOException
 import java.io.RandomAccessFile
+import java.util.concurrent.Executors
 import javax.imageio.ImageIO
 import javax.swing.ImageIcon
 import javax.swing.SwingUtilities
@@ -126,14 +128,14 @@ class FileIconView(entity: ExplorerFile, private val thumbnailSemaphore: Semapho
                     val reader = readers.next()
 
                     try {
-                        reader.setInput(imageInputStream)
+                        reader.input = imageInputStream
 
                         val width = reader.getWidth(reader.minIndex)
                         val height = reader.getHeight(reader.minIndex)
+                        val maxDim = max(width, height)
 
                         // Skip huge images
-                        if (width > Settings.maxImageSizeToShowThumbnail
-                            || height > Settings.maxImageSizeToShowThumbnail)
+                        if (maxDim > Settings.maxImageSizeToShowThumbnail)
                         {
                             return@withContext null
                         }
@@ -146,13 +148,18 @@ class FileIconView(entity: ExplorerFile, private val thumbnailSemaphore: Semapho
                         val newWidth = (width * scaleFactor).toInt()
                         val newHeight = (height * scaleFactor).toInt()
 
-                        // Scale the image
-                        val thumbnailImage = image.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH)
+                        // Scale the image with a higher-quality algorithm
+                        val thumbnailImage = BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_RGB)
+                        val graphics = thumbnailImage.createGraphics()
+                        graphics.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC)
+                        graphics.drawImage(image, 0, 0, newWidth, newHeight, null)
+                        graphics.dispose()
 
-                        // Return the ImageIcon
                         ImageIcon(thumbnailImage)
+
                     } finally {
                         reader.dispose()
+                        imageInputStream.close()
                     }
                 } else {
                     null
