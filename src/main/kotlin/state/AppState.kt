@@ -16,7 +16,6 @@ object AppState {
     private var backStack: MutableList<ExplorerDirectory> = mutableListOf()
     private var forwardStack: MutableList<ExplorerDirectory> = mutableListOf()
 
-    // TODO: Make it return Bool -> success or not
     // New explorer directory -> where to go
     // if called from goBack - do not clear forward stack
     fun updateDirectory(newExplorerDirectory: ExplorerDirectory,
@@ -102,5 +101,13 @@ object AppState {
 
     fun updateSelectedFile(newExplorerFile: ExplorerFile) {
         selectedExplorerFile = newExplorerFile
+    }
+
+    fun isBackStackEmpty(): Boolean {
+        return backStack.isEmpty()
+    }
+
+    fun isForwardStackEmpty(): Boolean {
+        return forwardStack.isEmpty()
     }
 }

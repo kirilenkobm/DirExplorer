@@ -16,9 +16,13 @@ class TopBarView(private val mainView: MainView, private val frame: JFrame) {
     private val leftPanel = JPanel()
     private val rightPanel = JPanel(FlowLayout(FlowLayout.RIGHT))
     private val addressBarView = AddressBarView(mainView)
-    private val settingsDialog: SettingsDialog? = null
+    private var settingsDialog: SettingsDialog? = null
 
-    private fun createButton(icon: ImageIcon, size: Int, action: () -> Unit): JButton {
+
+    private fun createButton(icon: ImageIcon,
+                             size: Int,
+                             action: () -> Unit): JButton
+    {
         val resizedIcon = ImageIcon(icon.image.getScaledInstance(size, size, Image.SCALE_SMOOTH))
         return JButton(resizedIcon).apply {
             addActionListener {
@@ -58,19 +62,24 @@ class TopBarView(private val mainView: MainView, private val frame: JFrame) {
             override fun insertUpdate(e: DocumentEvent?) {
                 AppState.currentExtensionFilter = filterField.text
                 updateView()
+                mainView.updateView()
+                mainView.updateMainPanel()
             }
 
             override fun removeUpdate(e: DocumentEvent?) {
                 AppState.currentExtensionFilter = filterField.text
                 updateView()
+                mainView.updateView()
+                mainView.updateMainPanel()
             }
 
             override fun changedUpdate(e: DocumentEvent?) {
                 AppState.currentExtensionFilter = filterField.text
                 updateView()
+                mainView.updateView()
+                mainView.updateMainPanel()
             }
         })
-
 
         // Add a clear button to the filter field
         val clearFilterButton = JButton("x")
@@ -83,26 +92,17 @@ class TopBarView(private val mainView: MainView, private val frame: JFrame) {
         return filterPanel
     }
 
-
     init {
         leftPanel.layout = BoxLayout(leftPanel, BoxLayout.X_AXIS)
 
         // Buttons on the left: for navigation
-        val backButton = createButton(IconManager.backArrowIcon, Settings.buttonSize) {
-            AppState.goBack()
-        }
+        val backButton = createButton(IconManager.backArrowIcon, Settings.buttonSize) { AppState.goBack() }
 
-        val forwardButton = createButton(IconManager.forwardArrowIcon, Settings.buttonSize) {
-            AppState.goForward()
-        }
+        val forwardButton = createButton(IconManager.forwardArrowIcon, Settings.buttonSize) { AppState.goForward() }
 
-        val homeButton = createButton(IconManager.homeIcon, Settings.buttonSize) {
-            AppState.goHome()
-        }
+        val homeButton = createButton(IconManager.homeIcon, Settings.buttonSize) { AppState.goHome() }
 
-        val upButton = createButton(IconManager.upArrowIcon, Settings.buttonSize) {
-            AppState.goUp()
-        }
+        val upButton = createButton(IconManager.upArrowIcon, Settings.buttonSize) { AppState.goUp() }
         // >>>> Buttons on the left: navigation
 
         // Address bar and filter
@@ -136,7 +136,7 @@ class TopBarView(private val mainView: MainView, private val frame: JFrame) {
         val settingsButton = createButton(IconManager.settingsIcon, Settings.buttonSize) {
             if (settingsDialog?.isVisible != true)  // to ensure only one settings view is shown
             {
-                val settingsDialog = SettingsDialog().apply {
+                settingsDialog = SettingsDialog().apply {
                     // to locate it in the middle of the main view, not in the
                     // top left corner of the screen
                     setLocationRelativeTo(frame)
@@ -148,8 +148,8 @@ class TopBarView(private val mainView: MainView, private val frame: JFrame) {
                             mainView.updateMainPanel()
                         }
                     })
+                    isVisible = true
                 }
-                settingsDialog.isVisible = true
             }
         }
         // >>>> Buttons on the right: Settings

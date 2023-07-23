@@ -34,6 +34,27 @@ abstract class AbstractDirectoryView : CoroutineScope {
         startWatchingDirectory(AppState.currentExplorerDirectory)
     }
 
+    private fun matchesExtension(entityExtension: String, filterExtension: String): Boolean {
+        // Check if filter starts with ~ and should invert the result
+        val invertResult = filterExtension.startsWith("~")
+        val cleanedFilter = if (invertResult) filterExtension.drop(1) else filterExtension
+
+        // if there is a full match, return true (or false if inverted)
+        if(entityExtension == cleanedFilter) return !invertResult
+
+        // check for partial match in case of complex extension
+        val entitySubExtensions = entityExtension.split('.')
+        if (entitySubExtensions.any { it == filterExtension }) return !invertResult
+
+        // check for match with regex pattern
+        val regexPattern = filterExtension
+            .replace("*", ".*")
+
+        val regex = regexPattern.toRegex()
+        val matches = regex.containsMatchIn(entityExtension)
+        return if (invertResult) !matches else matches
+    }
+
     protected fun filterAndSortContents(contents: List<FileSystemEntity>): List<FileSystemEntity> {
         var sortedContents = when (AppState.currentExplorerDirectory.sortOrder) {
             SortOrder.NAME -> contents.sortedBy { it.name }
@@ -53,7 +74,7 @@ abstract class AbstractDirectoryView : CoroutineScope {
 
         if (AppState.currentExtensionFilter.isNotEmpty()) {
             sortedContents = sortedContents.filter { entity ->
-                entity is ExplorerFile && entity.extension == AppState.currentExtensionFilter
+                entity is ExplorerFile && matchesExtension(entity.extension, AppState.currentExtensionFilter)
             }
         }
 

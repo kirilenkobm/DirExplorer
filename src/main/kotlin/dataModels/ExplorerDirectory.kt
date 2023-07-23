@@ -12,6 +12,7 @@ open class ExplorerDirectory(override val path: String): FileSystemEntity {
     val zipExtensions = setOf(".zip", ".7z", ".jar", ".war", ".rar", ".bz", ".bz2", ".gz")
     val sortOrder: SortOrder = SortOrder.TYPE
 
+    // TODO: store in a attribute, call only once
     open suspend fun getContents(): List<FileSystemEntity> = withContext(Dispatchers.IO) {
         Files.list(Paths.get(path)).asSequence().mapNotNull { path ->
             when {
@@ -31,6 +32,13 @@ open class ExplorerDirectory(override val path: String): FileSystemEntity {
                 else -> UnknownEntity(path.toString())
             }
         }.toList()
+    }
+
+    open suspend fun getUniqueExtensions(): Set<String> = withContext(Dispatchers.IO) {
+        getContents()
+            .filterIsInstance<ExplorerFile>()  // Filter out non-files
+            .map { it.extension }  // Map to file extensions
+            .toSet()  // Remove duplicates
     }
 
     val hasAccess: Boolean

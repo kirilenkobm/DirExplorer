@@ -17,7 +17,7 @@ class ExplorerFile(override val path: String): FileSystemEntity {
 
     val extension: String
         // TODO: ask whether extension of a file like *.txt.gz is .txt.gz or just .gz
-        get() = Paths.get(path).fileName.toString().substringAfterLast(".", "")
+        get() = Paths.get(path).fileName.toString().substringAfter(".", "")
 
     val fileType: String
         // Java built in method to determine file type
