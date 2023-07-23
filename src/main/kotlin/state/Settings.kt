@@ -12,7 +12,7 @@ object Settings {
     var colorTheme: ColorTheme = ColorTheme.SYSTEM
     var viewMode: ViewMode = ViewMode.ICONS
     var buttonSize: Int = 20
-    var iconSize: Int = 48
+    var iconSize: Int = 72
     var language: Language = Language.GERMAN
 
     var maxImageSizeToShowThumbnail = 6000

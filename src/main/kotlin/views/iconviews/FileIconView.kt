@@ -49,7 +49,9 @@ class FileIconView(entity: ExplorerFile, private val thumbnailSemaphore: Semapho
                     if (thumbnail != null) {
                         // If thumbnail created successfully -> apply it
                         SwingUtilities.invokeLater {
-                            iconLabel.icon = resizeIcon(thumbnail)
+                            // iconLabel.icon = resizeIcon(thumbnail)
+                            // it is already resized, aspect ratio preserved
+                            iconLabel.icon = thumbnail
                         }
                     }
                 } finally {
@@ -87,12 +89,12 @@ class FileIconView(entity: ExplorerFile, private val thumbnailSemaphore: Semapho
 
         // Draw the text
         g.color = Color.BLACK
-        g.font = g.font.deriveFont(8f)
+        g.font = g.font.deriveFont(6f)
 
         val lines = previewText.split("\n")
         for ((index, line) in lines.withIndex()) {
             // I found only a way to draw the text line by line
-            g.drawString(line, 5, 15 + index * 10)
+            g.drawString(line, 4, 12 + index * 8)
         }
 
         // Clean up
@@ -156,7 +158,6 @@ class FileIconView(entity: ExplorerFile, private val thumbnailSemaphore: Semapho
                         graphics.dispose()
 
                         ImageIcon(thumbnailImage)
-
                     } finally {
                         reader.dispose()
                         imageInputStream.close()

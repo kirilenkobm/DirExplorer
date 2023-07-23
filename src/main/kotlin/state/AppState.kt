@@ -10,28 +10,31 @@ const val HISTORY_SIZE = 40
 
 object AppState {
     var currentExplorerDirectory: ExplorerDirectory = ExplorerDirectory(System.getProperty("user.home"))
-    var currentFilter: String = ""
-    var selectedExplorerFile: ExplorerFile? = null
-    var backStack: MutableList<ExplorerDirectory> = mutableListOf()
-    var forwardStack: MutableList<ExplorerDirectory> = mutableListOf()
+    var currentExtensionFilter: String = ""
+    private var selectedExplorerFile: ExplorerFile? = null  // TODO: maybe UI layer?
+    private var backStack: MutableList<ExplorerDirectory> = mutableListOf()
+    private var forwardStack: MutableList<ExplorerDirectory> = mutableListOf()
 
-    fun updateDirectory(newExplorerDirectory: ExplorerDirectory) {
+    // TODO: Make it return Bool -> success or not
+    // New explorer directory -> where to go
+    // if called from goBack - do not clear forward stack
+    fun updateDirectory(newExplorerDirectory: ExplorerDirectory,
+                        clearForwardStack: Boolean = true,
+                        addToBackStack: Boolean = true) {
         if (Files.exists(Paths.get(newExplorerDirectory.path))) {
             if (currentExplorerDirectory.path != newExplorerDirectory.path) {
 
-                if (backStack.size >= HISTORY_SIZE) {
-                    // otherwise the history stack can get unlimited size
-                    backStack.removeAt(0)
+                if (addToBackStack) {
+                    if (backStack.size >= HISTORY_SIZE) {
+                        backStack.removeAt(0)
+                    }
+                    backStack.add(currentExplorerDirectory)
                 }
-                backStack.add(currentExplorerDirectory)
-                forwardStack.clear()  // TODO: fix logic here later
+                if (clearForwardStack) forwardStack.clear()
                 currentExplorerDirectory = newExplorerDirectory
             }
         } else {
-            // let's consider scenario where target directory does not exist
-            // for example user jumped forward to already deleted place
             println("Error! Target directory ${newExplorerDirectory.path} does not exist")
-            // TODO: show ERR in UI
             currentExplorerDirectory = ExplorerDirectory(System.getProperty("user.home"))
         }
     }
@@ -50,35 +53,32 @@ object AppState {
         }
     }
 
-    fun goBack() {  // TODO: block button in UI if backStack.isEmpty()
+    // TODO: block button in UI if backStack.isEmpty()
+    fun goBack() {
         if (backStack.isNotEmpty()) {
             val newExplorerDirectory = backStack.removeAt(backStack.size - 1)
-            if (forwardStack.size >= HISTORY_SIZE) {
-                forwardStack.removeAt(0)
-            }
             forwardStack.add(currentExplorerDirectory)
-            updateDirectory(newExplorerDirectory)
+            updateDirectory(
+                newExplorerDirectory,
+                clearForwardStack = false,
+                addToBackStack = false)
         }
     }
 
-    fun goForward() {  // TODO: block button in UI if forwardStack.isEmpty()
+    fun goForward() {
         if (forwardStack.isNotEmpty()) {
             val newExplorerDirectory = forwardStack.removeAt(forwardStack.size - 1)
-            if (backStack.size >= HISTORY_SIZE) {
-                backStack.removeAt(0)
-            }
-            backStack.add(currentExplorerDirectory)
-            updateDirectory(newExplorerDirectory)
+            updateDirectory(newExplorerDirectory, clearForwardStack = false)
         }
     }
 
     fun updateFilter(newFilter: String) {
         // TODO: do not forget to make it more dynamic
-        currentFilter = newFilter
+        currentExtensionFilter = newFilter
     }
 
     fun eraseFilter() {
-        currentFilter = ""
+        currentExtensionFilter = ""
     }
 
     fun updateSelectedFile(newExplorerFile: ExplorerFile) {

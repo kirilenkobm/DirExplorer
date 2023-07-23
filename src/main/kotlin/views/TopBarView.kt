@@ -43,7 +43,7 @@ class TopBarView(private val mainView: MainView, private val frame: JFrame) {
     }
 
     private fun createFilterPanel(): JPanel {
-        val filterField = JTextField(AppState.currentFilter)
+        val filterField = JTextField(AppState.currentExtensionFilter)
         val filterPanel = JPanel(BorderLayout())
         filterPanel.add(filterField, BorderLayout.CENTER)
         filterPanel.preferredSize = Dimension(200, filterField.preferredSize.height)
@@ -56,17 +56,17 @@ class TopBarView(private val mainView: MainView, private val frame: JFrame) {
         // Add a document listener to update AppState.currentFilter whenever the text changes
         filterField.document.addDocumentListener(object : DocumentListener {
             override fun insertUpdate(e: DocumentEvent?) {
-                AppState.currentFilter = filterField.text
+                AppState.currentExtensionFilter = filterField.text
                 updateView()
             }
 
             override fun removeUpdate(e: DocumentEvent?) {
-                AppState.currentFilter = filterField.text
+                AppState.currentExtensionFilter = filterField.text
                 updateView()
             }
 
             override fun changedUpdate(e: DocumentEvent?) {
-                AppState.currentFilter = filterField.text
+                AppState.currentExtensionFilter = filterField.text
                 updateView()
             }
         })
@@ -76,7 +76,7 @@ class TopBarView(private val mainView: MainView, private val frame: JFrame) {
         val clearFilterButton = JButton("x")
         clearFilterButton.addActionListener {
             filterField.text = ""
-            AppState.currentFilter = ""
+            AppState.currentExtensionFilter = ""
         }
         filterPanel.add(clearFilterButton, BorderLayout.EAST)
 

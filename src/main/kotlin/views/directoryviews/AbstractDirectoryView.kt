@@ -6,6 +6,7 @@ import dataModels.ExplorerSymLink
 import dataModels.FileSystemEntity
 import kotlinx.coroutines.*
 import state.AppState
+import state.Settings
 import state.SortOrder
 import java.nio.file.FileSystems
 import java.nio.file.Paths
@@ -50,10 +51,14 @@ abstract class AbstractDirectoryView : CoroutineScope {
             SortOrder.LAST_MODIFIED -> contents // TODO: Implement sorting by date created
         }
 
-        if (AppState.currentFilter.isNotEmpty()) {
+        if (AppState.currentExtensionFilter.isNotEmpty()) {
             sortedContents = sortedContents.filter { entity ->
-                entity is ExplorerFile && entity.extension == AppState.currentFilter
+                entity is ExplorerFile && entity.extension == AppState.currentExtensionFilter
             }
+        }
+
+        sortedContents = sortedContents.filter { entity ->
+            !(entity.isHidden && !Settings.showHiddenFiles)
         }
 
         return sortedContents

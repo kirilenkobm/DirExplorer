@@ -45,6 +45,16 @@ abstract class AbstractIconEntityView(private val entity: FileSystemEntity) {
 
     fun resizeIcon(icon: ImageIcon): ImageIcon {
         val image = icon.image
+        val imageWidth = image.getWidth(null)
+        val imageHeight = image.getHeight(null)
+
+        // If the image's width or height is already equal to Settings.iconSize,
+        // return the original icon - do not waste resources on rescaling
+        if (imageWidth == Settings.iconSize || imageHeight == Settings.iconSize) {
+            return icon
+        }
+
+        // Otherwise, scale the image
         val newImage = image.getScaledInstance(
             Settings.iconSize,
             Settings.iconSize,
@@ -52,6 +62,7 @@ abstract class AbstractIconEntityView(private val entity: FileSystemEntity) {
         )
         return ImageIcon(newImage)
     }
+
 
     // In case filename is too long, I'd like to shorten
     // it in the icon view, replacing part of the name
