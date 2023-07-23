@@ -3,6 +3,7 @@ import java.nio.file.Files
 import java.nio.file.Paths
 import java.nio.ByteBuffer
 import java.nio.channels.FileChannel
+import javax.swing.ImageIcon
 
 
 // Named ExplorerFile to avoid collision with java.io.File

@@ -3,7 +3,7 @@ package views
 import dataModels.ExplorerDirectory
 import javax.swing.ImageIcon
 
-//  that handles all the icons downloaded and provides an easy access to them
+//  that handles all the icons downloaded and provides easy access to them
 object IconManager {
     val audioFileIcon: ImageIcon = loadImageIcon("/images/baseline_audio_file_black_36dp.png")
     val filterIcon: ImageIcon = loadImageIcon("/images/baseline_filter_alt_black_36dp.png")

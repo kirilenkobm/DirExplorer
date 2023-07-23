@@ -20,6 +20,7 @@ import java.io.IOException
 import java.io.RandomAccessFile
 import java.util.concurrent.Executors
 import javax.imageio.ImageIO
+import javax.swing.Icon
 import javax.swing.ImageIcon
 import javax.swing.SwingUtilities
 import kotlin.coroutines.CoroutineContext
@@ -29,6 +30,8 @@ import kotlin.math.max
 class FileIconView(entity: ExplorerFile, private val thumbnailSemaphore: Semaphore): AbstractIconEntityView(entity), CoroutineScope {
     private val fileEntity = entity
     private val job = Job()
+    private val iconCache = IconsCache
+
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.Main + job
 
@@ -45,7 +48,13 @@ class FileIconView(entity: ExplorerFile, private val thumbnailSemaphore: Semapho
             launch(Dispatchers.IO) {
                 try {
                     thumbnailSemaphore.acquire()
-                    val thumbnail = createThumbnail(fileEntity.path)
+                    var thumbnail: Icon? = iconCache[fileEntity.path]
+                    if (thumbnail == null) {
+                        thumbnail = createThumbnail(fileEntity.path)
+                        if (thumbnail != null) {
+                            iconCache[fileEntity.path] = thumbnail
+                        }
+                    }
                     if (thumbnail != null) {
                         // If thumbnail created successfully -> apply it
                         SwingUtilities.invokeLater {
@@ -65,8 +74,9 @@ class FileIconView(entity: ExplorerFile, private val thumbnailSemaphore: Semapho
                 val previewText = createTextPreview(fileEntity.path)
                 if (!previewText.isNullOrEmpty()) {
                     // if empty -> no reason to show a preview
+                    val iconText = createTextIcon(previewText)
                     SwingUtilities.invokeLater {
-                        iconLabel.icon = createTextIcon(previewText)
+                        iconLabel.icon = iconText
                     }
                 }
             }
