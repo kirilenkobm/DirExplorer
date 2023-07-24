@@ -40,9 +40,15 @@ class ZipArchive(override val path: String) : ExplorableEntity, CoroutineScope {
 
     fun extractTo(): Path {
         val parentDir = Paths.get(path).parent
-        val tempDirName = Paths.get(path).fileName.toString() + "_" + UUID.randomUUID().toString().take(6)
+        // create hidden temp directory
+        val tempDirName = "." + Paths.get(path).fileName.toString() + "_" + UUID.randomUUID().toString().take(6)
         tempDir = Files.createDirectory(parentDir.resolve(tempDirName))
         // TODO: handle the case where I cannot create the dir: show ERROR instead
+
+        if (System.getProperty("os.name").startsWith("Windows")) {
+            // On Windows: .name is not enough, need to set the 'hidden' attribute
+            Files.setAttribute(tempDir, "dos:hidden", true, LinkOption.NOFOLLOW_LINKS)
+        }
 
         // Extract zip contents in a background thread
         launch(Dispatchers.IO) {
