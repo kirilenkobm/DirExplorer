@@ -4,6 +4,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import state.AppState
 import state.SortOrder
 import java.io.IOException
 import java.nio.file.*
@@ -16,7 +17,22 @@ import kotlin.coroutines.CoroutineContext
 class ZipArchive(override val path: String) : ExplorableEntity, CoroutineScope {
     override var sortOrder: SortOrder = SortOrder.TYPE
     private val job = Job()
-    private var tempDir: Path? = null
+    var tempDir: Path? = null
+
+    private val observer: DirectoryObserver = object : DirectoryObserver {
+        override fun onDirectoryChanged(newDirectory: ExplorerDirectory) {
+            val tempDir = this@ZipArchive.tempDir
+            if (tempDir != null && !newDirectory.path.startsWith(tempDir.toString())) {
+                cleanup()
+            }
+        }
+    }
+
+    init {
+        // Add listener + track of zipArchives in the app state
+        AppState.addDirectoryObserver(observer)
+        AppState.addZipArchive(this)
+    }
 
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.Main + job
@@ -46,6 +62,7 @@ class ZipArchive(override val path: String) : ExplorableEntity, CoroutineScope {
 
     fun cleanup() {
         job.cancel()  // cancel the coroutine
+        AppState.markObserverForRemoval(observer)
         // Delete the temp directory -> to be called once I left a zip file
         tempDir?.let { dir ->
             Files.walkFileTree(dir, object : SimpleFileVisitor<Path>() {
@@ -62,5 +79,6 @@ class ZipArchive(override val path: String) : ExplorableEntity, CoroutineScope {
             })
         }
         tempDir = null
+        AppState.zipArchives.remove(this)
     }
 }

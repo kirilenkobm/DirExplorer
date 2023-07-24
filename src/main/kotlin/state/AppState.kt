@@ -10,13 +10,21 @@ import java.util.UUID
 
 object AppState {
     var currentExplorerDirectory: ExplorerDirectory = ExplorerDirectory(System.getProperty("user.home"))
+        set(value) {
+            field = value
+            notifyDirectoryObservers(value)
+        }
     var currentExtensionFilter: String = ""
     private var selectedExplorerFile: ExplorerFile? = null  // TODO: maybe UI layer?
     private var backStack: MutableList<ExplorableEntity> = mutableListOf()
     private var forwardStack: MutableList<ExplorableEntity> = mutableListOf()
-    private var isInsideZip: Boolean = false
     private const val HISTORY_SIZE = 40
-
+    private val directoryObservers: MutableList<DirectoryObserver> = mutableListOf()
+    private val observersToRemove: MutableList<DirectoryObserver> = mutableListOf()
+    // Track all zipArchives that were present during the session to remove
+    // all temp directories which could be forgotten when the app closes
+    // Or if the app was closed in a zip Archive
+    val zipArchives: MutableList<ZipArchive> = mutableListOf()
 
     // New explorer directory -> where to go
     // if called from goBack - do not clear forward stack
@@ -46,19 +54,16 @@ object AppState {
                 }
                 if (clearForwardStack) forwardStack.clear()
                 currentExplorerDirectory = newExplorerDirectory as ExplorerDirectory
-                isInsideZip = false
             }
         } else if (pathExists && isReadable && isZipArchive){
             // I selected the following strategy: unpack and create a temp directory
             // then destroy it once we left it. Creating a separate filesystem for zip
             // files could be a bit too much
-            isInsideZip = true
             println("Unpacking zip...")
             val tempDir = (newExplorerDirectory as ZipArchive).extractTo()
             currentExplorerDirectory = ExplorerDirectory(tempDir.toString())
             // TODO: remove the unused zip temp dir
         } else {
-            isInsideZip = false
             // Error occurred: show a message and recover the original state
             val errorMessage = when {
                 !pathExists -> "Error! Target directory ${newExplorerDirectory.path} does not exist"
@@ -103,15 +108,30 @@ object AppState {
         }
     }
 
-    fun updateSelectedFile(newExplorerFile: ExplorerFile) {
-        selectedExplorerFile = newExplorerFile
+    fun addDirectoryObserver(observer: DirectoryObserver) {
+        directoryObservers.add(observer)
     }
 
-    fun isBackStackEmpty(): Boolean {
-        return backStack.isEmpty()
+    fun markObserverForRemoval(observer: DirectoryObserver) {
+        observersToRemove.add(observer)
     }
 
-    fun isForwardStackEmpty(): Boolean {
-        return forwardStack.isEmpty()
+    private fun removeMarkedObservers() {
+        directoryObservers.removeAll(observersToRemove)
+        observersToRemove.clear()
+    }
+
+    private fun notifyDirectoryObservers(newDirectory: ExplorerDirectory) {
+        directoryObservers.forEach { it.onDirectoryChanged(newDirectory) }
+        removeMarkedObservers()
+    }
+
+    fun addZipArchive(zipArchive: ZipArchive) {
+        zipArchives.add(zipArchive)
+    }
+
+    fun cleanupAllZipArchives() {
+        zipArchives.forEach { it.cleanup()}
+        zipArchives.clear()
     }
 }

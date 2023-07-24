@@ -23,6 +23,7 @@ fun main(args: Array<String>) {
     }
     // save Settings each time I close the app
     Runtime.getRuntime().addShutdownHook(Thread {
-        Settings.saveSettings()
+        Settings.saveSettings()  // dump settings for the next session
+        AppState.cleanupAllZipArchives()  // to make sure all temp dirs are deleted
     })
 }
