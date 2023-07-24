@@ -72,6 +72,7 @@ class IconsDirectoryView(private val topBarView: TopBarView) : AbstractDirectory
                 panel.repaint()
             }
         }
+        onCurrentDirectoryChanged()
     }
 
     fun getPanel(): JPanel {

@@ -44,7 +44,11 @@ abstract class AbstractDirectoryView : CoroutineScope {
 
         // check for partial match in case of complex extension
         val entitySubExtensions = entityExtension.split('.')
-        if (entitySubExtensions.any { it == filterExtension }) return !invertResult
+        if (!invertResult) {
+            if (entitySubExtensions.any { it == filterExtension }) return true
+        } else {
+            if (entitySubExtensions.none { it == filterExtension }) return true
+        }
 
         // check for match with regex pattern
         val regexPattern = filterExtension

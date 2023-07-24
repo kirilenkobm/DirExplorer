@@ -6,6 +6,7 @@ import state.AppState
 import state.Settings
 import views.IconManager
 import views.TopBarView
+import views.showErrorDialog
 import java.awt.Desktop
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
@@ -141,9 +142,11 @@ class TableDirectoryView(private val topBarView: TopBarView) : AbstractDirectory
                                 Desktop.getDesktop().open(File(entity.path))
                             } catch (ex: IOException) {
                                 ex.printStackTrace()
-                                println("Error! Cannot open ....")
-                                // TODO: show error message
+                                showErrorDialog("Error: Unable to open the file at ${entity.path}.")
                             }
+                        } else {
+                            // Desktop is not supported
+                            showErrorDialog("Error: Desktop operations are not supported on this system.")
                         }
                     }
                 }  // outside the table >>>>
