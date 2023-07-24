@@ -1,12 +1,9 @@
 package views.iconviews
 
 import dataModels.*
-import kotlinx.coroutines.CoroutineScope
 import state.Settings
-import java.awt.BorderLayout
 import java.awt.GridBagConstraints
 import java.awt.GridBagLayout
-import javax.swing.BoxLayout
 import javax.swing.ImageIcon
 import javax.swing.JLabel
 import javax.swing.JPanel
@@ -80,7 +77,7 @@ abstract class AbstractIconEntityView(private val entity: FileSystemEntity) {
         }
 
         // split into two lines if it's too long
-        val splitName = if (finalName.length > maxNameLen / 2 && finalName.length > 1) {
+        val splitName = if (finalName.length > maxNameLen / 2) {
             val firstHalf = finalName.take(finalName.length / 2)
             val secondHalf = finalName.substring(finalName.length / 2)
             "$firstHalf<br>$secondHalf"

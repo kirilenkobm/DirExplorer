@@ -4,24 +4,20 @@ import java.nio.file.Files
 import java.nio.file.Paths
 import kotlin.streams.asSequence
 import kotlinx.coroutines.*
-import state.Settings
 import state.SortOrder
 
 // Open to allow inheritance in ZipArchive
 open class ExplorerDirectory(override val path: String): FileSystemEntity {
     val zipExtensions = setOf(".zip", ".7z", ".jar", ".war", ".rar", ".bz", ".bz2", ".gz")
-    val sortOrder: SortOrder = SortOrder.TYPE
+    var sortOrder: SortOrder = SortOrder.TYPE
 
     // TODO: store in a attribute, call only once
     open suspend fun getContents(): List<FileSystemEntity> = withContext(Dispatchers.IO) {
         Files.list(Paths.get(path)).asSequence().mapNotNull { path ->
             when {
-                // TODO: filter hidden files out on the UI layer
-                //  Files.isHidden(path) && !Settings.showHiddenFiles -> null
                 Files.isSymbolicLink(path) -> ExplorerSymLink(path.toString())
                 Files.isRegularFile(path) -> {
-                    // val mimeType = Files.probeContentType(path) ?: "unknown"
-                    // TODO: check using MIME types - or maybe not
+                    // WON'T DO: check using MIME types -> not comprehensive enough
                     if (zipExtensions.any { ext -> path.toString().endsWith(ext) }) {
                         ZipArchive(path.toString())
                     } else {

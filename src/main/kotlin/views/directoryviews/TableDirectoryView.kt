@@ -4,6 +4,7 @@ import dataModels.*
 import kotlinx.coroutines.launch
 import state.AppState
 import state.Settings
+import state.SortOrder
 import views.IconManager
 import views.TopBarView
 import views.showErrorDialog
@@ -17,6 +18,7 @@ import javax.swing.ImageIcon
 import javax.swing.JTable
 import javax.swing.SwingUtilities
 import javax.swing.table.DefaultTableModel
+import javax.swing.table.TableRowSorter
 
 
 // View that controls directory view in the table mode
@@ -41,6 +43,7 @@ class TableDirectoryView(private val topBarView: TopBarView) : AbstractDirectory
         }
     }
 
+
     fun resizeIcon(icon: ImageIcon, size: Int): ImageIcon {
         val image = icon.image
         val newImage = image.getScaledInstance(size, size, java.awt.Image.SCALE_SMOOTH)
@@ -60,13 +63,13 @@ class TableDirectoryView(private val topBarView: TopBarView) : AbstractDirectory
                     resizeIcon(IconManager.getIconForDir(entity), entityIconSize),
                     entity.name,
                     "-",
-                    "-",
+                    dateFormat.format(Date(entity.lastModified))
                 )
                 is ExplorerSymLink -> arrayOf<Any>(
                     resizeIcon(IconManager.linkIcon, entityIconSize),
                     entity.name,
                     "-",
-                    "-"
+                    dateFormat.format(Date(entity.lastModified))
                 )
                 is ZipArchive -> arrayOf<Any>(
                     resizeIcon(IconManager.folderZipIcon, entityIconSize),
@@ -76,15 +79,16 @@ class TableDirectoryView(private val topBarView: TopBarView) : AbstractDirectory
                 )
                 is UnknownEntity -> arrayOf<Any>(
                     resizeIcon(IconManager.helpCenterIcon, entityIconSize),
-                    "-",
-                    "-",
-                    "-"
+                    entity.name,
+                    humanReadableSize(entity.size),
+                    dateFormat.format(Date(entity.lastModified))
                 )
                 else -> arrayOf<Any>(
+                    // should be not reachable?
                     resizeIcon(IconManager.helpCenterIcon, entityIconSize),
+                    entity.name,
                     "-",
-                    "-",
-                    "-",
+                    dateFormat.format(Date(entity.lastModified))
                 )
             }
         }.toTypedArray()

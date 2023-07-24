@@ -28,7 +28,7 @@ class SettingsDialog: JDialog() {
         // Dropdown for colorTheme
         // TODO: fix this warning:
         // 'Enum.values()' is recommended to be replaced by 'Enum.entries' since 1.9
-        val colorThemeDropdown = JComboBox<ColorTheme>(ColorTheme.values()).apply {
+        val colorThemeDropdown = JComboBox(ColorTheme.values()).apply {
             selectedItem = Settings.colorTheme
             addItemListener {e ->
                 if (e.stateChange == ItemEvent.SELECTED) {
@@ -38,7 +38,7 @@ class SettingsDialog: JDialog() {
         }
 
         // Dropdown for language
-        val languageDropdown = JComboBox<Language>(Language.values()).apply {
+        val languageDropdown = JComboBox(Language.values()).apply {
             selectedItem = Settings.language
             addItemListener {e ->
                 if (e.stateChange == ItemEvent.SELECTED) {

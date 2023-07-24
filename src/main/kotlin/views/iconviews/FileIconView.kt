@@ -1,7 +1,5 @@
 package views.iconviews
 
-import com.drew.imaging.ImageMetadataReader
-import com.drew.metadata.exif.ExifThumbnailDirectory
 import dataModels.ExplorerFile
 import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Semaphore
@@ -9,16 +7,12 @@ import state.Settings
 import views.IconManager
 import java.awt.Color
 import java.awt.Desktop
-import java.awt.Image
 import java.awt.RenderingHints
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
 import java.awt.image.BufferedImage
-import java.io.ByteArrayInputStream
 import java.io.File
 import java.io.IOException
-import java.io.RandomAccessFile
-import java.util.concurrent.Executors
 import javax.imageio.ImageIO
 import javax.swing.Icon
 import javax.swing.ImageIcon

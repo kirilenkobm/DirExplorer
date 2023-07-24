@@ -4,7 +4,7 @@
 * Mouseover hints
 * Entity select on one click, open on two
 * ~~Thumbnails - ImageIO supported formats are enough~~
-* Thumbnails - optimise performance, MacOS'es Finder manages it better
+* Thumbnails - optimise performance, macOS Finder manages it better
 * ~~Thumbnails - do not redraw what already drawn~~ - added cache
 * Settings - auto update
 * Cyrillic languages

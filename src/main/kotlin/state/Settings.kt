@@ -13,7 +13,7 @@ object Settings {
     var viewMode: ViewMode = ViewMode.ICONS
     var buttonSize: Int = 20
     var iconSize: Int = 72
-    var language: Language = Language.GERMAN
+    var language: Language = Language.ENGLISH
 
     var maxImageSizeToShowThumbnail = 6000
 
@@ -30,6 +30,7 @@ object Settings {
     }
 
     fun updateLanguage(newLanguage: Language) {
+        // TODO: update language does not work
         language = newLanguage
     }
 

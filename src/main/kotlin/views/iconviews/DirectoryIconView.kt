@@ -6,8 +6,6 @@ import views.IconManager
 import views.directoryviews.DirectoryViewUpdater
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
-import java.nio.file.Files
-import java.nio.file.Paths
 
 class DirectoryIconView(
     entity: ExplorerDirectory,

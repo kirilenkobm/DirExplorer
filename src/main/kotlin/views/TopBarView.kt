@@ -11,6 +11,7 @@ import javax.swing.event.DocumentEvent
 import javax.swing.event.DocumentListener
 
 
+// TODO: lock buttons for not available actions, like go up if already at root
 class TopBarView(private val mainView: MainView, private val frame: JFrame) {
     private val topBar = JSplitPane()
     private val leftPanel = JPanel()
@@ -61,6 +62,7 @@ class TopBarView(private val mainView: MainView, private val frame: JFrame) {
         filterField.document.addDocumentListener(object : DocumentListener {
             override fun insertUpdate(e: DocumentEvent?) {
                 AppState.currentExtensionFilter = filterField.text
+                // TODO: 3 updates -> probably I messed something up here
                 updateView()
                 mainView.updateView()
                 mainView.updateMainPanel()

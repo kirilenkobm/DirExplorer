@@ -72,8 +72,18 @@ abstract class AbstractDirectoryView : CoroutineScope {
                     }
                 }.thenBy { it.name }
             )
-            SortOrder.SIZE -> contents  // TODO: Implement this kind of sorting
-            SortOrder.LAST_MODIFIED -> contents // TODO: Implement sorting by date created
+            SortOrder.SIZE -> contents.sortedWith(
+                compareBy<FileSystemEntity> {
+                    when (it) {
+                        is ExplorerDirectory -> 0  // directories on top
+                        else -> 1                   // everything else after
+                    }
+                }.thenComparingLong(FileSystemEntity::size)  // sort by size
+                    .thenBy(FileSystemEntity::name)              // then by name
+            )
+            SortOrder.LAST_MODIFIED -> contents.sortedWith(
+                compareBy<FileSystemEntity> { it.lastModified }
+            )
         }
 
         if (AppState.currentExtensionFilter.isNotEmpty()) {

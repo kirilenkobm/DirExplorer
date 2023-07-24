@@ -71,7 +71,6 @@ object AppState {
         }
     }
 
-    // TODO: block button in UI if backStack.isEmpty()
     fun goBack() {
         if (backStack.isNotEmpty()) {
             val newExplorerDirectory = backStack.removeAt(backStack.size - 1)
@@ -88,15 +87,6 @@ object AppState {
             val newExplorerDirectory = forwardStack.removeAt(forwardStack.size - 1)
             updateDirectory(newExplorerDirectory, clearForwardStack = false)
         }
-    }
-
-    fun updateFilter(newFilter: String) {
-        // TODO: do not forget to make it more dynamic
-        currentExtensionFilter = newFilter
-    }
-
-    fun eraseFilter() {
-        currentExtensionFilter = ""
     }
 
     fun updateSelectedFile(newExplorerFile: ExplorerFile) {
