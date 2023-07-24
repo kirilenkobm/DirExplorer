@@ -82,7 +82,8 @@ abstract class AbstractIconEntityView(private val entity: FileSystemEntity) {
         val nameWithoutExtension = filename.substringBeforeLast(".")
 
         val finalName = if (filename.length > maxNameLen) {
-            val trimmedName = nameWithoutExtension.take(maxNameLen - extension.length - 3)
+            val trimLength = maxOf(0, maxNameLen - extension.length - 3)
+            val trimmedName = nameWithoutExtension.take(trimLength)
             "$trimmedName...$extension"
         } else {
             filename

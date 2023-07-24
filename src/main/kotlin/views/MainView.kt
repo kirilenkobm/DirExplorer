@@ -20,7 +20,7 @@ class MainView {
     private val iconsView = IconsDirectoryView(topBarView)
     private val mainPanel = JPanel(BorderLayout())
 
-    fun updateView() {  // TODO: rename
+    fun updateView() {
         when (Settings.viewMode) {
             ViewMode.TABLE -> tableView.updateView()
             ViewMode.ICONS -> iconsView.updateView()
@@ -31,8 +31,7 @@ class MainView {
 
     fun createAndShowGUI() {
         frame.defaultCloseOperation = JFrame.EXIT_ON_CLOSE
-        // Main Panel
-        mainPanel.preferredSize = Dimension(800, 600) // Set to your preferred width and height
+        mainPanel.preferredSize = Dimension(800, 600)
 
         when (Settings.viewMode) {
             ViewMode.TABLE -> mainPanel.add(JScrollPane(tableView.getTable()), BorderLayout.CENTER)

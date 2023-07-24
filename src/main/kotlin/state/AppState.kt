@@ -1,24 +1,26 @@
 // AppState - manages the whole Application state
 package state
-import dataModels.ExplorerDirectory
-import dataModels.ExplorerFile
+import dataModels.*
 import views.showErrorDialog
 import java.nio.file.Files
+import java.nio.file.Path
 import java.nio.file.Paths
-
-const val HISTORY_SIZE = 40
+import java.util.UUID
 
 
 object AppState {
     var currentExplorerDirectory: ExplorerDirectory = ExplorerDirectory(System.getProperty("user.home"))
     var currentExtensionFilter: String = ""
     private var selectedExplorerFile: ExplorerFile? = null  // TODO: maybe UI layer?
-    private var backStack: MutableList<ExplorerDirectory> = mutableListOf()
-    private var forwardStack: MutableList<ExplorerDirectory> = mutableListOf()
+    private var backStack: MutableList<ExplorableEntity> = mutableListOf()
+    private var forwardStack: MutableList<ExplorableEntity> = mutableListOf()
+    private var isInsideZip: Boolean = false
+    private const val HISTORY_SIZE = 40
+
 
     // New explorer directory -> where to go
     // if called from goBack - do not clear forward stack
-    fun updateDirectory(newExplorerDirectory: ExplorerDirectory,
+    fun updateDirectory(newExplorerDirectory: ExplorableEntity,
                         clearForwardStack: Boolean = true,
                         addToBackStack: Boolean = true) {
         // Preserve previous path in case Error occurs
@@ -31,6 +33,7 @@ object AppState {
         val pathExists = Files.exists(newPath)
         val isDirectory = Files.isDirectory(newPath)
         val isReadable = Files.isReadable(newPath)
+        val isZipArchive = newExplorerDirectory is ZipArchive
 
         if (pathExists && isDirectory && isReadable) {
             if (newPath != oldPath) {
@@ -42,9 +45,20 @@ object AppState {
                     backStack.add(currentExplorerDirectory)
                 }
                 if (clearForwardStack) forwardStack.clear()
-                currentExplorerDirectory = newExplorerDirectory
+                currentExplorerDirectory = newExplorerDirectory as ExplorerDirectory
+                isInsideZip = false
             }
+        } else if (pathExists && isReadable && isZipArchive){
+            // I selected the following strategy: unpack and create a temp directory
+            // then destroy it once we left it. Creating a separate filesystem for zip
+            // files could be a bit too much
+            isInsideZip = true
+            println("Unpacking zip...")
+            val tempDir = (newExplorerDirectory as ZipArchive).extractTo()
+            currentExplorerDirectory = ExplorerDirectory(tempDir.toString())
+            // TODO: remove the unused zip temp dir
         } else {
+            isInsideZip = false
             // Error occurred: show a message and recover the original state
             val errorMessage = when {
                 !pathExists -> "Error! Target directory ${newExplorerDirectory.path} does not exist"

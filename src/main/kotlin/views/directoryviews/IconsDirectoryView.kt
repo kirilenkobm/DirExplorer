@@ -19,7 +19,7 @@ import javax.swing.JPanel
 import javax.swing.SwingUtilities
 
 
-// TODO: evaluate all constraings
+// TODO: evaluate all constraints
 class IconsDirectoryView(private val topBarView: TopBarView) : AbstractDirectoryView(), DirectoryViewUpdater {
     private val gridPanel = JPanel()
     private val panel = JPanel(BorderLayout())
@@ -40,7 +40,7 @@ class IconsDirectoryView(private val topBarView: TopBarView) : AbstractDirectory
                 // is executed only if needed, and prev jobs are cancelled
                 updateJob?.cancel() // cancel the previous job if it's still running
                 updateJob = launch {
-                    delay(250) // Wait for 500 milliseconds before updating the view
+                    delay(400) // wait for X milliseconds before updating the view
                     updateView()
                 }
             }
@@ -63,7 +63,7 @@ class IconsDirectoryView(private val topBarView: TopBarView) : AbstractDirectory
             is ExplorerFile -> FileIconView(entity, thumbnailSemaphore).createView()
             is ExplorerDirectory -> DirectoryIconView(entity, this).createView()
             is ExplorerSymLink -> SymlinkIconView(entity).createView()
-            is ZipArchive -> ZipArchiveIconView(entity).createView()  // Add this line
+            is ZipArchive -> ZipArchiveIconView(entity, this).createView()  // Add this line
             else -> {
                 // To handle type mismatch in else branch:
                 // UnknownEntity handles all other possible cases
@@ -87,7 +87,8 @@ class IconsDirectoryView(private val topBarView: TopBarView) : AbstractDirectory
                 gridPanel.removeAll()
 
                 val columnWidth = 90
-                val numberOfColumns = panel.width / columnWidth
+                var numberOfColumns = panel.width / columnWidth - 1
+                if  (numberOfColumns <= 0) { numberOfColumns = 1}
                 gridPanel.layout = GridLayout(0, numberOfColumns) // Set new layout with updated number of columns
 
                 for (entity in filteredAndSortedContents) {

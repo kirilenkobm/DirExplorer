@@ -7,9 +7,11 @@ import kotlinx.coroutines.*
 import state.SortOrder
 
 // Open to allow inheritance in ZipArchive
-open class ExplorerDirectory(override val path: String): FileSystemEntity {
-    val zipExtensions = setOf(".zip", ".7z", ".jar", ".war", ".rar", ".bz", ".bz2", ".gz")
-    var sortOrder: SortOrder = SortOrder.TYPE
+open class ExplorerDirectory(override val path: String): ExplorableEntity {
+    // TODO: do not forget the manage in UI
+    // val zipExtensions = setOf(".zip", ".7z", ".jar", ".war", ".rar", ".bz", ".bz2", ".gz")
+    private val zipExtensions = setOf(".zip")
+    override var sortOrder: SortOrder = SortOrder.TYPE
 
     // TODO: store in a attribute, call only once
     open suspend fun getContents(): List<FileSystemEntity> = withContext(Dispatchers.IO) {

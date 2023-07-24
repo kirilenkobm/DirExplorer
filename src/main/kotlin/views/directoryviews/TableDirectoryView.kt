@@ -43,7 +43,6 @@ class TableDirectoryView(private val topBarView: TopBarView) : AbstractDirectory
         }
     }
 
-
     fun resizeIcon(icon: ImageIcon, size: Int): ImageIcon {
         val image = icon.image
         val newImage = image.getScaledInstance(size, size, java.awt.Image.SCALE_SMOOTH)
