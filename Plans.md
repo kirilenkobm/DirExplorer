@@ -10,4 +10,4 @@
 * Cyrillic languages
 * PDF previews
 * BUG: if open an image with many figures, and jump to another directory until all are loaded - the view still tries to draw all the figures, only after then the view jumps to another directory.
-* 
+* ~~Adaptive number of columns - not the best solution tho~~

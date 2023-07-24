@@ -1,29 +1,50 @@
 package views.directoryviews
 
 import dataModels.*
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Semaphore
 import state.AppState
 import views.*
 import views.iconviews.*
+import java.awt.BorderLayout
+import java.awt.GridBagConstraints
+import java.awt.GridBagLayout
 import java.awt.GridLayout
+import java.awt.event.ComponentAdapter
+import java.awt.event.ComponentEvent
 import javax.swing.ImageIcon
 import javax.swing.JPanel
 import javax.swing.SwingUtilities
 
-const val semaphorePermitsForThumbnailGeneration = 2
 
-
+// TODO: evaluate all constraings
 class IconsDirectoryView(private val topBarView: TopBarView) : AbstractDirectoryView(), DirectoryViewUpdater {
-    private val panel = JPanel(GridLayout(0, 8)) // TODO: adaptive number of columns
+    private val gridPanel = JPanel()
+    private val panel = JPanel(BorderLayout())
+    private var updateJob: Job? = null
     private var filteredAndSortedContents: List<FileSystemEntity> = emptyList()
     // If I render many thumbnails at once, I would like to avoid rendering many of them
     // at once (for example, if directory contains 1000s of them)
-    private val thumbnailSemaphore = Semaphore(semaphorePermitsForThumbnailGeneration) // Limit to N concurrent tasks
-
+    private val semaphorePermitsForThumbnailGeneration = 2
+    // Limit to N concurrent tasks
+    private val thumbnailSemaphore = Semaphore(semaphorePermitsForThumbnailGeneration)
 
     init {
+        panel.add(gridPanel, BorderLayout.NORTH)
+        panel.addComponentListener(object : ComponentAdapter() {
+            override fun componentResized(e: ComponentEvent?) {
+                super.componentResized(e)
+                // debouncing -> such that update view involving async
+                // is executed only if needed, and prev jobs are cancelled
+                updateJob?.cancel() // cancel the previous job if it's still running
+                updateJob = launch {
+                    delay(250) // Wait for 500 milliseconds before updating the view
+                    updateView()
+                }
+            }
+        })
         updateView()
     }
 
@@ -46,7 +67,6 @@ class IconsDirectoryView(private val topBarView: TopBarView) : AbstractDirectory
             else -> {
                 // To handle type mismatch in else branch:
                 // UnknownEntity handles all other possible cases
-
                 val unknownEntity = UnknownEntity(entity.path)
                 UnknownIconView(unknownEntity).createView()
             }
@@ -64,12 +84,17 @@ class IconsDirectoryView(private val topBarView: TopBarView) : AbstractDirectory
             }
 
             SwingUtilities.invokeLater {
-                panel.removeAll()
+                gridPanel.removeAll()
+
+                val columnWidth = 90
+                val numberOfColumns = panel.width / columnWidth
+                gridPanel.layout = GridLayout(0, numberOfColumns) // Set new layout with updated number of columns
+
                 for (entity in filteredAndSortedContents) {
-                    panel.add(createEntityView(entity))
+                    gridPanel.add(createEntityView(entity))
                 }
-                panel.revalidate()
-                panel.repaint()
+                gridPanel.revalidate()
+                gridPanel.repaint()
             }
         }
         onCurrentDirectoryChanged()

@@ -136,6 +136,8 @@ class TableDirectoryView(private val topBarView: TopBarView) : AbstractDirectory
                 val row = table.rowAtPoint(e.point)
                 if (row >= 0 && row < filteredAndSortedContents.size) {
                     val entity = filteredAndSortedContents[row]
+                    // TODO: create separate functions that are called
+                    // here and in icons?
                     if (entity is ExplorerDirectory) {
                         AppState.updateDirectory(entity)
                         updateView()
@@ -152,6 +154,8 @@ class TableDirectoryView(private val topBarView: TopBarView) : AbstractDirectory
                             // Desktop is not supported
                             showErrorDialog("Error: Desktop operations are not supported on this system.")
                         }
+                    } else if (entity is UnknownEntity) {
+                        showErrorDialog("Not supported file system entity")
                     }
                 }  // outside the table >>>>
             }

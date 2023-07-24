@@ -19,6 +19,8 @@ AFAIK - just open the project in IDEA and run
 
 ## Implemented functions
 
+Either run the application (then opens in the home directory), or open the desired directory from command line.
+
 ### Navigation
 
 * back

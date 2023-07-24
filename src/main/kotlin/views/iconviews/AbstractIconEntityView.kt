@@ -2,8 +2,11 @@ package views.iconviews
 
 import dataModels.*
 import state.Settings
+import java.awt.Component
+import java.awt.Dimension
 import java.awt.GridBagConstraints
 import java.awt.GridBagLayout
+import javax.swing.BoxLayout
 import javax.swing.ImageIcon
 import javax.swing.JLabel
 import javax.swing.JPanel
@@ -13,9 +16,11 @@ import javax.swing.SwingConstants
 abstract class AbstractIconEntityView(private val entity: FileSystemEntity) {
     protected val iconLabel = JLabel()
     protected val textLabel = JLabel()
-    protected val entityPanel = JPanel(GridBagLayout())
+    protected val entityPanel = JPanel()
+    protected val wrapperPanel = JPanel(GridBagLayout())
     private val maxNameLen = 24
     private val maxExtensionLen = 7
+    private val maxIconHeight = 120
 
     init {
         val gbc = GridBagConstraints()
@@ -24,12 +29,19 @@ abstract class AbstractIconEntityView(private val entity: FileSystemEntity) {
         gbc.weightx = 1.0
         gbc.weighty = 1.0
 
-        // Set alignment to center
+        // Align elements to center -> Q: why do I have to do it twice?
         iconLabel.horizontalAlignment = SwingConstants.CENTER
         textLabel.horizontalAlignment = SwingConstants.CENTER
+        iconLabel.alignmentX = Component.CENTER_ALIGNMENT
+        textLabel.alignmentX = Component.CENTER_ALIGNMENT
 
-        entityPanel.add(iconLabel, gbc)
-        entityPanel.add(textLabel, gbc)
+        // BoxLayout allows to limit height
+        entityPanel.layout = BoxLayout(entityPanel, BoxLayout.Y_AXIS)
+        entityPanel.add(iconLabel)
+        entityPanel.add(textLabel)
+
+        entityPanel.maximumSize = Dimension(entityPanel.maximumSize.width, maxIconHeight)
+        wrapperPanel.add(entityPanel, gbc)
     }
 
     protected abstract fun setIcon()
@@ -37,7 +49,7 @@ abstract class AbstractIconEntityView(private val entity: FileSystemEntity) {
     fun createView(): JPanel {
         setIcon()
         setText(entity.name)
-        return entityPanel
+        return wrapperPanel
     }
 
     fun resizeIcon(icon: ImageIcon): ImageIcon {
