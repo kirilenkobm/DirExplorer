@@ -15,7 +15,6 @@ import kotlin.coroutines.CoroutineContext
 
 
 class ZipArchive(override val path: String) : ExplorableEntity, CoroutineScope {
-    override var sortOrder: SortOrder = SortOrder.TYPE
     private val job = Job()
     var tempDir: Path? = null
 
@@ -47,7 +46,7 @@ class ZipArchive(override val path: String) : ExplorableEntity, CoroutineScope {
 
         if (System.getProperty("os.name").startsWith("Windows")) {
             // On Windows: .name is not enough, need to set the 'hidden' attribute
-            Files.setAttribute(tempDir, "dos:hidden", true, LinkOption.NOFOLLOW_LINKS)
+            Files.setAttribute(tempDir!!, "dos:hidden", true, LinkOption.NOFOLLOW_LINKS)
         }
 
         // Extract zip contents in a background thread
@@ -63,6 +62,7 @@ class ZipArchive(override val path: String) : ExplorableEntity, CoroutineScope {
             }
         }
         // Return temp dir before the zip is unzipped
+        // TODO: return optinal, show error if null
         return tempDir!!  // I hope it's safe...
     }
 

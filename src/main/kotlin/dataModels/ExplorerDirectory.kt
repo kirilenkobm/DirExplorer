@@ -9,9 +9,7 @@ import state.SortOrder
 // Open to allow inheritance in ZipArchive
 open class ExplorerDirectory(override val path: String): ExplorableEntity {
     // TODO: do not forget the manage in UI
-    // val zipExtensions = setOf(".zip", ".7z", ".jar", ".war", ".rar", ".bz", ".bz2", ".gz")
-    private val zipExtensions = setOf(".zip")
-    override var sortOrder: SortOrder = SortOrder.TYPE
+    var sortOrder: SortOrder = SortOrder.TYPE
 
     // TODO: store in a attribute, call only once
     open suspend fun getContents(): List<FileSystemEntity> = withContext(Dispatchers.IO) {
@@ -20,7 +18,7 @@ open class ExplorerDirectory(override val path: String): ExplorableEntity {
                 Files.isSymbolicLink(path) -> ExplorerSymLink(path.toString())
                 Files.isRegularFile(path) -> {
                     // WON'T DO: check using MIME types -> not comprehensive enough
-                    if (zipExtensions.any { ext -> path.toString().endsWith(ext) }) {
+                    if (path.endsWith(".zip")) {
                         ZipArchive(path.toString())
                     } else {
                         ExplorerFile(path.toString())
@@ -30,13 +28,6 @@ open class ExplorerDirectory(override val path: String): ExplorableEntity {
                 else -> UnknownEntity(path.toString())
             }
         }.toList()
-    }
-
-    open suspend fun getUniqueExtensions(): Set<String> = withContext(Dispatchers.IO) {
-        getContents()
-            .filterIsInstance<ExplorerFile>()  // Filter out non-files
-            .map { it.extension }  // Map to file extensions
-            .toSet()  // Remove duplicates
     }
 
     val hasAccess: Boolean

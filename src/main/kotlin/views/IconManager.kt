@@ -5,11 +5,14 @@ import javax.swing.ImageIcon
 
 //  that handles all the icons downloaded and provides easy access to them
 object IconManager {
+
+
     val audioFileIcon: ImageIcon = loadImageIcon("/images/baseline_audio_file_black_36dp.png")
     val filterIcon: ImageIcon = loadImageIcon("/images/baseline_filter_alt_black_36dp.png")
     val folderIcon: ImageIcon = loadImageIcon("/images/baseline_folder_black_36dp.png")
     val folderOpenIcon: ImageIcon = loadImageIcon("/images/baseline_folder_open_black_36dp.png")
     val folderZipIcon: ImageIcon = loadImageIcon("/images/baseline_folder_zip_black_36dp.png")
+    val folderArchiveIcon: ImageIcon = loadImageIcon("/images/baseline_folder_archive_black_36dp.png")
     val gridViewIcon: ImageIcon = loadImageIcon("/images/baseline_grid_view_black_36dp.png")
     val helpCenterIcon: ImageIcon = loadImageIcon("/images/baseline_help_center_black_36dp.png")
     val imageIcon: ImageIcon = loadImageIcon("/images/baseline_image_black_36dp.png")
@@ -36,6 +39,8 @@ object IconManager {
             fileType.startsWith("video/") -> movieIcon
             fileType == "application/pdf" -> pdfIcon
             fileType.startsWith("audio/") -> audioFileIcon
+            fileType.startsWith("application/x-") -> folderArchiveIcon
+            fileType == "application/gzip" -> folderArchiveIcon
             else -> fileIcon
         }
     }

@@ -131,7 +131,8 @@ object AppState {
     }
 
     fun cleanupAllZipArchives() {
-        zipArchives.forEach { it.cleanup()}
-        zipArchives.clear()
+        // to avoid ConcurrentModificationException
+        val zipArchivesCopy = ArrayList(zipArchives)
+        zipArchivesCopy.forEach { it.cleanup() }
     }
 }
