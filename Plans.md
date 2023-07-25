@@ -1,4 +1,4 @@
-# TODO List
+# Mandatory TODO List
 
 * Settings - apply after close immediately
 * ~~Fix bug where I cannot leave a directory where not all thumbnails are generated~~
@@ -12,6 +12,7 @@
 * Unit tests
 * Stress tests ???
 * Get rid of magic numbers and strings
+* ~~ZIP files bug: only DEFLATED entries can have EXT descriptor~~
 
 # Prefer to do
 
@@ -23,7 +24,7 @@
 * If open in external app -warn about it?
 * Lock buttons for not available actions, like go up if already at root
 * Spinner when ZIP file is being unpacked
-
+* Thumbnail LRU cache in zip files
 
 # Nice to have
 

@@ -9,7 +9,7 @@ import java.io.IOException
 import java.nio.file.*
 import java.nio.file.attribute.BasicFileAttributes
 import java.util.UUID
-import java.util.zip.ZipInputStream
+import java.util.zip.ZipFile
 import kotlin.coroutines.CoroutineContext
 
 
@@ -51,16 +51,19 @@ class ZipArchive(override val path: String) : ExplorableEntity, CoroutineScope {
 
         // Extract zip contents in a background thread
         launch(Dispatchers.IO) {
-            ZipInputStream(Files.newInputStream(Paths.get(path))).use { zis ->
-                generateSequence { zis.nextEntry }.forEach { entry ->
+            ZipFile(path).use { zip ->
+                zip.entries().asSequence().forEach { entry ->
                     if (!entry.isDirectory) {
+                        val inputFileStream = zip.getInputStream(entry)
                         val outputFile = tempDir!!.resolve(entry.name)
                         Files.createDirectories(outputFile.parent)
-                        Files.copy(zis, outputFile, StandardCopyOption.REPLACE_EXISTING)
+                        Files.copy(inputFileStream, outputFile, StandardCopyOption.REPLACE_EXISTING)
+                        inputFileStream.close()
                     }
                 }
             }
         }
+
         // Return temp dir before the zip is unzipped
         // TODO: return optional, show error if null
         return tempDir!!  // I hope it's safe...
