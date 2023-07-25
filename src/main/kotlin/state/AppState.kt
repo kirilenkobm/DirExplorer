@@ -63,7 +63,6 @@ object AppState {
             // add zip files to back and forward stack instead of tempDirNames
             val tempDir = (newExplorerDirectory as ZipArchive).extractTo()
             currentExplorerDirectory = ExplorerDirectory(tempDir.toString())
-            // TODO: remove the unused zip temp dir
         } else {
             // Error occurred: show a message and recover the original state
             val errorMessage = when {

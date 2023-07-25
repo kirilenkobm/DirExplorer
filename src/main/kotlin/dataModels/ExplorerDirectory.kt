@@ -18,19 +18,7 @@ open class ExplorerDirectory(override val path: String): ExplorableEntity {
         contentsCache?.let { return@withContext it }
 
         contentsCache = Files.list(Paths.get(path)).asSequence().mapNotNull { path ->
-            when {
-                Files.isSymbolicLink(path) -> ExplorerSymLink(path.toString())
-                Files.isRegularFile(path) -> {
-                    // WON'T DO: check using MIME types -> not comprehensive enough
-                    if (path.toString().endsWith(".zip")) {
-                        ZipArchive(path.toString())
-                    } else {
-                        ExplorerFile(path.toString())
-                    }
-                }
-                Files.isDirectory(path) -> ExplorerDirectory(path.toString())
-                else -> UnknownEntity(path.toString())
-            }
+            FileSystemEntityFactory.createEntity(path.toString())
         }.toList()
 
         contentsCache!!

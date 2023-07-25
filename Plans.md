@@ -5,7 +5,7 @@
 * Semaphore for text generation too?
 * Fix bug with back and forward for archives
 * Fix directory get content and system listener
-* Handle symlinks - depending on destination, pick appropriate handle function
+* ~~Handle symlinks - depending on destination, pick appropriate handle function~~
 * ~~Decomposition for mouse Click functions~~
 * Entity select on one click, open on two
 * Fix and order view updates

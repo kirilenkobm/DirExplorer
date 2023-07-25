@@ -11,6 +11,7 @@ import java.awt.Desktop
 import java.io.File
 import java.io.IOException
 import java.nio.file.FileSystems
+import java.nio.file.Files
 import java.nio.file.Paths
 import java.nio.file.StandardWatchEventKinds
 import java.nio.file.WatchEvent
@@ -26,6 +27,8 @@ abstract class AbstractDirectoryView(private val topBarView: TopBarView) : Corou
         get() = Dispatchers.Main + job
     protected var currentContents: List<FileSystemEntity> = emptyList()
     private var watchKey: WatchKey? = null
+    // To avo
+    var visitedSymlinks: MutableSet<String> = mutableSetOf()
 
     init {
         launch {
@@ -44,11 +47,34 @@ abstract class AbstractDirectoryView(private val topBarView: TopBarView) : Corou
             is ExplorerFile -> {
                 openFile(entity)
             }
+            is ExplorerSymLink -> {
+                try {
+                    // TODO: handle circular linkgs
+                    val targetPath = entity.target
+                    val targetEntity = FileSystemEntityFactory.createEntity(targetPath)
+
+                    if (targetPath in visitedSymlinks) {
+                        showErrorDialog("Circular link detected: $targetPath")
+                        return
+                    }
+
+                    visitedSymlinks.add(targetPath)
+                    performEntityAction(targetEntity)
+                } catch (e: IOException) {
+                    showErrorDialog("Error following symlink: ${e.message}")
+                }
+            }
+            is ZipArchive -> {
+                AppState.updateDirectory(entity)
+                // updateView()
+                // topBarView.updateView()
+            }
             is UnknownEntity -> {
-                showErrorDialog("Not supported file system entity")
+                showErrorDialog("Not supported file system entity ${entity.path}")
             }
         }
     }
+
 
     private fun openFile(fileEntity: ExplorerFile) {
         if (Desktop.isDesktopSupported()) {
