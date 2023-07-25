@@ -1,18 +1,27 @@
-# TODO list
+# TODO List
 
-* Hotkeys
-* Mouseover hints
+* Settings - apply after close immediately
+* Fix bug where I cannot leave a directory where not all thumbnails are generated
+* Fix bug with back and forward for archives
+* Fix directory get content and system listener
+* Handle symlinks - depending on destination, pick appropriate handle function
+* Decomposition for mouse Click functions
 * Entity select on one click, open on two
-* ~~Thumbnails - ImageIO supported formats are enough~~
+* Fix and order view updates
+* Unit tests
+* Stress tests ???
+
+# Prefer to do
+
 * Thumbnails - extract if exist
-* ~~Thumbnails - do not redraw what already drawn~~ - added cache
-* Settings - auto update
+* PDF previews - extract if exist
+* Status bar with data like how many items in the directory, total size, etc
+* Better localization
+* If open in external app -warn about it?
+
+# Nice to have
+
+* Dark and light theme
+* Hotkeys ??
+* Mouseover hints
 * Cyrillic languages
-* PDF previews
-* BUG: if open an image with many figures, and jump to another directory until all are loaded - the view still tries to draw all the figures, only after then the view jumps to another directory.
-* ~~Adaptive number of columns - not the best solution tho~~
-* ~~Cache getContents() result~~
-  * but compatible with zip archives
-* If image previews are not loaded -> allow to skip loading and jump to another dir
-* Hard and symlinks
-* 
