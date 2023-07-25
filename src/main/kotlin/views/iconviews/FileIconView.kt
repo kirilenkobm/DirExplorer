@@ -37,7 +37,10 @@ class FileIconView(entity: ExplorerFile, private val thumbnailSemaphore: Semapho
         // also check whether is supported by ImageIO
         val fileType = fileEntity.fileType
         val fileExtension = fileEntity.extension
-        if (fileType.startsWith("image/") && ImageIO.getReaderFileSuffixes().contains(fileExtension)) {
+        // to handle cases like file.424.122.JPG
+        val correctedExtension = fileExtension.split(".").last().lowercase()
+        if (fileType.startsWith("image/") && ImageIO.getReaderFileSuffixes().contains(correctedExtension))
+        {
             //Start loading the thumbnail if possible
             launch(Dispatchers.IO) {
                 try {
