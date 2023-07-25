@@ -1,16 +1,18 @@
-package views.iconviews
+package views
 
 import state.AppState
-import views.AddressBarView
-import views.MainView
 import java.awt.BorderLayout
 import java.awt.Color
 import java.awt.Dimension
-import javax.swing.*
+import javax.swing.BorderFactory
+import javax.swing.JButton
+import javax.swing.JPanel
+import javax.swing.JTextField
 import javax.swing.event.DocumentEvent
 import javax.swing.event.DocumentListener
 
-// Extension filter view
+
+// File extensions filter view
 class FilterPanel(private val mainView: MainView, private val addressBarView: AddressBarView) {
     val filterPanel = JPanel()
 

@@ -3,7 +3,7 @@ package views
 import state.AppState
 import state.Settings
 import state.ViewMode
-import views.iconviews.FilterPanel
+import views.FilterPanel
 import java.awt.*
 import java.awt.event.WindowAdapter
 import java.awt.event.WindowEvent
