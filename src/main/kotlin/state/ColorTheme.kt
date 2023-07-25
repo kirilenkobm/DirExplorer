@@ -2,7 +2,7 @@ package state
 
 import java.util.ResourceBundle
 
-enum class ColorTheme(val key: String) {
+enum class ColorTheme(private val key: String) {
     LIGHT("LightTheme"),
     DARK("DarkTheme"),
     SYSTEM("SystemTheme");

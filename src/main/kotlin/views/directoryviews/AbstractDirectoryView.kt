@@ -20,13 +20,12 @@ import kotlin.coroutines.CoroutineContext
 
 // Abstract class that implements all the methods needed to show
 // a directory's content.
-abstract class AbstractDirectoryView(protected val topBarView: TopBarView) : CoroutineScope {
+abstract class AbstractDirectoryView(private val topBarView: TopBarView) : CoroutineScope {
     private val job = Job()
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.Main + job
     protected var currentContents: List<FileSystemEntity> = emptyList()
-    protected var watchKey: WatchKey? = null
-    private var filteredAndSortedContents: List<FileSystemEntity> = emptyList()
+    private var watchKey: WatchKey? = null
 
     init {
         launch {
@@ -112,7 +111,7 @@ abstract class AbstractDirectoryView(protected val topBarView: TopBarView) : Cor
                     .thenBy(FileSystemEntity::name)              // then by name
             )
             SortOrder.LAST_MODIFIED -> contents.sortedWith(
-                compareBy<FileSystemEntity> { it.lastModified }
+                compareBy { it.lastModified }
             )
         }
 
@@ -129,7 +128,7 @@ abstract class AbstractDirectoryView(protected val topBarView: TopBarView) : Cor
         return sortedContents
     }
 
-    protected fun startWatchingDirectory(directory: ExplorerDirectory) {
+    private fun startWatchingDirectory(directory: ExplorerDirectory) {
         // cancel the previous watch key if applicable
         watchKey?.cancel()
 

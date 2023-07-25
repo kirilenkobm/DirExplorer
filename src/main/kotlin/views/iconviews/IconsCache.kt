@@ -7,7 +7,7 @@ import java.util.concurrent.ConcurrentHashMap
 // TODO: ensure whether it's really thread safe and is not an overkill
 // Save on device or destroy after each session?
 object IconsCache {
-    private val maxSize: Int = 10000
+    private const val maxSize: Int = 10000
     private val cache: ConcurrentHashMap<String, Icon> = ConcurrentHashMap()
     private val accessOrder = mutableListOf<String>()
     private val lock = Any()

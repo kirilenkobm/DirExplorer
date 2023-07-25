@@ -15,7 +15,7 @@ import javax.swing.SwingConstants
 
 
 class AddressBarView(private val mainView: MainView) {
-    val addressBar = JPanel()
+    private val addressBar = JPanel()
     private val addressBarPanel = JPanel(BorderLayout())
 
     init {

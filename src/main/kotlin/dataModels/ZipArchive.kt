@@ -5,7 +5,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import state.AppState
-import state.SortOrder
 import java.io.IOException
 import java.nio.file.*
 import java.nio.file.attribute.BasicFileAttributes
@@ -63,7 +62,7 @@ class ZipArchive(override val path: String) : ExplorableEntity, CoroutineScope {
             }
         }
         // Return temp dir before the zip is unzipped
-        // TODO: return optinal, show error if null
+        // TODO: return optional, show error if null
         return tempDir!!  // I hope it's safe...
     }
 

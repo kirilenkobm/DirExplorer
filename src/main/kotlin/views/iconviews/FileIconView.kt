@@ -7,10 +7,7 @@ import state.Settings
 import views.IconManager
 import views.directoryviews.IconsDirectoryView
 import java.awt.Color
-import java.awt.Desktop
 import java.awt.RenderingHints
-import java.awt.event.MouseAdapter
-import java.awt.event.MouseEvent
 import java.awt.image.BufferedImage
 import java.io.File
 import java.io.IOException
@@ -24,7 +21,7 @@ import kotlin.math.max
 
 class FileIconView(
     entity: ExplorerFile,
-    private val parendDirView:
+    parendDirView:
     IconsDirectoryView,
     private val thumbnailSemaphore: Semaphore
 ): AbstractIconEntityView(entity, parendDirView), CoroutineScope {

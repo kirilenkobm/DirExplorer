@@ -4,21 +4,15 @@ import dataModels.*
 import kotlinx.coroutines.launch
 import state.AppState
 import state.Settings
-import state.SortOrder
 import views.IconManager
 import views.TopBarView
-import views.showErrorDialog
-import java.awt.Desktop
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
-import java.io.File
-import java.io.IOException
 import java.util.*
 import javax.swing.ImageIcon
 import javax.swing.JTable
 import javax.swing.SwingUtilities
 import javax.swing.table.DefaultTableModel
-import javax.swing.table.TableRowSorter
 
 
 // View that controls directory view in the table mode
@@ -43,7 +37,7 @@ class TableDirectoryView(topBarView: TopBarView) : AbstractDirectoryView(topBarV
         }
     }
 
-    fun resizeIcon(icon: ImageIcon, size: Int): ImageIcon {
+    private fun resizeTableIcon(icon: ImageIcon, size: Int = entityIconSize): ImageIcon {
         val image = icon.image
         val newImage = image.getScaledInstance(size, size, java.awt.Image.SCALE_SMOOTH)
         return ImageIcon(newImage)
@@ -53,38 +47,38 @@ class TableDirectoryView(topBarView: TopBarView) : AbstractDirectoryView(topBarV
         return filteredAndSortedContents.map { entity ->
             when (entity) {
                 is ExplorerFile -> arrayOf<Any>(
-                    resizeIcon(IconManager.getIconForFileType(entity.fileType), entityIconSize),
+                    resizeTableIcon(IconManager.getIconForFileType(entity.fileType)),
                     entity.name,
                     humanReadableSize(entity.size),
                     dateFormat.format(Date(entity.lastModified))
                 )
                 is ExplorerDirectory -> arrayOf<Any>(
-                    resizeIcon(IconManager.getIconForDir(entity), entityIconSize),
+                    resizeTableIcon(IconManager.getIconForDir(entity)),
                     entity.name,
                     "-",
                     dateFormat.format(Date(entity.lastModified))
                 )
                 is ExplorerSymLink -> arrayOf<Any>(
-                    resizeIcon(IconManager.linkIcon, entityIconSize),
+                    resizeTableIcon(IconManager.linkIcon),
                     entity.name,
                     "-",
                     dateFormat.format(Date(entity.lastModified))
                 )
                 is ZipArchive -> arrayOf<Any>(
-                    resizeIcon(IconManager.folderZipIcon, entityIconSize),
+                    resizeTableIcon(IconManager.folderZipIcon),
                     entity.name,
                     humanReadableSize(entity.size),
                     dateFormat.format(Date(entity.lastModified))
                 )
                 is UnknownEntity -> arrayOf<Any>(
-                    resizeIcon(IconManager.helpCenterIcon, entityIconSize),
+                    resizeTableIcon(IconManager.helpCenterIcon),
                     entity.name,
                     humanReadableSize(entity.size),
                     dateFormat.format(Date(entity.lastModified))
                 )
                 else -> arrayOf<Any>(
                     // should be not reachable?
-                    resizeIcon(IconManager.helpCenterIcon, entityIconSize),
+                    resizeTableIcon(IconManager.helpCenterIcon),
                     entity.name,
                     "-",
                     dateFormat.format(Date(entity.lastModified))
@@ -128,38 +122,6 @@ class TableDirectoryView(topBarView: TopBarView) : AbstractDirectoryView(topBarV
         }
         onCurrentDirectoryChanged()
     }
-
-//    private fun setupTableMouseListener() {
-//        table.addMouseListener(object : MouseAdapter() {
-//            override fun mouseClicked(e: MouseEvent) {
-//                val row = table.rowAtPoint(e.point)
-//                if (row >= 0 && row < filteredAndSortedContents.size) {
-//                    val entity = filteredAndSortedContents[row]
-//                    // TODO: create separate functions that are called
-//                    // here and in icons?
-//                    if (entity is ExplorerDirectory) {
-//                        AppState.updateDirectory(entity)
-//                        updateView()
-//                        topBarView.updateView()
-//                    } else if (entity is ExplorerFile) {
-//                        if (Desktop.isDesktopSupported()) {
-//                            try {
-//                                Desktop.getDesktop().open(File(entity.path))
-//                            } catch (ex: IOException) {
-//                                ex.printStackTrace()
-//                                showErrorDialog("Error: Unable to open the file at ${entity.path}.")
-//                            }
-//                        } else {
-//                            // Desktop is not supported
-//                            showErrorDialog("Error: Desktop operations are not supported on this system.")
-//                        }
-//                    } else if (entity is UnknownEntity) {
-//                        showErrorDialog("Not supported file system entity")
-//                    }
-//                }  // outside the table >>>>
-//            }
-//        })
-//    }
 
     private fun setupTableMouseListener() {
         table.addMouseListener(object : MouseAdapter() {

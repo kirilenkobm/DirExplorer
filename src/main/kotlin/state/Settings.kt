@@ -34,13 +34,13 @@ object Settings {
         language = newLanguage
     }
 
-    fun updateButtonSize(newButtonSize: Int) {
-        buttonSize = newButtonSize
-    }
-
-    fun updateIconSize(newIconSize: Int) {
-        iconSize = newIconSize
-    }
+//    fun updateButtonSize(newButtonSize: Int) {
+//        buttonSize = newButtonSize
+//    }
+//
+//    fun updateIconSize(newIconSize: Int) {
+//        iconSize = newIconSize
+//    }
 
     fun loadSettings() {
         val properties = Properties()

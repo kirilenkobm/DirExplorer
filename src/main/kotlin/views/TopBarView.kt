@@ -3,13 +3,10 @@ package views
 import state.AppState
 import state.Settings
 import state.ViewMode
-import views.FilterPanel
 import java.awt.*
 import java.awt.event.WindowAdapter
 import java.awt.event.WindowEvent
 import javax.swing.*
-import javax.swing.event.DocumentEvent
-import javax.swing.event.DocumentListener
 
 
 // TODO: lock buttons for not available actions, like go up if already at root

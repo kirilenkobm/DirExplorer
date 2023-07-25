@@ -19,7 +19,8 @@
 * Status bar with data like how many items in the directory, total size, etc
 * Better localization
 * If open in external app -warn about it?
-
+*  lock buttons for not available actions, like go up if already at root
+* 
 # Nice to have
 
 * Dark and light theme

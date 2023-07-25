@@ -14,7 +14,7 @@ import javax.swing.event.DocumentListener
 
 // File extensions filter view
 class FilterPanel(private val mainView: MainView, private val addressBarView: AddressBarView) {
-    val filterPanel = JPanel()
+    private val filterPanel = JPanel()
 
     init {
         setupFilterPanel()

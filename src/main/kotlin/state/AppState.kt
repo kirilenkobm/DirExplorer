@@ -3,9 +3,7 @@ package state
 import dataModels.*
 import views.showErrorDialog
 import java.nio.file.Files
-import java.nio.file.Path
 import java.nio.file.Paths
-import java.util.UUID
 
 
 object AppState {
@@ -15,7 +13,7 @@ object AppState {
             notifyDirectoryObservers(value)
         }
     var currentExtensionFilter: String = ""
-    private var selectedExplorerFile: ExplorerFile? = null  // TODO: maybe UI layer?
+    // private var selectedExplorerFile: ExplorerFile? = null  // TODO: maybe UI layer?
     private var backStack: MutableList<ExplorableEntity> = mutableListOf()
     private var forwardStack: MutableList<ExplorableEntity> = mutableListOf()
     private const val HISTORY_SIZE = 40

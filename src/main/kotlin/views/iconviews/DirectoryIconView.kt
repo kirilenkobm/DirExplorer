@@ -6,7 +6,7 @@ import views.directoryviews.IconsDirectoryView
 
 class DirectoryIconView(
     entity: ExplorerDirectory,
-    private val parentDirView: IconsDirectoryView
+    parentDirView: IconsDirectoryView
 ): AbstractIconEntityView(entity, parentDirView) {
     private val dirEntity = entity
 

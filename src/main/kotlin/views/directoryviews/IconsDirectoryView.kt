@@ -6,14 +6,11 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Semaphore
 import state.AppState
-import state.ColorTheme
-import state.Settings
 import views.*
 import views.iconviews.*
 import java.awt.*
 import java.awt.event.ComponentAdapter
 import java.awt.event.ComponentEvent
-import javax.swing.ImageIcon
 import javax.swing.JPanel
 import javax.swing.SwingUtilities
 
@@ -50,11 +47,11 @@ class IconsDirectoryView(topBarView: TopBarView) : AbstractDirectoryView(topBarV
         updateView()
     }
 
-    private fun resizeIcon(icon: ImageIcon, size: Int): ImageIcon {
-        val image = icon.image
-        val newImage = image.getScaledInstance(size, size, java.awt.Image.SCALE_FAST)
-        return ImageIcon(newImage)
-    }
+//    private fun resizeIcon(icon: ImageIcon, size: Int): ImageIcon {
+//        val image = icon.image
+//        val newImage = image.getScaledInstance(size, size, java.awt.Image.SCALE_FAST)
+//        return ImageIcon(newImage)
+//    }
 
     private fun createEntityView(entity: FileSystemEntity): JPanel {
         return when (entity) {

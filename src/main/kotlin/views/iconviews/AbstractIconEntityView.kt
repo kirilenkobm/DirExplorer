@@ -1,7 +1,6 @@
 package views.iconviews
 
 import dataModels.*
-import state.ColorTheme
 import state.Settings
 import views.directoryviews.IconsDirectoryView
 import java.awt.*
@@ -16,11 +15,11 @@ import javax.swing.SwingConstants
 
 abstract class AbstractIconEntityView(private val entity: FileSystemEntity, private val parentDirView: IconsDirectoryView) {
     protected val iconLabel = JLabel()
-    protected val textLabel = JLabel()
+    private val textLabel = JLabel()
     protected val entityPanel = JPanel()
-    protected val wrapperPanel = JPanel(GridBagLayout())
+    private val wrapperPanel = JPanel(GridBagLayout())
     private val maxNameLen = 24
-    private val maxExtensionLen = 7
+    // private val maxExtensionLen = 7
     private val maxIconHeight = 120
 
     init {
@@ -77,7 +76,7 @@ abstract class AbstractIconEntityView(private val entity: FileSystemEntity, priv
         val newImage = image.getScaledInstance(
             Settings.iconSize,
             Settings.iconSize,
-            java.awt.Image.SCALE_DEFAULT
+            Image.SCALE_DEFAULT
         )
         return ImageIcon(newImage)
     }
