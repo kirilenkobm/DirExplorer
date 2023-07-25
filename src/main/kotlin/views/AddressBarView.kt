@@ -46,13 +46,14 @@ class AddressBarView(private val mainView: MainView) {
         addressBar.layout = GridBagLayout()
         val constraints = GridBagConstraints()
 
-        val path = Paths.get(AppState.currentExplorerDirectory.path)
-        // TODO: add root
-        val rootPath = path.root
-        var currentPath = rootPath // start with the root of the path
-
         // hold the buttons and separators
         val components = ArrayList<Component>()
+
+        val path = Paths.get(AppState.currentExplorerDirectory.path)
+        val rootPath = path.root
+        var currentPath = rootPath // start with the root of the path
+        val rootButton = createAddressBarButton(rootPath.toString(), rootPath)
+        components.add(rootButton)
 
         constraints.weightx = 0.0 // set weightx to 0 for buttons
         constraints.fill = GridBagConstraints.NONE // do not resize buttons
@@ -60,8 +61,6 @@ class AddressBarView(private val mainView: MainView) {
         constraints.insets = Insets(0, 0, 0, -5)
 
         // create a button for each part of the path
-        // TODO: is to be optimised
-        // TODO: better design
         for (part in path) {
             // create a new currentPath that includes this part
             val newPath = currentPath.resolve(part)
@@ -71,8 +70,8 @@ class AddressBarView(private val mainView: MainView) {
             currentPath = newPath
 
             val separatorLabel = JLabel(IconManager.chevronRightIcon)
-            components.add(button)
             components.add(separatorLabel)
+            components.add(button)
         }
 
         // Check if the total width of the components is too wide
@@ -81,23 +80,22 @@ class AddressBarView(private val mainView: MainView) {
             // if it's too wide, keep the first and last few components as buttons,
             // and replace the middle components with ...
 
-            // how many components to show? -> take care about >
+            // TODO: compute properties
             val numStartComponents = 6
-            val numEndComponents = 5
+            val numEndComponents = 6
 
             // Add the start components to the address bar
             for (i in 0..<numStartComponents) {
                 addressBar.add(components[i], constraints)
             }
 
-            // dummy component
             // TODO: maybe? create dropdown menu
             // val middleComponents = components.subList(numStartComponents, components.size - numEndComponents)
-            val elipsisLabel = JLabel(" ... ")
-            addressBar.add(elipsisLabel)
+            val ellipsisLabel = JLabel("  ...  ")
+            addressBar.add(ellipsisLabel)
 
             // Add the end components to the address bar
-            for (i in components.size - numEndComponents..components.size - 1) {
+            for (i in components.size - numEndComponents..<components.size) {
                 addressBar.add(components[i], constraints)
             }
 
