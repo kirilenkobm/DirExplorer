@@ -3,7 +3,10 @@ package views.iconviews
 import dataModels.*
 import state.ColorTheme
 import state.Settings
+import views.directoryviews.IconsDirectoryView
 import java.awt.*
+import java.awt.event.MouseAdapter
+import java.awt.event.MouseEvent
 import javax.swing.BoxLayout
 import javax.swing.ImageIcon
 import javax.swing.JLabel
@@ -11,7 +14,7 @@ import javax.swing.JPanel
 import javax.swing.SwingConstants
 
 
-abstract class AbstractIconEntityView(private val entity: FileSystemEntity) {
+abstract class AbstractIconEntityView(private val entity: FileSystemEntity, private val parentDirView: IconsDirectoryView) {
     protected val iconLabel = JLabel()
     protected val textLabel = JLabel()
     protected val entityPanel = JPanel()
@@ -43,6 +46,12 @@ abstract class AbstractIconEntityView(private val entity: FileSystemEntity) {
 //            entityPanel.background = Color.DARK_GRAY
 //        }
         wrapperPanel.add(entityPanel, gbc)
+
+        entityPanel.addMouseListener(object : MouseAdapter() {
+            override fun mouseClicked(e: MouseEvent) {
+                parentDirView.performEntityAction(entity)
+            }
+        })
     }
 
     protected abstract fun setIcon()

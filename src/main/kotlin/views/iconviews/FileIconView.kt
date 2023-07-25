@@ -5,6 +5,7 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Semaphore
 import state.Settings
 import views.IconManager
+import views.directoryviews.IconsDirectoryView
 import java.awt.Color
 import java.awt.Desktop
 import java.awt.RenderingHints
@@ -21,7 +22,12 @@ import kotlin.coroutines.CoroutineContext
 import kotlin.math.max
 
 
-class FileIconView(entity: ExplorerFile, private val thumbnailSemaphore: Semaphore): AbstractIconEntityView(entity), CoroutineScope {
+class FileIconView(
+    entity: ExplorerFile,
+    private val parendDirView:
+    IconsDirectoryView,
+    private val thumbnailSemaphore: Semaphore
+): AbstractIconEntityView(entity, parendDirView), CoroutineScope {
     private val fileEntity = entity
     private val job = Job()
     private val iconCache = IconsCache
@@ -179,21 +185,6 @@ class FileIconView(entity: ExplorerFile, private val thumbnailSemaphore: Semapho
                 null
             }
         }
-    }
-
-    init {
-        entityPanel.addMouseListener(object : MouseAdapter() {
-            override fun mouseClicked(e: MouseEvent) {
-                if (Desktop.isDesktopSupported()) {
-                    try {
-                        Desktop.getDesktop().open(File(entity.path))
-                    } catch (ex: IOException) {
-                        ex.printStackTrace()
-                        println("TODO: come up with error ")
-                    }
-                }
-            }
-        })
     }
 
     fun dispose() {

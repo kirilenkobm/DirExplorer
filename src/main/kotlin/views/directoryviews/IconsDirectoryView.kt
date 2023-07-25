@@ -19,7 +19,7 @@ import javax.swing.SwingUtilities
 
 
 // TODO: evaluate all constraints
-class IconsDirectoryView(private val topBarView: TopBarView) : AbstractDirectoryView(), DirectoryViewUpdater {
+class IconsDirectoryView(topBarView: TopBarView) : AbstractDirectoryView(topBarView) {
     private val gridPanel = JPanel()
     private val panel = JPanel(BorderLayout())
     private var updateJob: Job? = null
@@ -50,10 +50,6 @@ class IconsDirectoryView(private val topBarView: TopBarView) : AbstractDirectory
         updateView()
     }
 
-    override fun updateTobBarView() {
-        topBarView.updateView()
-    }
-
     private fun resizeIcon(icon: ImageIcon, size: Int): ImageIcon {
         val image = icon.image
         val newImage = image.getScaledInstance(size, size, java.awt.Image.SCALE_FAST)
@@ -62,15 +58,15 @@ class IconsDirectoryView(private val topBarView: TopBarView) : AbstractDirectory
 
     private fun createEntityView(entity: FileSystemEntity): JPanel {
         return when (entity) {
-            is ExplorerFile -> FileIconView(entity, thumbnailSemaphore).createView()
+            is ExplorerFile -> FileIconView(entity, this, thumbnailSemaphore).createView()
             is ExplorerDirectory -> DirectoryIconView(entity, this).createView()
-            is ExplorerSymLink -> SymlinkIconView(entity).createView()
+            is ExplorerSymLink -> SymlinkIconView(entity, this).createView()
             is ZipArchive -> ZipArchiveIconView(entity, this).createView()  // Add this line
             else -> {
                 // To handle type mismatch in else branch:
                 // UnknownEntity handles all other possible cases
                 val unknownEntity = UnknownEntity(entity.path)
-                UnknownIconView(unknownEntity).createView()
+                UnknownIconView(unknownEntity, this).createView()
             }
         }
     }

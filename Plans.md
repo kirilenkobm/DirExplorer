@@ -10,6 +10,7 @@
 * Fix and order view updates
 * Unit tests
 * Stress tests ???
+* Get rid of magic numbers and strings
 
 # Prefer to do
 

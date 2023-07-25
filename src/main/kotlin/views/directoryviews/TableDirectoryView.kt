@@ -22,7 +22,7 @@ import javax.swing.table.TableRowSorter
 
 
 // View that controls directory view in the table mode
-class TableDirectoryView(private val topBarView: TopBarView) : AbstractDirectoryView() {
+class TableDirectoryView(topBarView: TopBarView) : AbstractDirectoryView(topBarView) {
     private val table = JTable()
     private var model: DefaultTableModel? = null
     private val entityIconSize: Int = 16
@@ -129,34 +129,46 @@ class TableDirectoryView(private val topBarView: TopBarView) : AbstractDirectory
         onCurrentDirectoryChanged()
     }
 
+//    private fun setupTableMouseListener() {
+//        table.addMouseListener(object : MouseAdapter() {
+//            override fun mouseClicked(e: MouseEvent) {
+//                val row = table.rowAtPoint(e.point)
+//                if (row >= 0 && row < filteredAndSortedContents.size) {
+//                    val entity = filteredAndSortedContents[row]
+//                    // TODO: create separate functions that are called
+//                    // here and in icons?
+//                    if (entity is ExplorerDirectory) {
+//                        AppState.updateDirectory(entity)
+//                        updateView()
+//                        topBarView.updateView()
+//                    } else if (entity is ExplorerFile) {
+//                        if (Desktop.isDesktopSupported()) {
+//                            try {
+//                                Desktop.getDesktop().open(File(entity.path))
+//                            } catch (ex: IOException) {
+//                                ex.printStackTrace()
+//                                showErrorDialog("Error: Unable to open the file at ${entity.path}.")
+//                            }
+//                        } else {
+//                            // Desktop is not supported
+//                            showErrorDialog("Error: Desktop operations are not supported on this system.")
+//                        }
+//                    } else if (entity is UnknownEntity) {
+//                        showErrorDialog("Not supported file system entity")
+//                    }
+//                }  // outside the table >>>>
+//            }
+//        })
+//    }
+
     private fun setupTableMouseListener() {
         table.addMouseListener(object : MouseAdapter() {
             override fun mouseClicked(e: MouseEvent) {
                 val row = table.rowAtPoint(e.point)
                 if (row >= 0 && row < filteredAndSortedContents.size) {
                     val entity = filteredAndSortedContents[row]
-                    // TODO: create separate functions that are called
-                    // here and in icons?
-                    if (entity is ExplorerDirectory) {
-                        AppState.updateDirectory(entity)
-                        updateView()
-                        topBarView.updateView()
-                    } else if (entity is ExplorerFile) {
-                        if (Desktop.isDesktopSupported()) {
-                            try {
-                                Desktop.getDesktop().open(File(entity.path))
-                            } catch (ex: IOException) {
-                                ex.printStackTrace()
-                                showErrorDialog("Error: Unable to open the file at ${entity.path}.")
-                            }
-                        } else {
-                            // Desktop is not supported
-                            showErrorDialog("Error: Desktop operations are not supported on this system.")
-                        }
-                    } else if (entity is UnknownEntity) {
-                        showErrorDialog("Not supported file system entity")
-                    }
-                }  // outside the table >>>>
+                    performEntityAction(entity)
+                }
             }
         })
     }

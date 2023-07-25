@@ -1,13 +1,15 @@
 package views.directoryviews
 
-import dataModels.ExplorerDirectory
-import dataModels.ExplorerFile
-import dataModels.ExplorerSymLink
-import dataModels.FileSystemEntity
+import dataModels.*
 import kotlinx.coroutines.*
 import state.AppState
 import state.Settings
 import state.SortOrder
+import views.TopBarView
+import views.showErrorDialog
+import java.awt.Desktop
+import java.io.File
+import java.io.IOException
 import java.nio.file.FileSystems
 import java.nio.file.Paths
 import java.nio.file.StandardWatchEventKinds
@@ -18,11 +20,10 @@ import kotlin.coroutines.CoroutineContext
 
 // Abstract class that implements all the methods needed to show
 // a directory's content.
-abstract class AbstractDirectoryView : CoroutineScope {
+abstract class AbstractDirectoryView(protected val topBarView: TopBarView) : CoroutineScope {
     private val job = Job()
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.Main + job
-
     protected var currentContents: List<FileSystemEntity> = emptyList()
     protected var watchKey: WatchKey? = null
     private var filteredAndSortedContents: List<FileSystemEntity> = emptyList()
@@ -32,6 +33,35 @@ abstract class AbstractDirectoryView : CoroutineScope {
             currentContents = AppState.currentExplorerDirectory.getContents()
         }
         startWatchingDirectory(AppState.currentExplorerDirectory)
+    }
+
+    fun performEntityAction(entity: FileSystemEntity) {
+        when(entity) {
+            is ExplorerDirectory -> {
+                AppState.updateDirectory(entity)
+                updateView()
+                topBarView.updateView()
+            }
+            is ExplorerFile -> {
+                openFile(entity)
+            }
+            is UnknownEntity -> {
+                showErrorDialog("Not supported file system entity")
+            }
+        }
+    }
+
+    private fun openFile(fileEntity: ExplorerFile) {
+        if (Desktop.isDesktopSupported()) {
+            try {
+                Desktop.getDesktop().open(File(fileEntity.path))
+            } catch (ex: IOException) {
+                ex.printStackTrace()
+                showErrorDialog("Error: Unable to open the file at ${fileEntity.path}.")
+            }
+        } else {
+            showErrorDialog("Error: Desktop operations are not supported on this system.")
+        }
     }
 
     private fun matchesExtension(entityExtension: String, filterExtension: String): Boolean {
