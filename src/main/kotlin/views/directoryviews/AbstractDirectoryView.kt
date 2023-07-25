@@ -11,7 +11,6 @@ import java.awt.Desktop
 import java.io.File
 import java.io.IOException
 import java.nio.file.FileSystems
-import java.nio.file.Files
 import java.nio.file.Paths
 import java.nio.file.StandardWatchEventKinds
 import java.nio.file.WatchEvent
@@ -175,6 +174,11 @@ abstract class AbstractDirectoryView(private val topBarView: TopBarView) : Corou
                         StandardWatchEventKinds.ENTRY_DELETE,
                         StandardWatchEventKinds.ENTRY_CREATE,
                         StandardWatchEventKinds.ENTRY_MODIFY -> {
+                            // Invalidate cache to let the changes go through
+                            // otherwise, the dir content is never updated
+                            // TODO: try a better strategy: handle the system event
+                            // and then change the cache accordingly
+                            directory.invalidateCache()
                             updateView()
                         }
                     }

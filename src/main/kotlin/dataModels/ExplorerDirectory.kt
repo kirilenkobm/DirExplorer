@@ -39,4 +39,8 @@ open class ExplorerDirectory(override val path: String): ExplorableEntity {
             // If we don't have access to the directory, assume it's not empty
             false
         }
+
+    fun invalidateCache() {
+        contentsCache = null
+    }
 }
