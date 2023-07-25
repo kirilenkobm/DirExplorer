@@ -10,15 +10,19 @@ import state.SortOrder
 open class ExplorerDirectory(override val path: String): ExplorableEntity {
     // TODO: do not forget the manage in UI
     var sortOrder: SortOrder = SortOrder.TYPE
+    // Works bad with zips, if decompression is too slow
+    private var contentsCache: List<FileSystemEntity>? = null
 
     // TODO: store in a attribute, call only once
     open suspend fun getContents(): List<FileSystemEntity> = withContext(Dispatchers.IO) {
-        Files.list(Paths.get(path)).asSequence().mapNotNull { path ->
+        contentsCache?.let { return@withContext it }
+
+        contentsCache = Files.list(Paths.get(path)).asSequence().mapNotNull { path ->
             when {
                 Files.isSymbolicLink(path) -> ExplorerSymLink(path.toString())
                 Files.isRegularFile(path) -> {
                     // WON'T DO: check using MIME types -> not comprehensive enough
-                    if (path.endsWith(".zip")) {
+                    if (path.toString().endsWith(".zip")) {
                         ZipArchive(path.toString())
                     } else {
                         ExplorerFile(path.toString())
@@ -28,6 +32,8 @@ open class ExplorerDirectory(override val path: String): ExplorableEntity {
                 else -> UnknownEntity(path.toString())
             }
         }.toList()
+
+        contentsCache!!
     }
 
     val hasAccess: Boolean

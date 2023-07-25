@@ -40,6 +40,9 @@ class AddressBarView(private val mainView: MainView) {
         // TODO: better design
         for (part in path) {
             // create a new currentPath that includes this part
+            // TODO: some hashmap from tempZip dir to original zip archive name
+            // so that path contains /dir1/dir2/file.zip/dir3, not like
+            // /dir1/dir2/.file.zip_xxxxxx/dir3
             val newPath = currentPath.resolve(part)
             val button = JButton(part.toString()).apply {
                 isContentAreaFilled = false // make the button transparent

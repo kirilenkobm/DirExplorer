@@ -59,7 +59,7 @@ object AppState {
             // I selected the following strategy: unpack and create a temp directory
             // then destroy it once we left it. Creating a separate filesystem for zip
             // files could be a bit too much
-            println("Unpacking zip...")
+            // TODO: idea works poorly with "back" and "forward" functions
             val tempDir = (newExplorerDirectory as ZipArchive).extractTo()
             currentExplorerDirectory = ExplorerDirectory(tempDir.toString())
             // TODO: remove the unused zip temp dir
