@@ -42,6 +42,7 @@ class ZipArchive(override val path: String) : ExplorableEntity, CoroutineScope {
         // create hidden temp directory
         val tempDirName = "." + Paths.get(path).fileName.toString() + "_" + UUID.randomUUID().toString().take(6)
         tempDir = Files.createDirectory(parentDir.resolve(tempDirName))
+        AppState.zipDirMapping[tempDirName] = Paths.get(path).fileName.toString()
         // TODO: handle the case where I cannot create the dir: show ERROR instead
 
         if (System.getProperty("os.name").startsWith("Windows")) {

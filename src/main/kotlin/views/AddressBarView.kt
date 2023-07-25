@@ -44,7 +44,8 @@ class AddressBarView(private val mainView: MainView) {
             // so that path contains /dir1/dir2/file.zip/dir3, not like
             // /dir1/dir2/.file.zip_xxxxxx/dir3
             val newPath = currentPath.resolve(part)
-            val button = JButton(part.toString()).apply {
+            val partName = AppState.zipDirMapping[part.toString()] ?: part.toString()
+            val button = JButton(partName).apply {
                 isContentAreaFilled = false // make the button transparent
                 isBorderPainted = false // remove the border
                 isFocusPainted = false // remove the focus highlight

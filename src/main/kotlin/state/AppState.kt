@@ -25,6 +25,8 @@ object AppState {
     // all temp directories which could be forgotten when the app closes
     // Or if the app was closed in a zip Archive
     val zipArchives: MutableList<ZipArchive> = mutableListOf()
+    // Only to replace zipTempDir names to zip Filenames in the address bar
+    val zipDirMapping = HashMap<String, String>()
 
     // New explorer directory -> where to go
     // if called from goBack - do not clear forward stack
