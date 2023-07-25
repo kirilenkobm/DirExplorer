@@ -1,11 +1,9 @@
 package views.iconviews
 
 import dataModels.*
+import state.ColorTheme
 import state.Settings
-import java.awt.Component
-import java.awt.Dimension
-import java.awt.GridBagConstraints
-import java.awt.GridBagLayout
+import java.awt.*
 import javax.swing.BoxLayout
 import javax.swing.ImageIcon
 import javax.swing.JLabel
@@ -41,6 +39,9 @@ abstract class AbstractIconEntityView(private val entity: FileSystemEntity) {
         entityPanel.add(textLabel)
 
         entityPanel.maximumSize = Dimension(entityPanel.maximumSize.width, maxIconHeight)
+//        if (Settings.colorTheme == ColorTheme.DARK) {
+//            entityPanel.background = Color.DARK_GRAY
+//        }
         wrapperPanel.add(entityPanel, gbc)
     }
 

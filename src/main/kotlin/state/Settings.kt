@@ -9,7 +9,7 @@ object Settings {
     private const val SETTINGS_FILE = "settings.properties"
 
     var showHiddenFiles: Boolean = false
-    var colorTheme: ColorTheme = ColorTheme.SYSTEM
+    var colorTheme: ColorTheme = ColorTheme.DARK
     var viewMode: ViewMode = ViewMode.ICONS
     var buttonSize: Int = 20
     var iconSize: Int = 72

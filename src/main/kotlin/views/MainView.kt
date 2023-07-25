@@ -1,5 +1,6 @@
 package views
 
+import state.ColorTheme
 import java.awt.BorderLayout
 import javax.swing.JFrame
 import javax.swing.JScrollPane
@@ -8,6 +9,7 @@ import state.Settings
 import state.ViewMode
 import views.directoryviews.IconsDirectoryView
 import views.directoryviews.TableDirectoryView
+import java.awt.Color
 import java.awt.Dimension
 
 
@@ -46,6 +48,10 @@ class MainView {
         // frame.add(statusBar, BorderLayout.SOUTH)
         frame.pack()
         frame.isVisible = true
+
+        if (Settings.colorTheme == ColorTheme.DARK) {
+            mainPanel.background = Color.DARK_GRAY
+        }
     }
 
     fun updateMainPanel() {
@@ -59,5 +65,9 @@ class MainView {
 
         mainPanel.revalidate()
         mainPanel.repaint()
+
+        if (Settings.colorTheme == ColorTheme.DARK) {
+            mainPanel.background = Color.DARK_GRAY
+        }
     }
 }

@@ -50,7 +50,7 @@ class FilterPanel(private val mainView: MainView, private val addressBarView: Ad
         })
 
         // clear filter button
-        val clearFilterButton = JButton("x").apply {
+        val clearFilterButton = JButton(IconManager.backSpaceIcon).apply {
             isContentAreaFilled = false // transparent
             isBorderPainted = false // remove border
             isFocusPainted = false  // rm focus highlight
@@ -61,7 +61,7 @@ class FilterPanel(private val mainView: MainView, private val addressBarView: Ad
         }
         filterPanel.add(clearFilterButton, BorderLayout.EAST)
         filterPanel.border = BorderFactory.createMatteBorder(1, 1, 1, 1, Color.BLACK)
-
+        filterPanel.background = Color(255, 255, 255, 255)
     }
 
     private fun updateFilter(text: String) {

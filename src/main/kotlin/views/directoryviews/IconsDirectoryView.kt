@@ -6,12 +6,11 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Semaphore
 import state.AppState
+import state.ColorTheme
+import state.Settings
 import views.*
 import views.iconviews.*
-import java.awt.BorderLayout
-import java.awt.GridBagConstraints
-import java.awt.GridBagLayout
-import java.awt.GridLayout
+import java.awt.*
 import java.awt.event.ComponentAdapter
 import java.awt.event.ComponentEvent
 import javax.swing.ImageIcon
@@ -45,6 +44,9 @@ class IconsDirectoryView(private val topBarView: TopBarView) : AbstractDirectory
                 }
             }
         })
+//        if (Settings.colorTheme == ColorTheme.DARK) {
+//            panel.background = Color.DARK_GRAY
+//        }
         updateView()
     }
 
@@ -96,6 +98,9 @@ class IconsDirectoryView(private val topBarView: TopBarView) : AbstractDirectory
                 }
                 gridPanel.revalidate()
                 gridPanel.repaint()
+//                if (Settings.colorTheme == ColorTheme.DARK) {
+//                    gridPanel.background = Color.DARK_GRAY
+//                }
             }
         }
         onCurrentDirectoryChanged()
