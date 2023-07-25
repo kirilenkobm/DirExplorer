@@ -66,8 +66,8 @@ abstract class AbstractDirectoryView(private val topBarView: TopBarView) : Corou
             }
             is ZipArchive -> {
                 AppState.updateDirectory(entity)
-                // updateView()
-                // topBarView.updateView()
+                 updateView()
+                 topBarView.updateView()
             }
             is UnknownEntity -> {
                 showErrorDialog("Not supported file system entity ${entity.path}")
