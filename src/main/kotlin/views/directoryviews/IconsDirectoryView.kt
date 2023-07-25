@@ -21,11 +21,10 @@ class IconsDirectoryView(topBarView: TopBarView) : AbstractDirectoryView(topBarV
     private val panel = JPanel(BorderLayout())
     private var updateJob: Job? = null
     private var filteredAndSortedContents: List<FileSystemEntity> = emptyList()
-    // If I render many thumbnails at once, I would like to avoid rendering many of them
-    // at once (for example, if directory contains 1000s of them)
+    // Limit number of thumbnails rendered at once
     private val semaphorePermitsForThumbnailGeneration = 2
-    // Limit to N concurrent tasks
     private val thumbnailSemaphore = Semaphore(semaphorePermitsForThumbnailGeneration)
+    private val fileIconViews = mutableListOf<FileIconView>()  // keep track of all launched thumbnail generation jobs
 
     init {
         panel.add(gridPanel, BorderLayout.NORTH)
@@ -47,15 +46,13 @@ class IconsDirectoryView(topBarView: TopBarView) : AbstractDirectoryView(topBarV
         updateView()
     }
 
-//    private fun resizeIcon(icon: ImageIcon, size: Int): ImageIcon {
-//        val image = icon.image
-//        val newImage = image.getScaledInstance(size, size, java.awt.Image.SCALE_FAST)
-//        return ImageIcon(newImage)
-//    }
-
     private fun createEntityView(entity: FileSystemEntity): JPanel {
         return when (entity) {
-            is ExplorerFile -> FileIconView(entity, this, thumbnailSemaphore).createView()
+            is ExplorerFile -> {
+                val view = FileIconView(entity, this, thumbnailSemaphore)
+                fileIconViews.add(view)
+                view.createView()
+            }
             is ExplorerDirectory -> DirectoryIconView(entity, this).createView()
             is ExplorerSymLink -> SymlinkIconView(entity, this).createView()
             is ZipArchive -> ZipArchiveIconView(entity, this).createView()  // Add this line
@@ -73,11 +70,6 @@ class IconsDirectoryView(topBarView: TopBarView) : AbstractDirectoryView(topBarV
             currentContents = AppState.currentExplorerDirectory.getContents()
             filteredAndSortedContents = filterAndSortContents(currentContents)
 
-            // Wait for all thumbnail generation tasks to complete
-            while (thumbnailSemaphore.availablePermits < semaphorePermitsForThumbnailGeneration) {
-                delay(100) // Wait for a short time before checking again
-            }
-
             SwingUtilities.invokeLater {
                 gridPanel.removeAll()
 
@@ -91,11 +83,13 @@ class IconsDirectoryView(topBarView: TopBarView) : AbstractDirectoryView(topBarV
                 }
                 gridPanel.revalidate()
                 gridPanel.repaint()
-//                if (Settings.colorTheme == ColorTheme.DARK) {
-//                    gridPanel.background = Color.DARK_GRAY
-//                }
             }
         }
+        // Cancel all ongoing thumbnail generation tasks
+        for (view in fileIconViews) {
+            view.dispose()
+        }
+        fileIconViews.clear()
         onCurrentDirectoryChanged()
     }
 

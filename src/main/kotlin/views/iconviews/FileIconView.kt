@@ -35,19 +35,21 @@ class FileIconView(
     override fun setIcon() {
         // default base image
         iconLabel.icon = resizeIcon(IconManager.getIconForFileType(fileEntity.fileType))
+        startThumbnailGeneration()
+    }
 
+    private fun startThumbnailGeneration() {
         // if it's image: try to replace icon with thumbnail
         // also check whether is supported by ImageIO
         val fileType = fileEntity.fileType
         val fileExtension = fileEntity.extension
         // to handle cases like file.424.122.JPG
         val correctedExtension = fileExtension.split(".").last().lowercase()
-        if (fileType.startsWith("image/") && ImageIO.getReaderFileSuffixes().contains(correctedExtension))
-        {
-            //Start loading the thumbnail if possible
+
+        if (fileType.startsWith("image/") && ImageIO.getReaderFileSuffixes().contains(correctedExtension)) {
             launch(Dispatchers.IO) {
+                thumbnailSemaphore.acquire()
                 try {
-                    thumbnailSemaphore.acquire()
                     var thumbnail: Icon? = iconCache[fileEntity.path]
                     if (thumbnail == null) {
                         thumbnail = createThumbnail(fileEntity.path)
@@ -69,7 +71,6 @@ class FileIconView(
                 }
             }
         } else if (fileType.startsWith("text/") || fileExtension == "log") {
-            // It is a text file -> also required to provide a preview
             launch(Dispatchers.IO) {
                 val previewText = createTextPreview(fileEntity.path)
                 if (!previewText.isNullOrEmpty()) {
@@ -81,7 +82,6 @@ class FileIconView(
                 }
             }
         }
-        // TODO else if (fileType == "application/pdf") {
     }
 
     private fun createTextIcon(previewText: String): ImageIcon {

@@ -1,7 +1,8 @@
 # TODO List
 
 * Settings - apply after close immediately
-* Fix bug where I cannot leave a directory where not all thumbnails are generated
+* ~~Fix bug where I cannot leave a directory where not all thumbnails are generated~~
+* Semaphore for text generation too?
 * Fix bug with back and forward for archives
 * Fix directory get content and system listener
 * Handle symlinks - depending on destination, pick appropriate handle function
