@@ -3,12 +3,12 @@ package views
 import dataModels.ExplorerDirectory
 import state.AppState
 import java.awt.*
+import java.nio.file.Path
 import java.nio.file.Paths
 import javax.swing.BorderFactory
 import javax.swing.Box
 import javax.swing.BoxLayout
 import javax.swing.JButton
-import javax.swing.JComboBox
 import javax.swing.JLabel
 import javax.swing.JPanel
 import javax.swing.SwingConstants
@@ -24,12 +24,30 @@ class AddressBarView(private val mainView: MainView) {
         updateView()
     }
 
+    private fun createAddressBarButton(partName: String, newPath: Path): JButton {
+        return JButton(partName).apply {
+            isContentAreaFilled = false  // transparent button
+            isBorderPainted = false // remove stroke
+            isFocusPainted = false // remove focus highlight TODO: check whether needed
+            horizontalTextPosition = SwingConstants.CENTER
+            verticalTextPosition = SwingConstants.CENTER
+            foreground = Color.BLACK
+            font = Font("Arial", Font.PLAIN, 14)
+            cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)  // hover cursor
+            addActionListener {
+                AppState.updateDirectory(ExplorerDirectory(newPath.toString()))
+                mainView.updateView()
+            }
+        }
+    }
+
     fun updateView() {
         addressBar.removeAll()
         addressBar.layout = GridBagLayout()
         val constraints = GridBagConstraints()
 
         val path = Paths.get(AppState.currentExplorerDirectory.path)
+        // TODO: add root
         val rootPath = path.root
         var currentPath = rootPath // start with the root of the path
 
@@ -41,7 +59,6 @@ class AddressBarView(private val mainView: MainView) {
         // adjust the right inset to reduce the space after the button
         constraints.insets = Insets(0, 0, 0, -5)
 
-
         // create a button for each part of the path
         // TODO: is to be optimised
         // TODO: better design
@@ -49,20 +66,7 @@ class AddressBarView(private val mainView: MainView) {
             // create a new currentPath that includes this part
             val newPath = currentPath.resolve(part)
             val partName = AppState.zipDirMapping[part.toString()] ?: part.toString()
-            val button = JButton(partName).apply {
-                isContentAreaFilled = false // make the button transparent
-                isBorderPainted = false // remove the border
-                isFocusPainted = false // remove the focus highlight
-                horizontalTextPosition = SwingConstants.CENTER // center the text
-                verticalTextPosition = SwingConstants.CENTER // center the text
-                foreground = Color.BLACK // set the text color
-                font = Font("Arial", Font.PLAIN, 14) // set the font
-                cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR) // change the cursor when hovering over the button
-                addActionListener {
-                    AppState.updateDirectory(ExplorerDirectory(newPath.toString()))
-                    mainView.updateView()
-                }
-            }
+            val button = createAddressBarButton(partName, newPath)
             // update currentPath to the new path
             currentPath = newPath
 

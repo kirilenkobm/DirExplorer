@@ -3,6 +3,7 @@ package views
 import state.AppState
 import state.Settings
 import state.ViewMode
+import views.iconviews.FilterPanel
 import java.awt.*
 import java.awt.event.WindowAdapter
 import java.awt.event.WindowEvent
@@ -18,6 +19,7 @@ class TopBarView(private val mainView: MainView, private val frame: JFrame) {
     private val rightPanel = JPanel(FlowLayout(FlowLayout.RIGHT))
     private val addressBarView = AddressBarView(mainView)
     private var settingsDialog: SettingsDialog? = null
+    private val filterPanel = FilterPanel(mainView, addressBarView)
 
 
     private fun createButton(icon: ImageIcon,
@@ -55,53 +57,6 @@ class TopBarView(private val mainView: MainView, private val frame: JFrame) {
         }
     }
 
-    private fun createFilterPanel(): JPanel {
-        val filterField = JTextField(AppState.currentExtensionFilter)
-        val filterPanel = JPanel(BorderLayout())
-        filterPanel.add(filterField, BorderLayout.CENTER)
-        filterPanel.preferredSize = Dimension(200, filterField.preferredSize.height)
-        filterPanel.minimumSize = Dimension(200, filterField.preferredSize.height)
-        filterPanel.maximumSize = Dimension(200, filterField.preferredSize.height)
-
-        // Set the maximum height to the preferred height to prevent vertical growth
-        filterPanel.maximumSize = Dimension(filterPanel.maximumSize.width, filterPanel.preferredSize.height)
-
-        // Add a document listener to update AppState.currentFilter whenever the text changes
-        filterField.document.addDocumentListener(object : DocumentListener {
-            override fun insertUpdate(e: DocumentEvent?) {
-                AppState.currentExtensionFilter = filterField.text
-                // TODO: 3 updates -> probably I messed something up here
-                updateView()
-                mainView.updateView()
-                mainView.updateMainPanel()
-            }
-
-            override fun removeUpdate(e: DocumentEvent?) {
-                AppState.currentExtensionFilter = filterField.text
-                updateView()
-                mainView.updateView()
-                mainView.updateMainPanel()
-            }
-
-            override fun changedUpdate(e: DocumentEvent?) {
-                AppState.currentExtensionFilter = filterField.text
-                updateView()
-                mainView.updateView()
-                mainView.updateMainPanel()
-            }
-        })
-
-        // Add a clear button to the filter field
-        val clearFilterButton = JButton("x")
-        clearFilterButton.addActionListener {
-            filterField.text = ""
-            AppState.currentExtensionFilter = ""
-        }
-        filterPanel.add(clearFilterButton, BorderLayout.EAST)
-
-        return filterPanel
-    }
-
     init {
         leftPanel.layout = BoxLayout(leftPanel, BoxLayout.X_AXIS)
 
@@ -121,9 +76,6 @@ class TopBarView(private val mainView: MainView, private val frame: JFrame) {
         addressBarPanel.preferredSize = Dimension(400, addressBarPanel.preferredSize.height)
         addressBarPanel.minimumSize = Dimension(400, addressBarPanel.preferredSize.height)
 
-        val filterPanel = createFilterPanel()
-        // >>>> Address bar and filter
-
         // Buttons on the right: Settings
         val viewModeGroup = ButtonGroup()
         val tableButton = createToggleButton(IconManager.tocIcon, Settings.buttonSize) {
@@ -131,7 +83,6 @@ class TopBarView(private val mainView: MainView, private val frame: JFrame) {
         }.apply {
             isSelected = Settings.viewMode == ViewMode.TABLE
         }
-
 
         val iconButton = createToggleButton(IconManager.viewModuleIcon, Settings.buttonSize) {
             Settings.updateViewMode(ViewMode.ICONS)
@@ -171,9 +122,19 @@ class TopBarView(private val mainView: MainView, private val frame: JFrame) {
         leftPanel.add(upButton)
         leftPanel.add(Box.createHorizontalStrut(20)) // add 100px of space
 
-        leftPanel.add(addressBarView.getPanel())
+        val addressBar = addressBarView.getPanel()
+        val filterView = filterPanel.getPanel()
+
+        leftPanel.add(addressBar)
+
+        val addressBarHeight = addressBar.preferredSize.height
+        filterView.preferredSize = Dimension(filterView.preferredSize.width, addressBarHeight)
+        filterView.minimumSize = Dimension(filterView.minimumSize.width, addressBarHeight)
+        filterView.maximumSize = Dimension(filterView.maximumSize.width, addressBarHeight)
+
+
         leftPanel.add(Box.createHorizontalStrut(20)) // add 100px of space
-        leftPanel.add(filterPanel)
+        leftPanel.add(filterView)
 
         // right-aligned components
         rightPanel.add(tableButton)
