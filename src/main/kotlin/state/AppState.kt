@@ -62,6 +62,7 @@ object AppState {
             // then destroy it once we left it. Creating a separate filesystem for zip
             // files could be a bit too much
             // TODO: idea works poorly with "back" and "forward" functions
+            // add zip files to back and forward stack instead of tempDirNames
             val tempDir = (newExplorerDirectory as ZipArchive).extractTo()
             currentExplorerDirectory = ExplorerDirectory(tempDir.toString())
             // TODO: remove the unused zip temp dir

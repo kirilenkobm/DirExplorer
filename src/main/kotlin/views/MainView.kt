@@ -31,7 +31,7 @@ class MainView {
 
     fun createAndShowGUI() {
         frame.defaultCloseOperation = JFrame.EXIT_ON_CLOSE
-        mainPanel.preferredSize = Dimension(800, 600)
+        mainPanel.preferredSize = Dimension(1280, 800)
 
         when (Settings.viewMode) {
             ViewMode.TABLE -> mainPanel.add(JScrollPane(tableView.getTable()), BorderLayout.CENTER)

@@ -8,6 +8,7 @@ import javax.swing.BorderFactory
 import javax.swing.Box
 import javax.swing.BoxLayout
 import javax.swing.JButton
+import javax.swing.JComboBox
 import javax.swing.JLabel
 import javax.swing.JPanel
 import javax.swing.SwingConstants
@@ -32,17 +33,20 @@ class AddressBarView(private val mainView: MainView) {
         val rootPath = path.root
         var currentPath = rootPath // start with the root of the path
 
+        // hold the buttons and separators
+        val components = ArrayList<Component>()
+
         constraints.weightx = 0.0 // set weightx to 0 for buttons
         constraints.fill = GridBagConstraints.NONE // do not resize buttons
+        // adjust the right inset to reduce the space after the button
+        constraints.insets = Insets(0, 0, 0, -5)
+
 
         // create a button for each part of the path
         // TODO: is to be optimised
         // TODO: better design
         for (part in path) {
             // create a new currentPath that includes this part
-            // TODO: some hashmap from tempZip dir to original zip archive name
-            // so that path contains /dir1/dir2/file.zip/dir3, not like
-            // /dir1/dir2/.file.zip_xxxxxx/dir3
             val newPath = currentPath.resolve(part)
             val partName = AppState.zipDirMapping[part.toString()] ?: part.toString()
             val button = JButton(partName).apply {
@@ -59,11 +63,45 @@ class AddressBarView(private val mainView: MainView) {
                     mainView.updateView()
                 }
             }
-            addressBar.add(button, constraints)
-            val separatorLabel = JLabel(">")
-            addressBar.add(separatorLabel, constraints)
             // update currentPath to the new path
             currentPath = newPath
+
+            val separatorLabel = JLabel(IconManager.chevronRightIcon)
+            components.add(button)
+            components.add(separatorLabel)
+        }
+
+        // Check if the total width of the components is too wide
+        val totalWidth = components.sumOf { it.preferredSize.width }
+        if (totalWidth > addressBar.width) {
+            // if it's too wide, keep the first and last few components as buttons,
+            // and replace the middle components with ...
+
+            // how many components to show? -> take care about >
+            val numStartComponents = 6
+            val numEndComponents = 5
+
+            // Add the start components to the address bar
+            for (i in 0..<numStartComponents) {
+                addressBar.add(components[i], constraints)
+            }
+
+            // dummy component
+            // TODO: maybe? create dropdown menu
+            // val middleComponents = components.subList(numStartComponents, components.size - numEndComponents)
+            val elipsisLabel = JLabel(" ... ")
+            addressBar.add(elipsisLabel)
+
+            // Add the end components to the address bar
+            for (i in components.size - numEndComponents..components.size - 1) {
+                addressBar.add(components[i], constraints)
+            }
+
+        } else {
+            // If it's not too wide, add all the components to the address bar
+            for (component in components) {
+                addressBar.add(component, constraints)
+            }
         }
 
         // add a filler component that takes up the remaining space

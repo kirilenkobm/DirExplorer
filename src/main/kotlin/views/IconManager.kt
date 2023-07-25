@@ -27,7 +27,8 @@ object IconManager {
     val backArrowIcon: ImageIcon = loadImageIcon("/images/baseline_arrow_back_black_36dp.png")
     val forwardArrowIcon: ImageIcon = loadImageIcon("/images/baseline_arrow_forward_black_36dp.png")
     val upArrowIcon: ImageIcon = loadImageIcon("/images/baseline_arrow_upward_black_36dp.png")
-
+    var chevronRightIcon: ImageIcon = loadImageIcon("/images/baseline_chevron_right_black_18dp.png")
+    var ellipsisIcon: ImageIcon = loadImageIcon("/images/baseline_more_horiz_black_24dp.png")
 
     private fun loadImageIcon(path: String): ImageIcon {
         return ImageIcon(javaClass.getResource(path))

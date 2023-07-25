@@ -26,6 +26,10 @@ class TopBarView(private val mainView: MainView, private val frame: JFrame) {
     {
         val resizedIcon = ImageIcon(icon.image.getScaledInstance(size, size, Image.SCALE_SMOOTH))
         return JButton(resizedIcon).apply {
+            isContentAreaFilled = false // make the button transparent
+            isBorderPainted = false // remove the border
+            isFocusPainted = false // remove the focus highlight
+            cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)
             addActionListener {
                 action()
                 mainView.updateView()
@@ -39,6 +43,10 @@ class TopBarView(private val mainView: MainView, private val frame: JFrame) {
     {
         val resizedIcon = ImageIcon(icon.image.getScaledInstance(size, size, Image.SCALE_SMOOTH))
         return JToggleButton(resizedIcon).apply {
+            isContentAreaFilled = false // make the button transparent
+            isBorderPainted = false // remove the border
+            isFocusPainted = false // remove the focus highlight
+            cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)
             addActionListener {
                 action()
                 mainView.updateView()
@@ -161,7 +169,7 @@ class TopBarView(private val mainView: MainView, private val frame: JFrame) {
         leftPanel.add(forwardButton)
         leftPanel.add(homeButton)
         leftPanel.add(upButton)
-        leftPanel.add(Box.createHorizontalStrut(100)) // add 100px of space
+        leftPanel.add(Box.createHorizontalStrut(20)) // add 100px of space
 
         leftPanel.add(addressBarView.getPanel())
         leftPanel.add(Box.createHorizontalStrut(20)) // add 100px of space
