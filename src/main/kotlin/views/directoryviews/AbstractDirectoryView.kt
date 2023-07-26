@@ -7,6 +7,7 @@ import views.showErrorDialog
 import java.awt.Desktop
 import java.io.File
 import java.io.IOException
+import java.util.*
 import kotlin.coroutines.CoroutineContext
 
 /** Abstract class that implements all the methods needed to show
@@ -81,7 +82,10 @@ abstract class AbstractDirectoryView:
         }
     }
 
-    private fun matchesExtension(entityExtension: String, filterExtension: String): Boolean {
+    internal fun matchesExtension(entityExtensionRaw: String, filterExtensionRaw: String): Boolean {
+        // Maybe case-insensitive is better?
+        val entityExtension = entityExtensionRaw.lowercase(Locale.getDefault())
+        val filterExtension = filterExtensionRaw.lowercase()
         // Check if filter starts with ~ and should invert the result
         val invertResult = filterExtension.startsWith("~")
         val cleanedFilter = if (invertResult) filterExtension.drop(1) else filterExtension
@@ -134,6 +138,7 @@ abstract class AbstractDirectoryView:
             )
         }
 
+        // TODO: better first filter, and then sort
         if (AppState.currentExtensionFilter.isNotEmpty()) {
             sortedContents = sortedContents.filter { entity ->
                 entity is ExplorerFile && matchesExtension(entity.extension, AppState.currentExtensionFilter)

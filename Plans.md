@@ -7,7 +7,7 @@ _I beleive these 3 are connected:_
 * Fix and order view updates
 * BUG: sometimes just does not update dir content view, updating State and AddressBar
 
-* Fix extension filter -> now does not affect anything
+* ~~Fix extension filter -> now does not affect anything~~
 * Fix bug with back and forward for archives
 * Table view: sorting -> only after I fix view updates
 * Unit tests

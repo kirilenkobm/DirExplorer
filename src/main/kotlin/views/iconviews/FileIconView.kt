@@ -42,7 +42,6 @@ class FileIconView(
         "swift"
     )
 
-
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.Main + job
 

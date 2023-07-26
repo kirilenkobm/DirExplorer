@@ -4,7 +4,6 @@ import javax.swing.Icon
 import java.util.concurrent.ConcurrentHashMap
 
 // TODO: ensure whether it belongs here, but not state package
-// TODO: ensure whether it's really thread safe and is not an overkill
 // TODO: work with zip archives
 // Save on device or destroy after each session?
 object IconsCache {
