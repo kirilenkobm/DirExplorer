@@ -8,12 +8,10 @@ import state.SortOrder
 
 // Open to allow inheritance in ZipArchive
 open class ExplorerDirectory(override val path: String): ExplorableEntity {
-    // TODO: do not forget the manage in UI
     var sortOrder: SortOrder = SortOrder.TYPE
     // Works bad with zips, if decompression is too slow
     private var contentsCache: List<FileSystemEntity>? = null
 
-    // TODO: store in a attribute, call only once
     open suspend fun getContents(): List<FileSystemEntity> = withContext(Dispatchers.IO) {
         try {
             contentsCache?.let {

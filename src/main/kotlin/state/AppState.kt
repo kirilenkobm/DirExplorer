@@ -11,6 +11,7 @@ object AppState {
         set(value) {
             field = value
             notifyDirectoryObservers(value)
+            DirectoryWatcher.startWatching(value)
         }
     var currentExtensionFilter: String = ""
     // private var selectedExplorerFile: ExplorerFile? = null  // TODO: maybe UI layer?

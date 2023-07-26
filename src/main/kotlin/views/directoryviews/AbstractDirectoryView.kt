@@ -10,12 +10,7 @@ import views.showErrorDialog
 import java.awt.Desktop
 import java.io.File
 import java.io.IOException
-import java.nio.file.FileSystems
-import java.nio.file.Paths
-import java.nio.file.StandardWatchEventKinds
-import java.nio.file.WatchEvent
 import java.nio.file.WatchKey
-import java.text.SimpleDateFormat
 import kotlin.coroutines.CoroutineContext
 
 /** Abstract class that implements all the methods needed to show
@@ -34,7 +29,6 @@ abstract class AbstractDirectoryView(private val topBarView: TopBarView) : Corou
         launch {
             currentContents = AppState.currentExplorerDirectory.getContents()
         }
-        startWatchingDirectory(AppState.currentExplorerDirectory)
     }
 
     /**
@@ -155,40 +149,6 @@ abstract class AbstractDirectoryView(private val topBarView: TopBarView) : Corou
         }
 
         return sortedContents
-    }
-
-    protected fun startWatchingDirectory(directory: ExplorerDirectory) {
-        // cancel the previous watch key if applicable
-        watchKey?.cancel()
-
-        launch(Dispatchers.IO) {// TODO: check whether IO fits better
-            val watchService = FileSystems.getDefault().newWatchService()
-            watchKey = Paths.get(directory.path).register(
-                watchService,
-                StandardWatchEventKinds.ENTRY_DELETE,
-                StandardWatchEventKinds.ENTRY_MODIFY,
-                StandardWatchEventKinds.ENTRY_CREATE
-            )
-
-            while (isActive) {
-                val key = watchService.take()
-                for (event in key.pollEvents()) {
-                    val watchEvent: WatchEvent<*> = event
-                    when (watchEvent.kind()) {
-                        StandardWatchEventKinds.ENTRY_DELETE,
-                        StandardWatchEventKinds.ENTRY_CREATE,
-                        StandardWatchEventKinds.ENTRY_MODIFY -> {
-                            // Invalidate cache to let the changes go through
-                            // otherwise, the dir content is never updated
-                            // TODO: try a better strategy: handle the system event
-                            // and then change the cache accordingly
-                            directory.invalidateCache()
-                            updateView()
-                        }
-                    }
-                }
-            }
-        }
     }
 
     abstract fun updateView()
