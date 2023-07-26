@@ -1,20 +1,20 @@
 package views
 
-import state.AppState
-import state.ColorTheme
+import dataModels.DirectoryObserver
+import dataModels.DirectoryWatcher
+import dataModels.ExplorerDirectory
+import state.*
 import java.awt.BorderLayout
 import javax.swing.JFrame
 import javax.swing.JScrollPane
 import javax.swing.JPanel
-import state.Settings
-import state.ViewMode
 import views.directoryviews.IconsDirectoryView
 import views.directoryviews.TableDirectoryView
 import java.awt.Color
 import java.awt.Dimension
 
 
-class MainView {
+class MainView: DirectoryObserver, SettingsObserver {
     // TODO: better manage view updates and triggers
     private val frame = JFrame("DirExplorer")
     private val topBarView = TopBarView(this, frame)
@@ -23,14 +23,13 @@ class MainView {
     private val mainPanel = JPanel(BorderLayout())
     private val statusBarView = StatusBarView()
 
+    init {
+        AppState.addDirectoryObserver(this)
+        Settings.addObserver(this)
+    }
 
     fun updateView() {
-        when (Settings.viewMode) {
-            ViewMode.TABLE -> tableView.updateView()
-            ViewMode.ICONS -> iconsView.updateView()
-            ViewMode.COLUMNS -> iconsView.updateView()
-        }
-        topBarView.updateView()
+        // TODO: do I need to update anything from here?
     }
 
 
@@ -38,12 +37,9 @@ class MainView {
         frame.defaultCloseOperation = JFrame.EXIT_ON_CLOSE
         mainPanel.preferredSize = Dimension(1280, 800)
 
-        when (Settings.viewMode) {
-            ViewMode.TABLE -> mainPanel.add(JScrollPane(tableView.getTable()), BorderLayout.CENTER)
-            ViewMode.ICONS -> mainPanel.add(JScrollPane(iconsView.getPanel()), BorderLayout.CENTER)
-            ViewMode.COLUMNS -> mainPanel.add(JScrollPane(iconsView.getPanel()), BorderLayout.CENTER)  // TODO
-        }
-
+        // draw the proper main panel that shows the directory view
+        updateViewMode()
+        // draw status bar
         updateStatusBar()
         // Compose views together
         frame.add(topBarView.getPanel(), BorderLayout.NORTH)
@@ -59,17 +55,56 @@ class MainView {
         statusBarView.updateStatus(itemsCount, totalSize)
     }
 
+    /**
+     * Deprecated
+     */
     fun updateMainPanel() {
         mainPanel.removeAll()
 
         when (Settings.viewMode) {
             ViewMode.TABLE -> mainPanel.add(JScrollPane(tableView.getTable()), BorderLayout.CENTER)
             ViewMode.ICONS -> mainPanel.add(JScrollPane(iconsView.getPanel()), BorderLayout.CENTER)
-            ViewMode.COLUMNS -> mainPanel.add(JScrollPane(iconsView.getPanel()), BorderLayout.CENTER)  // TODO
         }
-        updateStatusBar()
+        mainPanel.revalidate()
+        mainPanel.repaint()
+    }
+
+    /**
+     * Repaint the main panel that shows the content of the current dir
+     * when the Settings.viewMode changes
+     */
+    private fun updateViewMode() {
+        mainPanel.removeAll()
+
+        when (Settings.viewMode) {
+            ViewMode.TABLE -> mainPanel.add(JScrollPane(tableView.getTable()), BorderLayout.CENTER)
+            ViewMode.ICONS -> mainPanel.add(JScrollPane(iconsView.getPanel()), BorderLayout.CENTER)
+        }
 
         mainPanel.revalidate()
         mainPanel.repaint()
+    }
+
+    /**
+     * When the AppState notifies the MainView about the
+     * change of the current directory.
+     * Update the view at least.
+     */
+    override fun onDirectoryChanged(newDirectory: ExplorerDirectory) {
+        // No need to do anything here if the views update themselves
+        // The child views will update themselves independently
+        // because they also implement the DirectoryObserver interface
+    }
+
+    override fun onShowHiddenFilesChanged(newShowHiddenFiles: Boolean) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onViewModeChanged(newViewMode: ViewMode) {
+        updateViewMode()
+    }
+
+    override fun onColorThemeChanged(newColorTheme: ColorTheme) {
+        TODO("Not yet implemented")
     }
 }

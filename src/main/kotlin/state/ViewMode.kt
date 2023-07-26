@@ -3,5 +3,5 @@ package state
 enum class ViewMode {
     ICONS,
     TABLE,
-    COLUMNS
+    // COLUMNS  // Potential TODO
 }

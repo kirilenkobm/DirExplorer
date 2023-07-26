@@ -25,6 +25,7 @@ class TableDirectoryView(topBarView: TopBarView) : AbstractDirectoryView(topBarV
     private val entityIconSize: Int = 16
     private var filteredAndSortedContents: List<FileSystemEntity> = emptyList()
     private val bundle = ResourceBundle.getBundle("languages/Messages", Settings.language.getLocale())
+    private val firstColumnWidth = 20
 
     init {
         setupTableMouseListener()
@@ -123,11 +124,13 @@ class TableDirectoryView(topBarView: TopBarView) : AbstractDirectoryView(topBarV
                 model?.fireTableDataChanged()
 
                 // Set the column width here
-                table.columnModel.getColumn(0).preferredWidth = 20
-                table.columnModel.getColumn(0).maxWidth = 20
+                table.columnModel.getColumn(0).preferredWidth = firstColumnWidth
+                table.columnModel.getColumn(0).maxWidth = firstColumnWidth
             }
         }
-        // onCurrentDirectoryChanged()
+
+        table.revalidate()
+        table.repaint()
     }
 
     private fun setupTableMouseListener() {

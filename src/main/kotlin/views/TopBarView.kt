@@ -1,5 +1,7 @@
 package views
 
+import dataModels.DirectoryObserver
+import dataModels.ExplorerDirectory
 import state.AppState
 import state.Settings
 import state.ViewMode
@@ -10,7 +12,7 @@ import javax.swing.*
 
 
 // TODO: lock buttons for not available actions, like go up if already at root
-class TopBarView(private val mainView: MainView, private val frame: JFrame) {
+class TopBarView(private val mainView: MainView, private val frame: JFrame): DirectoryObserver {
     private val topBar = JSplitPane()
     private val leftPanel = JPanel()
     private val rightPanel = JPanel(FlowLayout(FlowLayout.RIGHT))
@@ -55,6 +57,7 @@ class TopBarView(private val mainView: MainView, private val frame: JFrame) {
     }
 
     init {
+        AppState.addDirectoryObserver(this)
         leftPanel.layout = BoxLayout(leftPanel, BoxLayout.X_AXIS)
 
         // Buttons on the left: for navigation
@@ -150,5 +153,9 @@ class TopBarView(private val mainView: MainView, private val frame: JFrame) {
 
     fun getPanel(): JSplitPane {
         return topBar
+    }
+
+    override fun onDirectoryChanged(newDirectory: ExplorerDirectory) {
+        updateView()
     }
 }

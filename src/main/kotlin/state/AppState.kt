@@ -1,15 +1,21 @@
 // AppState - manages the whole Application state
 package state
 import dataModels.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import views.showErrorDialog
 import java.nio.file.Files
 import java.nio.file.Paths
 
-
+/**
+ * Application state.
+ * Suppose to be the single source of truth for the rest of the components.
+ */
 object AppState {
     var currentExplorerDirectory: ExplorerDirectory = ExplorerDirectory(System.getProperty("user.home"))
         set(value) {
             field = value
+            value.invalidateCache()
             notifyDirectoryObservers(value)
             DirectoryWatcher.startWatching(value)
         }
@@ -27,13 +33,16 @@ object AppState {
     // Only to replace zipTempDir names to zip Filenames in the address bar
     val zipDirMapping = HashMap<String, String>()
 
-    // New explorer directory -> where to go
-    // if called from goBack - do not clear forward stack
+    /**
+    / * New explorer directory -> where to go
+    / * if called from goBack - do not clear forward stack
+    */
     fun updateDirectory(newExplorerDirectory: ExplorableEntity,
                         clearForwardStack: Boolean = true,
                         addToBackStack: Boolean = true) {
         // Preserve previous path in case Error occurs
         // to recover the previous state
+        println("AppState.updateDirectory triggered with ${newExplorerDirectory.path}")
         val oldDirectoryInCaseOfError = currentExplorerDirectory
 
         // Check whether the new path points to an existing and readable directory

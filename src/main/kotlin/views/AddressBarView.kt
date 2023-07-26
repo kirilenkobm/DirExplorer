@@ -1,5 +1,6 @@
 package views
 
+import dataModels.DirectoryObserver
 import dataModels.ExplorerDirectory
 import state.AppState
 import java.awt.*
@@ -16,11 +17,12 @@ import kotlin.math.max
 import kotlin.math.min
 
 
-class AddressBarView(private val mainView: MainView) {
+class AddressBarView(private val mainView: MainView): DirectoryObserver {
     private val addressBar = JPanel()
     private val addressBarPanel = JPanel(BorderLayout())
 
     init {
+        AppState.addDirectoryObserver(this)
         addressBar.layout = BoxLayout(addressBar, BoxLayout.X_AXIS)
         addressBarPanel.add(addressBar, BorderLayout.NORTH)
         updateView()
@@ -38,7 +40,6 @@ class AddressBarView(private val mainView: MainView) {
             cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)  // hover cursor
             addActionListener {
                 AppState.updateDirectory(ExplorerDirectory(newPath.toString()))
-                mainView.updateView()
             }
         }
     }
@@ -121,5 +122,9 @@ class AddressBarView(private val mainView: MainView) {
 
     fun getPanel(): JPanel {
         return addressBarPanel
+    }
+
+    override fun onDirectoryChanged(newDirectory: ExplorerDirectory) {
+        updateView()
     }
 }

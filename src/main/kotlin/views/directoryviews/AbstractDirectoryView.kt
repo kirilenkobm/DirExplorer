@@ -16,7 +16,7 @@ import kotlin.coroutines.CoroutineContext
 /** Abstract class that implements all the methods needed to show
  * a directory's content.
  */
-abstract class AbstractDirectoryView(private val topBarView: TopBarView) : CoroutineScope {
+abstract class AbstractDirectoryView(private val topBarView: TopBarView) : CoroutineScope, DirectoryObserver {
     protected val job = Job()
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.Main + job
@@ -26,6 +26,7 @@ abstract class AbstractDirectoryView(private val topBarView: TopBarView) : Corou
     private var visitedSymlinks: MutableSet<String> = mutableSetOf()
 
     init {
+        AppState.addDirectoryObserver(this)
         launch {
             currentContents = AppState.currentExplorerDirectory.getContents()
         }
@@ -153,9 +154,11 @@ abstract class AbstractDirectoryView(private val topBarView: TopBarView) : Corou
 
     abstract fun updateView()
 
+    override fun onDirectoryChanged(newDirectory: ExplorerDirectory) {
+        updateView()
+    }
+
     fun dispose() {
         job.cancel()
     }
-
-
 }
