@@ -17,6 +17,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-swing:1.5.2")
     implementation("com.drewnoakes:metadata-extractor:2.18.0")
+    implementation("org.apache.pdfbox:pdfbox:2.0.24")
 }
 
 tasks.test {

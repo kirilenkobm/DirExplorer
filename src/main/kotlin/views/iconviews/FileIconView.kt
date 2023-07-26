@@ -3,6 +3,9 @@ package views.iconviews
 import dataModels.ExplorerFile
 import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Semaphore
+import org.apache.pdfbox.pdmodel.PDDocument
+import org.apache.pdfbox.pdmodel.PDPage
+import org.apache.pdfbox.rendering.PDFRenderer
 import state.Settings
 import views.IconManager
 import views.directoryviews.IconsDirectoryView
@@ -96,7 +99,30 @@ class FileIconView(
                     textPreviewsSemaphore.release()
                 }
             }
-        }  // TODO: else if application/pdf
+        }  else if (fileType == "application/pdf") {
+            // TODO: incapsulate in another method
+            launch(Dispatchers.IO) {
+                imagePreviewsSemaphore.acquire()
+                try {
+                    var thumbnail: Icon? = iconCache[fileEntity.path]
+                    if (thumbnail == null) {
+                        val document = PDDocument.load(File(fileEntity.path))
+                        val pdfRenderer = PDFRenderer(document)
+                        val image: BufferedImage = pdfRenderer.renderImageWithDPI(0, 40f)
+                        document.close()
+                        thumbnail = resizeIcon(ImageIcon(image))
+                    }
+                    val safeThumbnail: Icon = thumbnail!!
+                    iconCache[fileEntity.path] = safeThumbnail
+
+                    SwingUtilities.invokeLater {
+                        iconLabel.icon = thumbnail
+                    }
+                } finally {
+                    imagePreviewsSemaphore.release()
+                }
+            }
+        }
     }
 
     private fun createTextIcon(previewText: String): ImageIcon {

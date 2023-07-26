@@ -10,3 +10,12 @@ Or maybe https://icons8.com?
 
 This software includes material from the project Metadata Extractor.
 Metadata Extractor Copyright 2002-2022 Drew Noakes and contributors.
+
+# PDF box
+This product includes software developed at
+The Apache Software Foundation (http://www.apache.org/).
+
+This product includes software from the Apache PDFBox project,
+distributed under the Apache License, Version 2.0.
+
+[Copy of the PDFBox NOTICE file contents here]
