@@ -172,16 +172,16 @@ class FileIconView(
         val width = image.width
         val height = image.height
         val scaleFactor = Settings.iconSize.toDouble() / max(width, height)
-        val newWidht = (width * scaleFactor).toInt()
+        val newWidth = (width * scaleFactor).toInt()
         val newHeight = (height * scaleFactor).toInt()
 
-        val resizedImage = BufferedImage(newWidht, newHeight, BufferedImage.TYPE_INT_RGB)
+        val resizedImage = BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_RGB)
         val graphics = resizedImage.createGraphics()
         graphics.setRenderingHint(
             RenderingHints.KEY_INTERPOLATION,
             RenderingHints.VALUE_INTERPOLATION_BILINEAR
         )
-        graphics.drawImage(image, 0, 0, newWidht, newHeight, null)
+        graphics.drawImage(image, 0, 0, newWidth, newHeight, null)
         graphics.dispose()
 
         return resizedImage

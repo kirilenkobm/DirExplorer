@@ -16,7 +16,7 @@ import javax.swing.SwingConstants
 abstract class AbstractIconEntityView(private val entity: FileSystemEntity, private val parentDirView: IconsDirectoryView) {
     protected val iconLabel = JLabel()
     private val textLabel = JLabel()
-    protected val entityPanel = JPanel()
+    private val entityPanel = JPanel()
     private val wrapperPanel = JPanel(GridBagLayout())
     private val maxNameLen = 24
     // private val maxExtensionLen = 7

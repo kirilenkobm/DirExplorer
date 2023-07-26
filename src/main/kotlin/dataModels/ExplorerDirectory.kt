@@ -12,7 +12,7 @@ import state.SortOrder
 open class ExplorerDirectory(override val path: String): ExplorableEntity {
     var sortOrder: SortOrder = SortOrder.TYPE
     private var contentsCache: List<FileSystemEntity>? = null
-    val mutex = Mutex()
+    private val mutex = Mutex()
 
     open suspend fun getContents(): List<FileSystemEntity> = withContext(Dispatchers.IO) {
         mutex.withLock {
@@ -31,12 +31,12 @@ open class ExplorerDirectory(override val path: String): ExplorableEntity {
             } catch (e: Exception) {
                 println("Exception in getContents: ${e.message}")
                 e.printStackTrace()
-                emptyList<FileSystemEntity>()
+                emptyList()
             }
         }
     }
 
-    val hasAccess: Boolean
+    private val hasAccess: Boolean
         get() = Files.isReadable(Paths.get(path))
 
     val isEmpty: Boolean

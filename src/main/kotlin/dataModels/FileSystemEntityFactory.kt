@@ -8,7 +8,7 @@ object FileSystemEntityFactory {
         return when {
             Files.isSymbolicLink(Paths.get(path)) -> ExplorerSymLink(path)
             Files.isRegularFile(Paths.get(path)) -> {
-                if (path.toString().endsWith(".zip")) {
+                if (path.endsWith(".zip")) {
                     ZipArchive(path)
                 } else {
                     ExplorerFile(path)

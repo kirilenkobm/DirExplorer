@@ -79,6 +79,7 @@ object Settings {
         observers.add(observer)
     }
 
+    // TODO: do not forget to cleanup observers
     fun removeObserver(observer: SettingsObserver) {
         observers.remove(observer)
     }

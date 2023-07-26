@@ -7,7 +7,6 @@ import views.showErrorDialog
 import java.awt.Desktop
 import java.io.File
 import java.io.IOException
-import java.nio.file.WatchKey
 import kotlin.coroutines.CoroutineContext
 
 /** Abstract class that implements all the methods needed to show
@@ -17,11 +16,10 @@ abstract class AbstractDirectoryView:
     CoroutineScope,
     DirectoryObserver,
     SettingsObserver {
-    protected val job = Job()
+    private val job = Job()
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.Main + job
     protected var currentContents: List<FileSystemEntity> = emptyList()
-    private var watchKey: WatchKey? = null
     // To avo
     private var visitedSymlinks: MutableSet<String> = mutableSetOf()
 
@@ -116,6 +114,7 @@ abstract class AbstractDirectoryView:
                     when (it) {
                         is ExplorerDirectory -> 0
                         is ExplorerFile -> 1
+                        // TODO: add filter by extension
                         is ExplorerSymLink -> 2
                         else -> 3
                     }
@@ -163,9 +162,10 @@ abstract class AbstractDirectoryView:
     }
 
     override fun onColorThemeChanged(newColorTheme: ColorTheme) {
-        // TODO: probably is not needed
+        // Only if I implement theme changes
     }
 
+    // TODO: do not forget
     fun dispose() {
         job.cancel()
     }

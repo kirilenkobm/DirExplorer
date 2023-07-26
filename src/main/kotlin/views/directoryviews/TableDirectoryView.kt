@@ -18,7 +18,7 @@ import javax.swing.table.DefaultTableModel
 /**
  * View that controls directory view in the table mode
  */
-class TableDirectoryView() : AbstractDirectoryView() {
+class TableDirectoryView : AbstractDirectoryView() {
     private val table = JTable()
     private var model: DefaultTableModel? = null
     private val entityIconSize: Int = 16

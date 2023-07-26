@@ -1,11 +1,9 @@
 package views.directoryviews
 
 import dataModels.*
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.Semaphore
 import state.AppState
 import views.iconviews.*
@@ -17,7 +15,7 @@ import javax.swing.SwingUtilities
 
 
 // TODO: evaluate all constraints
-class IconsDirectoryView() : AbstractDirectoryView() {
+class IconsDirectoryView : AbstractDirectoryView() {
     private val gridPanel = JPanel()
     private val panel = JPanel(BorderLayout())
     private var updateJob: Job? = null

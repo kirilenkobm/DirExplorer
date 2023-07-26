@@ -14,9 +14,4 @@ class ExplorerFile(override val path: String): FileSystemEntity {
     val fileType: String
         // Java built in method to determine file type
         get() = Files.probeContentType(Paths.get(path)) ?: "unknown"
-
-    fun readContents(): String {
-        // Implement logic to read file contents
-        return "Dummy"
-    }
 }

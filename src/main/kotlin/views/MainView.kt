@@ -1,7 +1,6 @@
 package views
 
 import dataModels.DirectoryObserver
-import dataModels.DirectoryWatcher
 import dataModels.ExplorerDirectory
 import state.*
 import java.awt.BorderLayout
@@ -25,11 +24,6 @@ class MainView: DirectoryObserver, SettingsObserver {
         AppState.addDirectoryObserver(this)
         Settings.addObserver(this)
     }
-
-    fun updateView() {
-        // TODO: do I need to update anything from here?
-    }
-
 
     fun createAndShowGUI() {
         frame.defaultCloseOperation = JFrame.EXIT_ON_CLOSE
@@ -58,7 +52,7 @@ class MainView: DirectoryObserver, SettingsObserver {
      * Repaint the main panel that shows the content of the current dir
      * when the Settings.viewMode changes
      */
-    fun updateViewMode() {
+    private fun updateViewMode() {
         mainPanel.removeAll()
 
         when (Settings.viewMode) {

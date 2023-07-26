@@ -1,8 +1,6 @@
 // AppState - manages the whole Application state
 package state
 import dataModels.*
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import views.showErrorDialog
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -20,7 +18,6 @@ object AppState {
             DirectoryWatcher.startWatching(value)
         }
     var currentExtensionFilter: String = ""
-    var currentDirectoryContents: List<FileSystemEntity> = emptyList()
     // private var selectedExplorerFile: ExplorerFile? = null  // TODO: maybe UI layer?
     private var backStack: MutableList<ExplorableEntity> = mutableListOf()
     private var forwardStack: MutableList<ExplorableEntity> = mutableListOf()

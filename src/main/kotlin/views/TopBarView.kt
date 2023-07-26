@@ -6,8 +6,6 @@ import state.AppState
 import state.Settings
 import state.ViewMode
 import java.awt.*
-import java.awt.event.WindowAdapter
-import java.awt.event.WindowEvent
 import javax.swing.*
 
 
@@ -136,7 +134,7 @@ class TopBarView(private val frame: JFrame): DirectoryObserver {
         topBar.resizeWeight = 0.7
     }
 
-    fun updateView() {
+    private fun updateView() {
         addressBarView.updateView()
     }
 
