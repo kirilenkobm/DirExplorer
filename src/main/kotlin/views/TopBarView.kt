@@ -12,13 +12,13 @@ import javax.swing.*
 
 
 // TODO: lock buttons for not available actions, like go up if already at root
-class TopBarView(private val mainView: MainView, private val frame: JFrame): DirectoryObserver {
+class TopBarView(private val frame: JFrame): DirectoryObserver {
     private val topBar = JSplitPane()
     private val leftPanel = JPanel()
     private val rightPanel = JPanel(FlowLayout(FlowLayout.RIGHT))
-    private val addressBarView = AddressBarView(mainView)
+    private val addressBarView = AddressBarView()
     private var settingsDialog: SettingsDialog? = null
-    private val filterPanel = FilterPanel(mainView, addressBarView)
+    private val filterPanel = FilterPanel()
 
 
     private fun createButton(icon: ImageIcon,
@@ -33,7 +33,6 @@ class TopBarView(private val mainView: MainView, private val frame: JFrame): Dir
             cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)
             addActionListener {
                 action()
-                mainView.updateView()
             }
         }
     }
@@ -50,8 +49,6 @@ class TopBarView(private val mainView: MainView, private val frame: JFrame): Dir
             cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)
             addActionListener {
                 action()
-                mainView.updateView()
-                mainView.updateMainPanel()
             }
         }
     }
@@ -101,14 +98,6 @@ class TopBarView(private val mainView: MainView, private val frame: JFrame): Dir
                     // to locate it in the middle of the main view, not in the
                     // top left corner of the screen
                     setLocationRelativeTo(frame)
-
-                    // ideally to apply changes after the window is closed
-                    addWindowListener(object : WindowAdapter() {
-                        override fun windowClosed(e: WindowEvent?) {
-                            mainView.updateView()
-                            mainView.updateMainPanel()
-                        }
-                    })
                     isVisible = true
                 }
             }

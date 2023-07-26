@@ -12,8 +12,8 @@ import javax.swing.event.DocumentEvent
 import javax.swing.event.DocumentListener
 
 
-// File extensions filter view
-class FilterPanel(private val mainView: MainView, private val addressBarView: AddressBarView) {
+// TODO: implement update on filter
+class FilterPanel {
     private val filterPanel = JPanel()
 
     init {
@@ -66,9 +66,6 @@ class FilterPanel(private val mainView: MainView, private val addressBarView: Ad
 
     private fun updateFilter(text: String) {
         AppState.currentExtensionFilter = text
-        addressBarView.updateView()
-        mainView.updateView()
-        mainView.updateMainPanel()
     }
 
     fun getPanel(): JPanel {

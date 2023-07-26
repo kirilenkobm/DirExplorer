@@ -3,7 +3,7 @@
 * ~~Status bar~~ with data like how many items in the directory, total size, etc
 
 _I beleive these 3 are connected:_
-* Settings - apply after close immediately
+* ~~Settings - apply after close immediately~~
 * Fix and order view updates
 * BUG: sometimes just does not update dir content view, updating State and AddressBar
 
@@ -13,6 +13,9 @@ _I beleive these 3 are connected:_
 * Stress tests ???
 * Get rid of magic numbers and strings
 * README and documentation
+* Error handling for thumbnail creation like:
+  * SEVERE: Cannot read JPEG2000 image: Java Advanced Imaging (JAI) Image I/O Tools are not installed
+* ~~Fix filesystem listener~~
 * ~~Entity select on one click, open on two~~
   * ~~In tables~~
   * ~~In grid view~~

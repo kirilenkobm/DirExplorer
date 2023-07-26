@@ -1,6 +1,7 @@
 package dataModels
 
 import kotlinx.coroutines.*
+import state.AppState
 import java.nio.file.FileSystems
 import java.nio.file.Paths
 import java.nio.file.StandardWatchEventKinds
@@ -41,10 +42,12 @@ object DirectoryWatcher: CoroutineScope {
                         StandardWatchEventKinds.ENTRY_DELETE,
                         StandardWatchEventKinds.ENTRY_CREATE,
                         StandardWatchEventKinds.ENTRY_MODIFY -> {
-                            // TODO: implement this part
                             println("Event kind: ${watchEvent.kind()}")
                             println("Event count: ${watchEvent.count()}")
                             println("Event context: ${watchEvent.context()}")
+                            // Don't want to make notifyDirectoryObservers() public
+                            // probably it's the best way to notify the UI
+                            AppState.refreshCurrentDirectory()
                         }
                     }
                 }

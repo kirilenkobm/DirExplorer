@@ -17,7 +17,7 @@ import kotlin.math.max
 import kotlin.math.min
 
 
-class AddressBarView(private val mainView: MainView): DirectoryObserver {
+class AddressBarView: DirectoryObserver {
     private val addressBar = JPanel()
     private val addressBarPanel = JPanel(BorderLayout())
 

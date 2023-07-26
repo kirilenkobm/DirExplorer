@@ -10,14 +10,12 @@ import javax.swing.JScrollPane
 import javax.swing.JPanel
 import views.directoryviews.IconsDirectoryView
 import views.directoryviews.TableDirectoryView
-import java.awt.Color
 import java.awt.Dimension
 
 
 class MainView: DirectoryObserver, SettingsObserver {
-    // TODO: better manage view updates and triggers
     private val frame = JFrame("DirExplorer")
-    private val topBarView = TopBarView(this, frame)
+    private val topBarView = TopBarView(frame)
     private val tableView = TableDirectoryView()
     private val iconsView = IconsDirectoryView()
     private val mainPanel = JPanel(BorderLayout())
@@ -49,6 +47,7 @@ class MainView: DirectoryObserver, SettingsObserver {
         frame.isVisible = true
     }
 
+    // TODO: move outside
     private fun updateStatusBar() {
         val itemsCount = 1000
         val totalSize = 1000000000L
@@ -56,24 +55,10 @@ class MainView: DirectoryObserver, SettingsObserver {
     }
 
     /**
-     * Deprecated
-     */
-    fun updateMainPanel() {
-        mainPanel.removeAll()
-
-        when (Settings.viewMode) {
-            ViewMode.TABLE -> mainPanel.add(JScrollPane(tableView.getTable()), BorderLayout.CENTER)
-            ViewMode.ICONS -> mainPanel.add(JScrollPane(iconsView.getPanel()), BorderLayout.CENTER)
-        }
-        mainPanel.revalidate()
-        mainPanel.repaint()
-    }
-
-    /**
      * Repaint the main panel that shows the content of the current dir
      * when the Settings.viewMode changes
      */
-    private fun updateViewMode() {
+    fun updateViewMode() {
         mainPanel.removeAll()
 
         when (Settings.viewMode) {

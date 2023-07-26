@@ -147,4 +147,9 @@ object AppState {
         val zipArchivesCopy = ArrayList(zipArchives)
         zipArchivesCopy.forEach { it.cleanup() }
     }
+
+    fun refreshCurrentDirectory() {
+        currentExplorerDirectory.invalidateCache()
+        notifyDirectoryObservers(currentExplorerDirectory)
+    }
 }
