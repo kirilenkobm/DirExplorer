@@ -99,6 +99,10 @@ class TableDirectoryView(topBarView: TopBarView) : AbstractDirectoryView(topBarV
             override fun getColumnClass(column: Int): Class<*> {
                 return if (column == 0) ImageIcon::class.java else super.getColumnClass(column)
             }
+
+            override fun isCellEditable(row: Int, column: Int): Boolean {
+                return false
+            }
         }
     }
 

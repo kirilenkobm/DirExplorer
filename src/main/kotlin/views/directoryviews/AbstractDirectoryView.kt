@@ -37,6 +37,11 @@ abstract class AbstractDirectoryView(private val topBarView: TopBarView) : Corou
         startWatchingDirectory(AppState.currentExplorerDirectory)
     }
 
+    /**
+     For each entity, defines the action on mouse click.
+     @param entity: clicked FileSystemEntity, such as
+     Directory, Regular File, Archive, etc.
+     */
     fun performEntityAction(entity: FileSystemEntity) {
         when(entity) {
             is ExplorerDirectory -> {

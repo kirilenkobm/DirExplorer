@@ -7,14 +7,14 @@ _I beleive these 3 are connected:_
 * Fix and order view updates
 * BUG: sometimes just does not update dir content view, updating State and AddressBar
 
-
+* Table view: sorting -> only after I fix view updates
 * Fix bug with back and forward for archives
 * Entity select on one click, open on two
-* Table view: sorting
 * Unit tests
 * Stress tests ???
 * Get rid of magic numbers and strings
 * README and documentation
+* ~~Disable editing in table view~~
 * ~~Semaphore for text generation too~~
 * ~~Fix bug where I cannot leave a directory where not all thumbnails are generated~~
 * ~~Fix directory get content and system listener~~
