@@ -4,7 +4,6 @@ import dataModels.ExplorerFile
 import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Semaphore
 import org.apache.pdfbox.pdmodel.PDDocument
-import org.apache.pdfbox.pdmodel.PDPage
 import org.apache.pdfbox.rendering.PDFRenderer
 import state.Settings
 import views.IconManager
@@ -15,6 +14,8 @@ import java.awt.image.BufferedImage
 import java.io.File
 import java.io.IOException
 import javax.imageio.ImageIO
+import javax.imageio.metadata.IIOMetadataFormatImpl
+import javax.imageio.metadata.IIOMetadataNode
 import javax.swing.Icon
 import javax.swing.ImageIcon
 import javax.swing.SwingUtilities
@@ -100,7 +101,7 @@ class FileIconView(
                 }
             }
         }  else if (fileType == "application/pdf") {
-            // TODO: incapsulate in another method
+            // TODO: encapsulate in another method
             launch(Dispatchers.IO) {
                 imagePreviewsSemaphore.acquire()
                 try {
@@ -167,6 +168,25 @@ class FileIconView(
         }
     }
 
+    private fun resizeThumbnail(image: BufferedImage): BufferedImage {
+        val width = image.width
+        val height = image.height
+        val scaleFactor = Settings.iconSize.toDouble() / max(width, height)
+        val newWidht = (width * scaleFactor).toInt()
+        val newHeight = (height * scaleFactor).toInt()
+
+        val resizedImage = BufferedImage(newWidht, newHeight, BufferedImage.TYPE_INT_RGB)
+        val graphics = resizedImage.createGraphics()
+        graphics.setRenderingHint(
+            RenderingHints.KEY_INTERPOLATION,
+            RenderingHints.VALUE_INTERPOLATION_BILINEAR
+        )
+        graphics.drawImage(image, 0, 0, newWidht, newHeight, null)
+        graphics.dispose()
+
+        return resizedImage
+    }
+
     private suspend fun createThumbnail(path: String): ImageIcon? {
         return withContext(Dispatchers.IO) {
             try {
@@ -182,6 +202,19 @@ class FileIconView(
                     try {
                         reader.input = imageInputStream
 
+                        // try to extract the already existing thumbnail
+                        val metadata = reader.getImageMetadata(0)
+                        val standardTree = metadata.getAsTree(IIOMetadataFormatImpl.standardMetadataFormatName) as IIOMetadataNode
+                        val childNodes = standardTree.getElementsByTagName("Thumbnail")
+
+                        if (childNodes.length > 0) {
+                            // Theoretically, several thumbnails can be included in the image
+                            val thumbnail = reader.readThumbnail(0, 0)
+                            val resizedThumbnail = resizeThumbnail(thumbnail)
+                            return@withContext ImageIcon(resizedThumbnail)
+                        }
+
+                        // No thumbnail found -> just read the whole image
                         val width = reader.getWidth(reader.minIndex)
                         val height = reader.getHeight(reader.minIndex)
                         val maxDim = max(width, height)
@@ -193,23 +226,8 @@ class FileIconView(
                         }
 
                         // Read the image
-                        val image = reader.read(reader.minIndex)
-
-                        // Calculate the new width and height
-                        val scaleFactor = Settings.iconSize.toDouble() / max(width, height)
-                        val newWidth = (width * scaleFactor).toInt()
-                        val newHeight = (height * scaleFactor).toInt()
-
-                        // Pick algorithm (balance between quality and speed?)
-                        val thumbnailImage = BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_RGB)
-                        val graphics = thumbnailImage.createGraphics()
-                        graphics.setRenderingHint(
-                            RenderingHints.KEY_INTERPOLATION,
-                            RenderingHints.VALUE_INTERPOLATION_BILINEAR
-                        )
-                        graphics.drawImage(image, 0, 0, newWidth, newHeight, null)
-                        graphics.dispose()
-
+                        val fullImage = reader.read(reader.minIndex)
+                        val thumbnailImage = resizeThumbnail(fullImage)
                         ImageIcon(thumbnailImage)
                     } finally {
                         reader.dispose()
