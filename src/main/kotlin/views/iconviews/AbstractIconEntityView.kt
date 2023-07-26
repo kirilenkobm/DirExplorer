@@ -48,7 +48,12 @@ abstract class AbstractIconEntityView(private val entity: FileSystemEntity, priv
 
         entityPanel.addMouseListener(object : MouseAdapter() {
             override fun mouseClicked(e: MouseEvent) {
-                parentDirView.performEntityAction(entity)
+                if (e.clickCount == 1) {
+                    parentDirView.setSelectedIcon(this@AbstractIconEntityView)
+                } else if (e.clickCount == 2) {
+                    parentDirView.setSelectedIcon(this@AbstractIconEntityView)
+                    parentDirView.performEntityAction(entity)
+                }
             }
         })
     }
@@ -107,7 +112,15 @@ abstract class AbstractIconEntityView(private val entity: FileSystemEntity, priv
             finalName
         }
 
-
         textLabel.text = "<html>$splitName</html>"
+    }
+
+    fun setSelected(selected: Boolean) {
+        if (selected) {
+            entityPanel.background = Color(66, 135, 245, 255)
+        } else {
+            entityPanel.background = Color(0, 0, 0, 0)
+            entityPanel.isOpaque = false
+        }
     }
 }

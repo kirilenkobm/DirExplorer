@@ -2,7 +2,6 @@ package views.directoryviews
 
 import dataModels.*
 import kotlinx.coroutines.*
-import kotlinx.coroutines.sync.Mutex
 import state.AppState
 import state.Settings
 import state.SortOrder
@@ -19,8 +18,9 @@ import java.nio.file.WatchKey
 import java.text.SimpleDateFormat
 import kotlin.coroutines.CoroutineContext
 
-// Abstract class that implements all the methods needed to show
-// a directory's content.
+/** Abstract class that implements all the methods needed to show
+ * a directory's content.
+ */
 abstract class AbstractDirectoryView(private val topBarView: TopBarView) : CoroutineScope {
     protected val job = Job()
     override val coroutineContext: CoroutineContext
@@ -78,7 +78,6 @@ abstract class AbstractDirectoryView(private val topBarView: TopBarView) : Corou
             }
         }
     }
-
 
     private fun openFile(fileEntity: ExplorerFile) {
         if (Desktop.isDesktopSupported()) {
@@ -192,14 +191,7 @@ abstract class AbstractDirectoryView(private val topBarView: TopBarView) : Corou
         }
     }
 
-//    fun onCurrentDirectoryChanged() {
-//        println("onCurrentDirectoryChanged")
-//        startWatchingDirectory(AppState.currentExplorerDirectory)
-//    }
-
     abstract fun updateView()
-
-    // abstract fun setupTableMouseListener()
 
     fun dispose() {
         job.cancel()

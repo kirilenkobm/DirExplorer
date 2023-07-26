@@ -31,6 +31,7 @@ class IconsDirectoryView(topBarView: TopBarView) : AbstractDirectoryView(topBarV
     private val semaphorePermitsForTextPreviewsGeneration = 10  // pretty lightweight
     private val textPreviewsSemaphore = Semaphore(semaphorePermitsForTextPreviewsGeneration)
     private val fileIconViews = mutableListOf<FileIconView>()  // keep track of all launched thumbnail generation jobs
+    private var selectedView: AbstractIconEntityView? = null
 
     init {
         panel.add(gridPanel, BorderLayout.NORTH)
@@ -69,6 +70,12 @@ class IconsDirectoryView(topBarView: TopBarView) : AbstractDirectoryView(topBarV
     }
 
     override fun updateView() {
+        // Cancel all ongoing thumbnail generation tasks
+        for (view in fileIconViews) {
+            view.dispose()
+        }
+        fileIconViews.clear()
+
         launch {
             currentContents = AppState.currentExplorerDirectory.getContents()
             filteredAndSortedContents = filterAndSortContents(currentContents)
@@ -88,12 +95,12 @@ class IconsDirectoryView(topBarView: TopBarView) : AbstractDirectoryView(topBarV
                 gridPanel.repaint()
             }
         }
-        // Cancel all ongoing thumbnail generation tasks
-        for (view in fileIconViews) {
-            view.dispose()
-        }
-        fileIconViews.clear()
-        // onCurrentDirectoryChanged()
+    }
+
+    fun setSelectedIcon(iconView: AbstractIconEntityView) {
+        selectedView?.setSelected(false)  // undo selection if any
+        iconView.setSelected(true)
+        selectedView = iconView
     }
 
     fun getPanel(): JPanel {

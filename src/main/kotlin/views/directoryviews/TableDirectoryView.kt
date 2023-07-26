@@ -15,7 +15,9 @@ import javax.swing.SwingUtilities
 import javax.swing.table.DefaultTableModel
 
 
-// View that controls directory view in the table mode
+/**
+ * View that controls directory view in the table mode
+ */
 class TableDirectoryView(topBarView: TopBarView) : AbstractDirectoryView(topBarView) {
     private val table = JTable()
     private var model: DefaultTableModel? = null
