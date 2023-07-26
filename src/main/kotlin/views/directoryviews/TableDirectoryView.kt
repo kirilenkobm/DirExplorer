@@ -5,7 +5,6 @@ import kotlinx.coroutines.launch
 import state.AppState
 import state.Settings
 import views.IconManager
-import views.TopBarView
 import views.Utils
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
@@ -19,7 +18,7 @@ import javax.swing.table.DefaultTableModel
 /**
  * View that controls directory view in the table mode
  */
-class TableDirectoryView(topBarView: TopBarView) : AbstractDirectoryView(topBarView) {
+class TableDirectoryView() : AbstractDirectoryView() {
     private val table = JTable()
     private var model: DefaultTableModel? = null
     private val entityIconSize: Int = 16

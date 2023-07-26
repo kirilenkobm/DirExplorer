@@ -7,20 +7,17 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.Semaphore
-import kotlinx.coroutines.sync.withLock
 import state.AppState
-import views.*
 import views.iconviews.*
 import java.awt.*
 import java.awt.event.ComponentAdapter
 import java.awt.event.ComponentEvent
 import javax.swing.JPanel
 import javax.swing.SwingUtilities
-import kotlin.math.abs
 
 
 // TODO: evaluate all constraints
-class IconsDirectoryView(topBarView: TopBarView) : AbstractDirectoryView(topBarView) {
+class IconsDirectoryView() : AbstractDirectoryView() {
     private val gridPanel = JPanel()
     private val panel = JPanel(BorderLayout())
     private var updateJob: Job? = null

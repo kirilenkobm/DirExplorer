@@ -2,10 +2,7 @@ package views.directoryviews
 
 import dataModels.*
 import kotlinx.coroutines.*
-import state.AppState
-import state.Settings
-import state.SortOrder
-import views.TopBarView
+import state.*
 import views.showErrorDialog
 import java.awt.Desktop
 import java.io.File
@@ -16,7 +13,10 @@ import kotlin.coroutines.CoroutineContext
 /** Abstract class that implements all the methods needed to show
  * a directory's content.
  */
-abstract class AbstractDirectoryView(private val topBarView: TopBarView) : CoroutineScope, DirectoryObserver {
+abstract class AbstractDirectoryView:
+    CoroutineScope,
+    DirectoryObserver,
+    SettingsObserver {
     protected val job = Job()
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.Main + job
@@ -27,6 +27,7 @@ abstract class AbstractDirectoryView(private val topBarView: TopBarView) : Corou
 
     init {
         AppState.addDirectoryObserver(this)
+        Settings.addObserver(this)
         launch {
             currentContents = AppState.currentExplorerDirectory.getContents()
         }
@@ -42,7 +43,6 @@ abstract class AbstractDirectoryView(private val topBarView: TopBarView) : Corou
             is ExplorerDirectory -> {
                 AppState.updateDirectory(entity)
                 updateView()
-                topBarView.updateView()
             }
             is ExplorerFile -> {
                 openFile(entity)
@@ -66,7 +66,6 @@ abstract class AbstractDirectoryView(private val topBarView: TopBarView) : Corou
             is ZipArchive -> {
                 AppState.updateDirectory(entity)
                 updateView()
-                topBarView.updateView()
             }
             is UnknownEntity -> {
                 showErrorDialog("Not supported file system entity ${entity.path}")
@@ -156,6 +155,18 @@ abstract class AbstractDirectoryView(private val topBarView: TopBarView) : Corou
 
     override fun onDirectoryChanged(newDirectory: ExplorerDirectory) {
         updateView()
+    }
+
+    override fun onShowHiddenFilesChanged(newShowHiddenFiles: Boolean) {
+        updateView()
+    }
+
+    override fun onViewModeChanged(newViewMode: ViewMode) {
+        // Irrelevant -> handled by MainView
+    }
+
+    override fun onColorThemeChanged(newColorTheme: ColorTheme) {
+        // TODO: probably is not needed
     }
 
     fun dispose() {

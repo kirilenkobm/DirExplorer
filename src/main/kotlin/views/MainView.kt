@@ -18,8 +18,8 @@ class MainView: DirectoryObserver, SettingsObserver {
     // TODO: better manage view updates and triggers
     private val frame = JFrame("DirExplorer")
     private val topBarView = TopBarView(this, frame)
-    private val tableView = TableDirectoryView(topBarView)
-    private val iconsView = IconsDirectoryView(topBarView)
+    private val tableView = TableDirectoryView()
+    private val iconsView = IconsDirectoryView()
     private val mainPanel = JPanel(BorderLayout())
     private val statusBarView = StatusBarView()
 
@@ -97,7 +97,7 @@ class MainView: DirectoryObserver, SettingsObserver {
     }
 
     override fun onShowHiddenFilesChanged(newShowHiddenFiles: Boolean) {
-        TODO("Not yet implemented")
+        // Do nothing here?
     }
 
     override fun onViewModeChanged(newViewMode: ViewMode) {
