@@ -3,7 +3,7 @@
 * ~~Status bar~~ with data like how many items in the directory, total size, etc
 
 _I beleive these 3 are connected:_
-* ~~Settings - apply after close immediately~~
+* ~~Settings - apply after close immediately~~ -> added settings observer
 * Fix and order view updates
 * BUG: sometimes just does not update dir content view, updating State and AddressBar
 
@@ -30,14 +30,14 @@ _I beleive these 3 are connected:_
 
 # Prefer to do
 
-* On system event in a directory -> update cache accordingly, instead of calling getContents() again
+* ~~On system event in a directory -> update cache accordingly, instead of calling getContents() again~~ -> WON'T DO
 * ~~Thumbnails - extract if exist~~ -> not sure whether it actually works
 * ~~PDF previews - extract if exist~~ -> in fact, I generate them from page...
 * Better localization
 * If open in external app -warn about it?
 * Spinner when ZIP file is being unpacked
 * Thumbnail LRU cache in zip files
-* PNG preview -> transparency on icons
+* ~~PNG preview -> transparency on icons~~
 
 # Nice to have
 

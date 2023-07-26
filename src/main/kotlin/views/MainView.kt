@@ -62,6 +62,7 @@ class MainView: DirectoryObserver, SettingsObserver {
 
         mainPanel.revalidate()
         mainPanel.repaint()
+        mainPanel.isOpaque = false
     }
 
     /**

@@ -26,9 +26,10 @@ class IconsDirectoryView : AbstractDirectoryView() {
     private val semaphorePermitsForTextPreviewsGeneration = 10  // pretty lightweight
     private val textPreviewsSemaphore = Semaphore(semaphorePermitsForTextPreviewsGeneration)
     private val fileIconViews = mutableListOf<FileIconView>()  // keep track of all launched thumbnail generation jobs
-    private var selectedView: AbstractIconEntityView? = null
+    private var selectedView: AbstractIconEntityView? = null  // TODO: move down to IconView
 
     init {
+        gridPanel.isOpaque = false
         panel.add(gridPanel, BorderLayout.NORTH)
         panel.addComponentListener(object : ComponentAdapter() {
             override fun componentResized(e: ComponentEvent?) {
@@ -43,6 +44,7 @@ class IconsDirectoryView : AbstractDirectoryView() {
             }
         })
         updateView()
+        panel.isOpaque = false
     }
 
     private fun createEntityView(entity: FileSystemEntity): JPanel {
@@ -84,7 +86,9 @@ class IconsDirectoryView : AbstractDirectoryView() {
                 gridPanel.layout = GridLayout(0, numberOfColumns) // Set new layout with updated number of columns
 
                 for (entity in filteredAndSortedContents) {
-                    gridPanel.add(createEntityView(entity))
+                    val entityIcon = createEntityView(entity)
+                    entityIcon.isOpaque = false
+                    gridPanel.add(entityIcon)
                 }
                 gridPanel.revalidate()
                 gridPanel.repaint()

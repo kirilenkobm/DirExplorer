@@ -175,7 +175,7 @@ class FileIconView(
         val newWidth = (width * scaleFactor).toInt()
         val newHeight = (height * scaleFactor).toInt()
 
-        val resizedImage = BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_RGB)
+        val resizedImage = BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_ARGB)
         val graphics = resizedImage.createGraphics()
         graphics.setRenderingHint(
             RenderingHints.KEY_INTERPOLATION,
@@ -188,10 +188,9 @@ class FileIconView(
     }
 
     private suspend fun createThumbnail(path: String): ImageIcon? {
+        // TODO: decomposition
         return withContext(Dispatchers.IO) {
             try {
-                // TODO: try to extract already existing thumbnail if possible
-                // TODO: preserve in scale like 128x128 (to allow rescaling UI)
                 val file = File(path)
                 val imageInputStream = ImageIO.createImageInputStream(file)
                 val readers = ImageIO.getImageReaders(imageInputStream)

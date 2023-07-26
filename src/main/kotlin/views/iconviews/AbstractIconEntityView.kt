@@ -13,7 +13,10 @@ import javax.swing.JPanel
 import javax.swing.SwingConstants
 
 
-abstract class AbstractIconEntityView(private val entity: FileSystemEntity, private val parentDirView: IconsDirectoryView) {
+abstract class AbstractIconEntityView(
+    private val entity: FileSystemEntity,
+    private val parentDirView: IconsDirectoryView)
+{
     protected val iconLabel = JLabel()
     private val textLabel = JLabel()
     private val entityPanel = JPanel()
@@ -34,6 +37,7 @@ abstract class AbstractIconEntityView(private val entity: FileSystemEntity, priv
         textLabel.horizontalAlignment = SwingConstants.CENTER
         iconLabel.alignmentX = Component.CENTER_ALIGNMENT
         textLabel.alignmentX = Component.CENTER_ALIGNMENT
+        iconLabel.background = Color.WHITE
 
         // BoxLayout allows to limit height
         entityPanel.layout = BoxLayout(entityPanel, BoxLayout.Y_AXIS)
@@ -41,10 +45,8 @@ abstract class AbstractIconEntityView(private val entity: FileSystemEntity, priv
         entityPanel.add(textLabel)
 
         entityPanel.maximumSize = Dimension(entityPanel.maximumSize.width, maxIconHeight)
-//        if (Settings.colorTheme == ColorTheme.DARK) {
-//            entityPanel.background = Color.DARK_GRAY
-//        }
         wrapperPanel.add(entityPanel, gbc)
+        entityPanel.isOpaque = false
 
         entityPanel.addMouseListener(object : MouseAdapter() {
             override fun mouseClicked(e: MouseEvent) {
@@ -118,6 +120,7 @@ abstract class AbstractIconEntityView(private val entity: FileSystemEntity, priv
     fun setSelected(selected: Boolean) {
         if (selected) {
             entityPanel.background = Color(66, 135, 245, 255)
+            entityPanel.isOpaque = true
         } else {
             entityPanel.background = Color(0, 0, 0, 0)
             entityPanel.isOpaque = false
