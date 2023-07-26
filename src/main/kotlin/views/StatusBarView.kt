@@ -18,23 +18,7 @@ class StatusBarView : JPanel() {
         background = Color.LIGHT_GRAY
     }
 
-    // TODO: avoid code duplication, this method is defined in abstract directory view
-    fun humanReadableSize(bytes: Long): String {
-        val kilobyte = 1024.0
-        val megabyte = kilobyte * 1024
-        val gigabyte = megabyte * 1024
-        val terabyte = gigabyte * 1024
-
-        return when {
-            bytes < kilobyte -> "$bytes B"
-            bytes < megabyte -> String.format("%.1f KB", bytes / kilobyte)
-            bytes < gigabyte -> String.format("%.1f MB", bytes / megabyte)
-            bytes < terabyte -> String.format("%.1f GB", bytes / gigabyte)
-            else -> String.format("%.1f TB", bytes / terabyte)
-        }
-    }
-
     fun updateStatus(itemsCount: Int, totalSize: Long) {
-        statusLabel.text = "Items: $itemsCount, Total size: ${humanReadableSize(totalSize)}"
+        statusLabel.text = "Items: $itemsCount, Total size: ${Utils.humanReadableSize(totalSize)}"
     }
 }

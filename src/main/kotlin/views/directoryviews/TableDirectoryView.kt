@@ -6,6 +6,7 @@ import state.AppState
 import state.Settings
 import views.IconManager
 import views.TopBarView
+import views.Utils
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
 import java.util.*
@@ -51,39 +52,39 @@ class TableDirectoryView(topBarView: TopBarView) : AbstractDirectoryView(topBarV
                 is ExplorerFile -> arrayOf<Any>(
                     resizeTableIcon(IconManager.getIconForFileType(entity.fileType)),
                     entity.name,
-                    humanReadableSize(entity.size),
-                    dateFormat.format(Date(entity.lastModified))
+                    Utils.humanReadableSize(entity.size),
+                    Utils.formatDate(entity.lastModified)
                 )
                 is ExplorerDirectory -> arrayOf<Any>(
                     resizeTableIcon(IconManager.getIconForDir(entity)),
                     entity.name,
                     "-",
-                    dateFormat.format(Date(entity.lastModified))
+                    Utils.formatDate(entity.lastModified)
                 )
                 is ExplorerSymLink -> arrayOf<Any>(
                     resizeTableIcon(IconManager.linkIcon),
                     entity.name,
                     "-",
-                    dateFormat.format(Date(entity.lastModified))
+                    Utils.formatDate(entity.lastModified)
                 )
                 is ZipArchive -> arrayOf<Any>(
                     resizeTableIcon(IconManager.folderZipIcon),
                     entity.name,
-                    humanReadableSize(entity.size),
-                    dateFormat.format(Date(entity.lastModified))
+                    Utils.humanReadableSize(entity.size),
+                    Utils.formatDate(entity.lastModified)
                 )
                 is UnknownEntity -> arrayOf<Any>(
                     resizeTableIcon(IconManager.helpCenterIcon),
                     entity.name,
-                    humanReadableSize(entity.size),
-                    dateFormat.format(Date(entity.lastModified))
+                    Utils.humanReadableSize(entity.size),
+                    Utils.formatDate(entity.lastModified)
                 )
                 else -> arrayOf<Any>(
                     // should be not reachable?
                     resizeTableIcon(IconManager.helpCenterIcon),
                     entity.name,
                     "-",
-                    dateFormat.format(Date(entity.lastModified))
+                    Utils.formatDate(entity.lastModified)
                 )
             }
         }.toTypedArray()
