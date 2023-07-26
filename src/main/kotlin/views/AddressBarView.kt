@@ -12,6 +12,8 @@ import javax.swing.JButton
 import javax.swing.JLabel
 import javax.swing.JPanel
 import javax.swing.SwingConstants
+import kotlin.math.max
+import kotlin.math.min
 
 
 class AddressBarView(private val mainView: MainView) {
@@ -84,18 +86,19 @@ class AddressBarView(private val mainView: MainView) {
             val numStartComponents = 6
             val numEndComponents = 6
 
-            // Add the start components to the address bar
-            for (i in 0..<numStartComponents) {
+            // Safer number of items
+            for (i in 0..<min(numStartComponents, components.size)) {
                 addressBar.add(components[i], constraints)
             }
+
 
             // TODO: maybe? create dropdown menu
             // val middleComponents = components.subList(numStartComponents, components.size - numEndComponents)
             val ellipsisLabel = JLabel("  ...  ")
             addressBar.add(ellipsisLabel)
 
-            // Add the end components to the address bar
-            for (i in components.size - numEndComponents..<components.size) {
+            // Safely add components to the end of the address bar
+            for (i in max(0, components.size - numEndComponents)..<components.size) {
                 addressBar.add(components[i], constraints)
             }
 

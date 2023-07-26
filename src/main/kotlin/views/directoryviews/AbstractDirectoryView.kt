@@ -2,6 +2,7 @@ package views.directoryviews
 
 import dataModels.*
 import kotlinx.coroutines.*
+import kotlinx.coroutines.sync.Mutex
 import state.AppState
 import state.Settings
 import state.SortOrder
@@ -21,13 +22,13 @@ import kotlin.coroutines.CoroutineContext
 // Abstract class that implements all the methods needed to show
 // a directory's content.
 abstract class AbstractDirectoryView(private val topBarView: TopBarView) : CoroutineScope {
-    private val job = Job()
+    protected val job = Job()
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.Main + job
     protected var currentContents: List<FileSystemEntity> = emptyList()
     private var watchKey: WatchKey? = null
     // To avo
-    var visitedSymlinks: MutableSet<String> = mutableSetOf()
+    private var visitedSymlinks: MutableSet<String> = mutableSetOf()
 
     init {
         launch {
@@ -48,7 +49,6 @@ abstract class AbstractDirectoryView(private val topBarView: TopBarView) : Corou
             }
             is ExplorerSymLink -> {
                 try {
-                    // TODO: handle circular linkgs
                     val targetPath = entity.target
                     val targetEntity = FileSystemEntityFactory.createEntity(targetPath)
 
@@ -65,8 +65,8 @@ abstract class AbstractDirectoryView(private val topBarView: TopBarView) : Corou
             }
             is ZipArchive -> {
                 AppState.updateDirectory(entity)
-                 updateView()
-                 topBarView.updateView()
+                updateView()
+                topBarView.updateView()
             }
             is UnknownEntity -> {
                 showErrorDialog("Not supported file system entity ${entity.path}")
@@ -153,7 +153,7 @@ abstract class AbstractDirectoryView(private val topBarView: TopBarView) : Corou
         return sortedContents
     }
 
-    private fun startWatchingDirectory(directory: ExplorerDirectory) {
+    protected fun startWatchingDirectory(directory: ExplorerDirectory) {
         // cancel the previous watch key if applicable
         watchKey?.cancel()
 
@@ -187,9 +187,10 @@ abstract class AbstractDirectoryView(private val topBarView: TopBarView) : Corou
         }
     }
 
-    fun onCurrentDirectoryChanged() {
-        startWatchingDirectory(AppState.currentExplorerDirectory)
-    }
+//    fun onCurrentDirectoryChanged() {
+//        println("onCurrentDirectoryChanged")
+//        startWatchingDirectory(AppState.currentExplorerDirectory)
+//    }
 
     abstract fun updateView()
 

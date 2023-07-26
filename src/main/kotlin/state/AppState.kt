@@ -53,6 +53,7 @@ object AppState {
                     backStack.add(currentExplorerDirectory)
                 }
                 if (clearForwardStack) forwardStack.clear()
+                currentExplorerDirectory.invalidateCache()
                 currentExplorerDirectory = newExplorerDirectory as ExplorerDirectory
             }
         } else if (pathExists && isReadable && isZipArchive){
@@ -62,6 +63,7 @@ object AppState {
             // TODO: idea works poorly with "back" and "forward" functions
             // add zip files to back and forward stack instead of tempDirNames
             val tempDir = (newExplorerDirectory as ZipArchive).extractTo()
+            currentExplorerDirectory.invalidateCache()
             currentExplorerDirectory = ExplorerDirectory(tempDir.toString())
         } else {
             // Error occurred: show a message and recover the original state

@@ -120,7 +120,7 @@ class TableDirectoryView(topBarView: TopBarView) : AbstractDirectoryView(topBarV
                 table.columnModel.getColumn(0).maxWidth = 20
             }
         }
-        onCurrentDirectoryChanged()
+        // onCurrentDirectoryChanged()
     }
 
     private fun setupTableMouseListener() {

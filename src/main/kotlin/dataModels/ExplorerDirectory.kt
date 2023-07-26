@@ -15,14 +15,25 @@ open class ExplorerDirectory(override val path: String): ExplorableEntity {
 
     // TODO: store in a attribute, call only once
     open suspend fun getContents(): List<FileSystemEntity> = withContext(Dispatchers.IO) {
-        contentsCache?.let { return@withContext it }
+        try {
+            contentsCache?.let {
+                println("Using cached contents for directory $path")
+                return@withContext it
+            }
 
-        contentsCache = Files.list(Paths.get(path)).asSequence().mapNotNull { path ->
-            FileSystemEntityFactory.createEntity(path.toString())
-        }.toList()
+            println("Fetching new contents for directory $path")
+            contentsCache = Files.list(Paths.get(path)).asSequence().mapNotNull { path ->
+                FileSystemEntityFactory.createEntity(path.toString())
+            }.toList()
 
-        contentsCache!!
+            contentsCache!!
+        } catch (e: Exception) {
+            println("Exception in getContents: ${e.message}")
+            e.printStackTrace()
+            emptyList<FileSystemEntity>()
+        }
     }
+
 
     val hasAccess: Boolean
         get() = Files.isReadable(Paths.get(path))

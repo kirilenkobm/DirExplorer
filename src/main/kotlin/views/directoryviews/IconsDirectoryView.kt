@@ -1,10 +1,13 @@
 package views.directoryviews
 
 import dataModels.*
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.Semaphore
+import kotlinx.coroutines.sync.withLock
 import state.AppState
 import views.*
 import views.iconviews.*
@@ -13,6 +16,7 @@ import java.awt.event.ComponentAdapter
 import java.awt.event.ComponentEvent
 import javax.swing.JPanel
 import javax.swing.SwingUtilities
+import kotlin.math.abs
 
 
 // TODO: evaluate all constraints
@@ -22,8 +26,10 @@ class IconsDirectoryView(topBarView: TopBarView) : AbstractDirectoryView(topBarV
     private var updateJob: Job? = null
     private var filteredAndSortedContents: List<FileSystemEntity> = emptyList()
     // Limit number of thumbnails rendered at once
-    private val semaphorePermitsForThumbnailGeneration = 2
-    private val thumbnailSemaphore = Semaphore(semaphorePermitsForThumbnailGeneration)
+    private val semaphorePermitsForImagePreviewsGeneration = 2
+    private val imagePreviewsSemaphore = Semaphore(semaphorePermitsForImagePreviewsGeneration)
+    private val semaphorePermitsForTextPreviewsGeneration = 10  // pretty lightweight
+    private val textPreviewsSemaphore = Semaphore(semaphorePermitsForTextPreviewsGeneration)
     private val fileIconViews = mutableListOf<FileIconView>()  // keep track of all launched thumbnail generation jobs
 
     init {
@@ -40,16 +46,13 @@ class IconsDirectoryView(topBarView: TopBarView) : AbstractDirectoryView(topBarV
                 }
             }
         })
-//        if (Settings.colorTheme == ColorTheme.DARK) {
-//            panel.background = Color.DARK_GRAY
-//        }
         updateView()
     }
 
     private fun createEntityView(entity: FileSystemEntity): JPanel {
         return when (entity) {
             is ExplorerFile -> {
-                val view = FileIconView(entity, this, thumbnailSemaphore)
+                val view = FileIconView(entity, this, imagePreviewsSemaphore, textPreviewsSemaphore)
                 fileIconViews.add(view)
                 view.createView()
             }
@@ -90,7 +93,7 @@ class IconsDirectoryView(topBarView: TopBarView) : AbstractDirectoryView(topBarV
             view.dispose()
         }
         fileIconViews.clear()
-        onCurrentDirectoryChanged()
+        // onCurrentDirectoryChanged()
     }
 
     fun getPanel(): JPanel {

@@ -21,13 +21,23 @@ import kotlin.math.max
 
 class FileIconView(
     entity: ExplorerFile,
-    parendDirView:
-    IconsDirectoryView,
-    private val thumbnailSemaphore: Semaphore
-): AbstractIconEntityView(entity, parendDirView), CoroutineScope {
+    parentDirView: IconsDirectoryView,
+    private val imagePreviewsSemaphore: Semaphore,
+    private val textPreviewsSemaphore: Semaphore
+): AbstractIconEntityView(entity, parentDirView), CoroutineScope {
     private val fileEntity = entity
     private val job = Job()
     private val iconCache = IconsCache
+    private val textFileExtensionsNotInMime = setOf(
+        "java", "py", "kt", "js",
+        "html", "css", "c", "cpp",
+        "h", "hpp", "go", "rs",
+        "rb", "log", "iml", "bat",
+        "kts", "csh", "sh", "fasta",
+        "fa", "fastq", "nf", "json",
+        "swift"
+    )
+
 
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.Main + job
@@ -48,7 +58,7 @@ class FileIconView(
 
         if (fileType.startsWith("image/") && ImageIO.getReaderFileSuffixes().contains(correctedExtension)) {
             launch(Dispatchers.IO) {
-                thumbnailSemaphore.acquire()
+                imagePreviewsSemaphore.acquire()
                 try {
                     var thumbnail: Icon? = iconCache[fileEntity.path]
                     if (thumbnail == null) {
@@ -67,21 +77,26 @@ class FileIconView(
                     }
                 } finally {
                     // to ensure that semaphore is always released
-                    thumbnailSemaphore.release() // Release the permit
+                    imagePreviewsSemaphore.release() // Release the permit
                 }
             }
-        } else if (fileType.startsWith("text/") || fileExtension == "log") {
+        } else if (fileType.startsWith("text/") || textFileExtensionsNotInMime.contains(fileExtension)) {
             launch(Dispatchers.IO) {
-                val previewText = createTextPreview(fileEntity.path)
-                if (!previewText.isNullOrEmpty()) {
-                    // if empty -> no reason to show a preview
-                    val iconText = createTextIcon(previewText)
-                    SwingUtilities.invokeLater {
-                        iconLabel.icon = iconText
+                textPreviewsSemaphore.acquire()
+                try {
+                    val previewText = createTextPreview(fileEntity.path)
+                    if (!previewText.isNullOrEmpty()) {
+                        // if empty -> no reason to show a preview
+                        val iconText = createTextIcon(previewText)
+                        SwingUtilities.invokeLater {
+                            iconLabel.icon = iconText
+                        }
                     }
+                } finally {
+                    textPreviewsSemaphore.release()
                 }
             }
-        }
+        }  // TODO: else if application/pdf
     }
 
     private fun createTextIcon(previewText: String): ImageIcon {
@@ -159,10 +174,13 @@ class FileIconView(
                         val newWidth = (width * scaleFactor).toInt()
                         val newHeight = (height * scaleFactor).toInt()
 
-                        // Scale the image with a higher-quality algorithm
+                        // Pick algorithm (balance between quality and speed?)
                         val thumbnailImage = BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_RGB)
                         val graphics = thumbnailImage.createGraphics()
-                        graphics.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC)
+                        graphics.setRenderingHint(
+                            RenderingHints.KEY_INTERPOLATION,
+                            RenderingHints.VALUE_INTERPOLATION_BILINEAR
+                        )
                         graphics.drawImage(image, 0, 0, newWidth, newHeight, null)
                         graphics.dispose()
 
