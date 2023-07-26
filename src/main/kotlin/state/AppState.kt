@@ -118,6 +118,11 @@ object AppState {
         }
     }
 
+    fun updateFilter(newFilter: String) {
+        currentExtensionFilter = newFilter
+        notifyDirectoryObservers(currentExplorerDirectory)
+    }
+
     fun addDirectoryObserver(observer: DirectoryObserver) {
         directoryObservers.add(observer)
     }

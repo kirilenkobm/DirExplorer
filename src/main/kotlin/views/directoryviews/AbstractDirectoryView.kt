@@ -20,7 +20,7 @@ abstract class AbstractDirectoryView:
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.Main + job
     protected var currentContents: List<FileSystemEntity> = emptyList()
-    // To avo
+    // To avoid circular links
     private var visitedSymlinks: MutableSet<String> = mutableSetOf()
 
     init {

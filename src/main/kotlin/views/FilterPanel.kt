@@ -37,15 +37,15 @@ class FilterPanel {
         // Add a document listener to update AppState.currentFilter whenever the text changes
         filterField.document.addDocumentListener(object : DocumentListener {
             override fun insertUpdate(e: DocumentEvent?) {
-                updateFilter(filterField.text)
+                AppState.updateFilter(filterField.text)
             }
 
             override fun removeUpdate(e: DocumentEvent?) {
-                updateFilter(filterField.text)
+                AppState.updateFilter(filterField.text)
             }
 
             override fun changedUpdate(e: DocumentEvent?) {
-                updateFilter(filterField.text)
+                AppState.updateFilter(filterField.text)
             }
         })
 
@@ -57,15 +57,11 @@ class FilterPanel {
         }
         clearFilterButton.addActionListener {
             filterField.text = ""
-            updateFilter("")
+            AppState.updateFilter("")
         }
         filterPanel.add(clearFilterButton, BorderLayout.EAST)
         filterPanel.border = BorderFactory.createMatteBorder(1, 1, 1, 1, Color.BLACK)
         filterPanel.background = Color(255, 255, 255, 255)
-    }
-
-    private fun updateFilter(text: String) {
-        AppState.currentExtensionFilter = text
     }
 
     fun getPanel(): JPanel {

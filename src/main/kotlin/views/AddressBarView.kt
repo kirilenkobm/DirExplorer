@@ -116,6 +116,7 @@ class AddressBarView: DirectoryObserver {
 
         addressBar.revalidate()
         addressBar.repaint()
+        addressBar.background = Color(255, 255, 255, 255)
     }
 
     fun getPanel(): JPanel {

@@ -87,7 +87,6 @@ class TopBarView(private val frame: JFrame) {
         viewModeGroup.add(tableButton)
         viewModeGroup.add(iconButton)
 
-        // TODO: save changes right after the window is closed
         val settingsButton = createButton(IconManager.settingsIcon, Settings.buttonSize) {
             if (settingsDialog?.isVisible != true)  // to ensure only one settings view is shown
             {
@@ -109,6 +108,7 @@ class TopBarView(private val frame: JFrame) {
         leftPanel.add(Box.createHorizontalStrut(20)) // add 100px of space
 
         val addressBar = addressBarView.getPanel()
+        val filterLabel = JLabel(" /*. ")
         val filterView = filterPanel.getPanel()
 
         leftPanel.add(addressBar)
@@ -118,8 +118,8 @@ class TopBarView(private val frame: JFrame) {
         filterView.minimumSize = Dimension(filterView.minimumSize.width, addressBarHeight)
         filterView.maximumSize = Dimension(filterView.maximumSize.width, addressBarHeight)
 
-
-        leftPanel.add(Box.createHorizontalStrut(20)) // add 100px of space
+        // leftPanel.add(Box.createHorizontalStrut(20)) // add 100px of space
+        leftPanel.add(filterLabel)
         leftPanel.add(filterView)
 
         // right-aligned components
