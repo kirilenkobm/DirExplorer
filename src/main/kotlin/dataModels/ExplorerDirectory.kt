@@ -4,34 +4,37 @@ import java.nio.file.Files
 import java.nio.file.Paths
 import kotlin.streams.asSequence
 import kotlinx.coroutines.*
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import state.SortOrder
 
 // Open to allow inheritance in ZipArchive
 open class ExplorerDirectory(override val path: String): ExplorableEntity {
     var sortOrder: SortOrder = SortOrder.TYPE
-    // Works bad with zips, if decompression is too slow
     private var contentsCache: List<FileSystemEntity>? = null
+    val mutex = Mutex()
 
     open suspend fun getContents(): List<FileSystemEntity> = withContext(Dispatchers.IO) {
-        try {
-            contentsCache?.let {
-                println("Using cached contents for directory $path")
-                return@withContext it
+        mutex.withLock {
+            try {
+                contentsCache?.let {
+                    println("Using cached contents for directory $path")
+                    return@withContext it
+                }
+
+                println("Fetching new contents for directory $path")
+                contentsCache = Files.list(Paths.get(path)).asSequence().mapNotNull { path ->
+                    FileSystemEntityFactory.createEntity(path.toString())
+                }.toList()
+
+                contentsCache!!
+            } catch (e: Exception) {
+                println("Exception in getContents: ${e.message}")
+                e.printStackTrace()
+                emptyList<FileSystemEntity>()
             }
-
-            println("Fetching new contents for directory $path")
-            contentsCache = Files.list(Paths.get(path)).asSequence().mapNotNull { path ->
-                FileSystemEntityFactory.createEntity(path.toString())
-            }.toList()
-
-            contentsCache!!
-        } catch (e: Exception) {
-            println("Exception in getContents: ${e.message}")
-            e.printStackTrace()
-            emptyList<FileSystemEntity>()
         }
     }
-
 
     val hasAccess: Boolean
         get() = Files.isReadable(Paths.get(path))

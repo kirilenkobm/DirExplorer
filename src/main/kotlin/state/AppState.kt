@@ -20,6 +20,7 @@ object AppState {
             DirectoryWatcher.startWatching(value)
         }
     var currentExtensionFilter: String = ""
+    var currentDirectoryContents: List<FileSystemEntity> = emptyList()
     // private var selectedExplorerFile: ExplorerFile? = null  // TODO: maybe UI layer?
     private var backStack: MutableList<ExplorableEntity> = mutableListOf()
     private var forwardStack: MutableList<ExplorableEntity> = mutableListOf()

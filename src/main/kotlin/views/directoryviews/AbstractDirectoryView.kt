@@ -28,9 +28,6 @@ abstract class AbstractDirectoryView:
     init {
         AppState.addDirectoryObserver(this)
         Settings.addObserver(this)
-        launch {
-            currentContents = AppState.currentExplorerDirectory.getContents()
-        }
     }
 
     /**
