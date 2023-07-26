@@ -42,9 +42,16 @@ object DirectoryWatcher: CoroutineScope {
                         StandardWatchEventKinds.ENTRY_CREATE,
                         StandardWatchEventKinds.ENTRY_MODIFY -> {
                             // TODO: implement this part
-                            println("Change found")
+                            println("Event kind: ${watchEvent.kind()}")
+                            println("Event count: ${watchEvent.count()}")
+                            println("Event context: ${watchEvent.context()}")
                         }
                     }
+                }
+                // reset key after processing events
+                val valid = key.reset()
+                if (!valid) {
+                    break
                 }
             }
         }
