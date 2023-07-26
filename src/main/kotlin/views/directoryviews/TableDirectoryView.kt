@@ -130,10 +130,12 @@ class TableDirectoryView(topBarView: TopBarView) : AbstractDirectoryView(topBarV
     private fun setupTableMouseListener() {
         table.addMouseListener(object : MouseAdapter() {
             override fun mouseClicked(e: MouseEvent) {
-                val row = table.rowAtPoint(e.point)
-                if (row >= 0 && row < filteredAndSortedContents.size) {
-                    val entity = filteredAndSortedContents[row]
-                    performEntityAction(entity)
+                if (e.clickCount == 2) {
+                    val row = table.rowAtPoint(e.point)
+                    if (row >= 0 && row < filteredAndSortedContents.size) {
+                        val entity = filteredAndSortedContents[row]
+                        performEntityAction(entity)
+                    }
                 }
             }
         })

@@ -10,6 +10,8 @@ _I beleive these 3 are connected:_
 * Table view: sorting -> only after I fix view updates
 * Fix bug with back and forward for archives
 * Entity select on one click, open on two
+  * ~~In tables~~
+  * In grid view
 * Unit tests
 * Stress tests ???
 * Get rid of magic numbers and strings
