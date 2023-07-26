@@ -1,6 +1,6 @@
 # Mandatory TODO List
 
-* ~~Status bar~~ with data like how many items in the directory, total size, etc
+* ~~Status bar with data like how many items in the directory, total size, etc~~
 
 _I beleive these 3 are connected:_
 * ~~Settings - apply after close immediately~~ -> added settings observer

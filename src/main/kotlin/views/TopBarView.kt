@@ -10,7 +10,7 @@ import javax.swing.*
 
 
 // TODO: lock buttons for not available actions, like go up if already at root
-class TopBarView(private val frame: JFrame): DirectoryObserver {
+class TopBarView(private val frame: JFrame) {
     private val topBar = JSplitPane()
     private val leftPanel = JPanel()
     private val rightPanel = JPanel(FlowLayout(FlowLayout.RIGHT))
@@ -52,7 +52,6 @@ class TopBarView(private val frame: JFrame): DirectoryObserver {
     }
 
     init {
-        AppState.addDirectoryObserver(this)
         leftPanel.layout = BoxLayout(leftPanel, BoxLayout.X_AXIS)
 
         // Buttons on the left: for navigation
@@ -134,15 +133,7 @@ class TopBarView(private val frame: JFrame): DirectoryObserver {
         topBar.resizeWeight = 0.7
     }
 
-    private fun updateView() {
-        addressBarView.updateView()
-    }
-
     fun getPanel(): JSplitPane {
         return topBar
-    }
-
-    override fun onDirectoryChanged(newDirectory: ExplorerDirectory) {
-        updateView()
     }
 }

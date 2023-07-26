@@ -32,20 +32,12 @@ class MainView: DirectoryObserver, SettingsObserver {
         // draw the proper main panel that shows the directory view
         updateViewMode()
         // draw status bar
-        updateStatusBar()
         // Compose views together
         frame.add(topBarView.getPanel(), BorderLayout.NORTH)
         frame.add(mainPanel, BorderLayout.CENTER)
         frame.add(statusBarView, BorderLayout.SOUTH)
         frame.pack()
         frame.isVisible = true
-    }
-
-    // TODO: move outside
-    private fun updateStatusBar() {
-        val itemsCount = 1000
-        val totalSize = 1000000000L
-        statusBarView.updateStatus(itemsCount, totalSize)
     }
 
     /**

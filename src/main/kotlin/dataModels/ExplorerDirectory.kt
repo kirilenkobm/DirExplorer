@@ -6,6 +6,7 @@ import kotlin.streams.asSequence
 import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import state.Settings
 import state.SortOrder
 
 // Open to allow inheritance in ZipArchive
@@ -51,6 +52,27 @@ open class ExplorerDirectory(override val path: String): ExplorableEntity {
             // If we don't have access to the directory, assume it's not empty
             false
         }
+
+    suspend fun getItemsCount(): Int = withContext(Dispatchers.IO) {
+        try {
+            getContents().filter { !it.isHidden || Settings.showHiddenFiles }.size
+        } catch (e: Exception) {
+            println("Exception in getItemsCount: ${e.message}")
+            e.printStackTrace()
+            0
+        }
+    }
+
+    suspend fun getTotalSize(): Long = withContext(Dispatchers.IO) {
+        try {
+            getContents().filter { !it.isHidden || Settings.showHiddenFiles }.sumOf { it.size }
+        } catch (e: Exception) {
+            println("Exception in getTotalSize: ${e.message}")
+            e.printStackTrace()
+            0L
+        }
+    }
+
 
     fun invalidateCache() {
         contentsCache = null

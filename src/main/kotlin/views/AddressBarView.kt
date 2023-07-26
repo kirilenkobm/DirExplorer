@@ -44,7 +44,7 @@ class AddressBarView: DirectoryObserver {
         }
     }
 
-    fun updateView() {
+    private fun updateView() {
         addressBar.removeAll()
         addressBar.layout = GridBagLayout()
         val constraints = GridBagConstraints()
@@ -79,11 +79,11 @@ class AddressBarView: DirectoryObserver {
 
         // Check if the total width of the components is too wide
         val totalWidth = components.sumOf { it.preferredSize.width }
-        if (totalWidth > addressBar.width) {
+        val addressBarWidth = addressBar.width
+        // Had to add addressBarWidth > 0 bc at start it's 0
+        if (addressBarWidth in 1..<totalWidth) {
             // if it's too wide, keep the first and last few components as buttons,
             // and replace the middle components with ...
-
-            // TODO: compute properties
             val numStartComponents = 6
             val numEndComponents = 6
 
@@ -91,7 +91,6 @@ class AddressBarView: DirectoryObserver {
             for (i in 0..<min(numStartComponents, components.size)) {
                 addressBar.add(components[i], constraints)
             }
-
 
             // TODO: maybe? create dropdown menu
             // val middleComponents = components.subList(numStartComponents, components.size - numEndComponents)
@@ -102,7 +101,6 @@ class AddressBarView: DirectoryObserver {
             for (i in max(0, components.size - numEndComponents)..<components.size) {
                 addressBar.add(components[i], constraints)
             }
-
         } else {
             // If it's not too wide, add all the components to the address bar
             for (component in components) {
