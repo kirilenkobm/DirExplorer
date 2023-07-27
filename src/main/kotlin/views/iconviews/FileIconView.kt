@@ -5,6 +5,7 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Semaphore
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.rendering.PDFRenderer
+import state.ColorTheme
 import state.Settings
 import views.IconManager
 import views.directoryviews.IconsDirectoryView
@@ -27,8 +28,9 @@ class FileIconView(
     entity: ExplorerFile,
     parentDirView: IconsDirectoryView,
     private val imagePreviewsSemaphore: Semaphore,
-    private val textPreviewsSemaphore: Semaphore
-): AbstractIconEntityView(entity, parentDirView), CoroutineScope {
+    private val textPreviewsSemaphore: Semaphore,
+    colorTheme: ColorTheme
+): AbstractIconEntityView(entity, parentDirView, colorTheme), CoroutineScope {
     private val fileEntity = entity
     private val job = Job()
     private val iconCache = IconsCache

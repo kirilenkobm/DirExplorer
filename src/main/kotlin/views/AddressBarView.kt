@@ -3,6 +3,8 @@ package views
 import dataModels.DirectoryObserver
 import dataModels.ExplorerDirectory
 import state.AppState
+import state.ColorTheme
+import state.Settings
 import java.awt.*
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -35,7 +37,11 @@ class AddressBarView: DirectoryObserver {
             isFocusPainted = false // remove focus highlight TODO: check whether needed
             horizontalTextPosition = SwingConstants.CENTER
             verticalTextPosition = SwingConstants.CENTER
-            foreground = Color.BLACK
+            foreground = if (Settings.colorTheme == ColorTheme.LIGHT) {
+                Color.BLACK
+            } else {
+                Color.WHITE
+            }
             font = Font("Arial", Font.PLAIN, 14)
             cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)  // hover cursor
             addActionListener {
@@ -44,7 +50,7 @@ class AddressBarView: DirectoryObserver {
         }
     }
 
-    private fun updateView() {
+    fun updateView() {
         addressBar.removeAll()
         addressBar.layout = GridBagLayout()
         val constraints = GridBagConstraints()
@@ -94,7 +100,7 @@ class AddressBarView: DirectoryObserver {
 
             // TODO: maybe? create dropdown menu
             // val middleComponents = components.subList(numStartComponents, components.size - numEndComponents)
-            val ellipsisLabel = JLabel("  ...  ")
+            val ellipsisLabel = JLabel(Constants.ELLIPSIS_LABEL)
             addressBar.add(ellipsisLabel)
 
             // Safely add components to the end of the address bar
@@ -116,7 +122,11 @@ class AddressBarView: DirectoryObserver {
 
         addressBar.revalidate()
         addressBar.repaint()
-        addressBar.background = Color(255, 255, 255, 255)
+        addressBar.background = if (Settings.colorTheme == ColorTheme.LIGHT) {
+            Color(255, 255, 255, 255)
+        } else {
+            Color.DARK_GRAY
+        }
     }
 
     fun getPanel(): JPanel {

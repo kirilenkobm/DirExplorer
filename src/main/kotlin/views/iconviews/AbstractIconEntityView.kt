@@ -1,7 +1,11 @@
 package views.iconviews
 
+import Constants
 import dataModels.*
+import state.ColorTheme
 import state.Settings
+import state.SettingsObserver
+import state.ViewMode
 import views.directoryviews.IconsDirectoryView
 import java.awt.*
 import java.awt.event.MouseAdapter
@@ -15,7 +19,8 @@ import javax.swing.SwingConstants
 
 abstract class AbstractIconEntityView(
     private val entity: FileSystemEntity,
-    private val parentDirView: IconsDirectoryView)
+    private val parentDirView: IconsDirectoryView,
+    private val colorTheme: ColorTheme)
 {
     protected val iconLabel = JLabel()
     private val textLabel = JLabel()
@@ -37,7 +42,12 @@ abstract class AbstractIconEntityView(
         textLabel.horizontalAlignment = SwingConstants.CENTER
         iconLabel.alignmentX = Component.CENTER_ALIGNMENT
         textLabel.alignmentX = Component.CENTER_ALIGNMENT
-        iconLabel.background = Color.WHITE
+
+//        iconLabel.background = if (Settings.colorTheme == ColorTheme.LIGHT) {
+//            Constants.BACKGROUND_COLOR_LIGHT
+//        } else {
+//            Constants.BACKGROUND_COLOR_DARK
+//        }
 
         // BoxLayout allows to limit height
         entityPanel.layout = BoxLayout(entityPanel, BoxLayout.Y_AXIS)
@@ -64,7 +74,12 @@ abstract class AbstractIconEntityView(
 
     fun createView(): JPanel {
         setIcon()
-        setText(entity.name)
+        textLabel.text = setText(entity.name)
+        textLabel.foreground = if (colorTheme == ColorTheme.LIGHT) {
+            Color.BLACK
+        } else {
+            Color.WHITE
+        }
         return wrapperPanel
     }
 
@@ -92,8 +107,7 @@ abstract class AbstractIconEntityView(
     // In case filename is too long, I'd like to shorten
     // it in the icon view, replacing part of the name
     // with ellipsis
-    // TODO: improve this function
-    private fun setText(filename: String) {
+    internal fun setText(filename: String): String {
         val extension = filename.substringAfterLast(".", "")
         val nameWithoutExtension = filename.substringBeforeLast(".")
 
@@ -114,7 +128,8 @@ abstract class AbstractIconEntityView(
             finalName
         }
 
-        textLabel.text = "<html>$splitName</html>"
+        val filenameToShow = "<html>$splitName</html>"
+        return filenameToShow
     }
 
     fun setSelected(selected: Boolean) {

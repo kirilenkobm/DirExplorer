@@ -1,11 +1,12 @@
 package views.directoryviews
 
+import Constants
 import dataModels.*
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Semaphore
-import state.AppState
+import state.*
 import views.iconviews.*
 import java.awt.*
 import java.awt.event.ComponentAdapter
@@ -44,24 +45,35 @@ class IconsDirectoryView : AbstractDirectoryView() {
             }
         })
         updateView()
-        panel.isOpaque = false
+        // panel.isOpaque = false
+        panel.background = if (Settings.colorTheme == ColorTheme.LIGHT) {
+            Constants.BACKGROUND_COLOR_LIGHT
+        } else {
+            Constants.BACKGROUND_COLOR_DARK
+        }
     }
 
     private fun createEntityView(entity: FileSystemEntity): JPanel {
         return when (entity) {
             is ExplorerFile -> {
-                val view = FileIconView(entity, this, imagePreviewsSemaphore, textPreviewsSemaphore)
+                val view = FileIconView(
+                    entity,
+                    this,
+                    imagePreviewsSemaphore,
+                    textPreviewsSemaphore,
+                    Settings.colorTheme
+                )
                 fileIconViews.add(view)
                 view.createView()
             }
-            is ExplorerDirectory -> DirectoryIconView(entity, this).createView()
-            is ExplorerSymLink -> SymlinkIconView(entity, this).createView()
-            is ZipArchive -> ZipArchiveIconView(entity, this).createView()  // Add this line
+            is ExplorerDirectory -> DirectoryIconView(entity, this, Settings.colorTheme).createView()
+            is ExplorerSymLink -> SymlinkIconView(entity, this, Settings.colorTheme).createView()
+            is ZipArchive -> ZipArchiveIconView(entity, this, Settings.colorTheme).createView()  // Add this line
             else -> {
                 // To handle type mismatch in else branch:
                 // UnknownEntity handles all other possible cases
                 val unknownEntity = UnknownEntity(entity.path)
-                UnknownIconView(unknownEntity, this).createView()
+                UnknownIconView(unknownEntity, this, Settings.colorTheme).createView()
             }
         }
     }
@@ -72,6 +84,11 @@ class IconsDirectoryView : AbstractDirectoryView() {
             view.dispose()
         }
         fileIconViews.clear()
+        panel.background = if (Settings.colorTheme == ColorTheme.LIGHT) {
+            Constants.BACKGROUND_COLOR_LIGHT
+        } else {
+            Constants.BACKGROUND_COLOR_DARK
+        }
 
         launch {
             currentContents = AppState.currentExplorerDirectory.getContents()
@@ -104,5 +121,9 @@ class IconsDirectoryView : AbstractDirectoryView() {
 
     fun getPanel(): JPanel {
         return panel
+    }
+
+    override fun onViewModeChanged(newViewMode: ViewMode) {
+        updateView()
     }
 }

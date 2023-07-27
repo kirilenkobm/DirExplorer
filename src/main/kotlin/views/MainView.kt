@@ -1,5 +1,6 @@
 package views
 
+import Constants
 import dataModels.DirectoryObserver
 import dataModels.ExplorerDirectory
 import state.*
@@ -48,14 +49,22 @@ class MainView: DirectoryObserver, SettingsObserver {
         mainPanel.removeAll()
 
         when (Settings.viewMode) {
-            ViewMode.TABLE -> mainPanel.add(JScrollPane(tableView.getTable()), BorderLayout.CENTER)
-            ViewMode.ICONS -> mainPanel.add(JScrollPane(iconsView.getPanel()), BorderLayout.CENTER)
+            ViewMode.TABLE -> {
+                val scrollPane = JScrollPane(tableView.getTable())
+                scrollPane.border = null
+                mainPanel.add(scrollPane, BorderLayout.CENTER)
+            }
+            ViewMode.ICONS -> {
+                val scrollPane = JScrollPane(iconsView.getPanel())
+                scrollPane.border = null
+                mainPanel.add(scrollPane, BorderLayout.CENTER)
+            }
         }
 
         mainPanel.revalidate()
         mainPanel.repaint()
-        mainPanel.isOpaque = false
     }
+
 
     /**
      * When the AppState notifies the MainView about the
@@ -77,6 +86,6 @@ class MainView: DirectoryObserver, SettingsObserver {
     }
 
     override fun onColorThemeChanged(newColorTheme: ColorTheme) {
-        TODO("Not yet implemented")
+        updateViewMode()
     }
 }

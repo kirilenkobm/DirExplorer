@@ -1,5 +1,6 @@
 package dataModels
 
+import Constants
 import java.nio.file.Files
 import java.nio.file.Paths
 
@@ -8,7 +9,7 @@ object FileSystemEntityFactory {
         return when {
             Files.isSymbolicLink(Paths.get(path)) -> ExplorerSymLink(path)
             Files.isRegularFile(Paths.get(path)) -> {
-                if (path.endsWith(".zip")) {
+                if (path.endsWith(Constants.ZIP_EXTENSION)) {
                     ZipArchive(path)
                 } else {
                     ExplorerFile(path)

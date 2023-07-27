@@ -3,7 +3,8 @@ package views
 import dataModels.DirectoryObserver
 import dataModels.ExplorerDirectory
 import kotlinx.coroutines.*
-import state.AppState
+import state.*
+import utils.Utils
 import java.awt.BorderLayout
 import java.awt.Color
 import java.awt.Dimension
@@ -12,7 +13,8 @@ import javax.swing.JLabel
 import javax.swing.JPanel
 import kotlin.coroutines.CoroutineContext
 
-class StatusBarView : JPanel(), CoroutineScope, DirectoryObserver {
+class StatusBarView : JPanel(), CoroutineScope, DirectoryObserver, SettingsObserver
+{
     private val statusLabel = JLabel()
     private var job = Job()
 
@@ -21,11 +23,16 @@ class StatusBarView : JPanel(), CoroutineScope, DirectoryObserver {
 
     init {
         AppState.addDirectoryObserver(this)
+        Settings.addObserver(this)
         layout = BorderLayout()
         preferredSize = Dimension(1280, 20)
         statusLabel.border = BorderFactory.createEmptyBorder(0, 0, 0, 20)  // padding 10 right
         add(statusLabel, BorderLayout.EAST)
-        background = Color.LIGHT_GRAY
+        background = if (Settings.colorTheme == ColorTheme.LIGHT) {
+            Color.LIGHT_GRAY
+        } else {
+            Color.DARK_GRAY
+        }
         onDirectoryChanged(AppState.currentExplorerDirectory)
     }
 
@@ -58,6 +65,24 @@ class StatusBarView : JPanel(), CoroutineScope, DirectoryObserver {
             val itemsCount = newDirectory.getItemsCount()
             val totalSize = newDirectory.getTotalSize()
             updateStatus(itemsCount, totalSize)
+        }
+    }
+
+    override fun onShowHiddenFilesChanged(newShowHiddenFiles: Boolean) {
+        // TODO: add or delete a mark about it?
+    }
+
+    override fun onViewModeChanged(newViewMode: ViewMode) {
+        // TODO: think whether is needed
+    }
+
+    override fun onColorThemeChanged(newColorTheme: ColorTheme) {
+        if (newColorTheme == ColorTheme.LIGHT) {
+            background = Color.LIGHT_GRAY
+            statusLabel.foreground = Color.BLACK
+        } else {
+            background = Color.DARK_GRAY
+            statusLabel.foreground = Color.LIGHT_GRAY
         }
     }
 }

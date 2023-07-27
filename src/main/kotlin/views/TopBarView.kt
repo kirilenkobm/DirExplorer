@@ -1,16 +1,13 @@
 package views
 
-import dataModels.DirectoryObserver
-import dataModels.ExplorerDirectory
-import state.AppState
-import state.Settings
-import state.ViewMode
+import Constants
+import state.*
 import java.awt.*
 import javax.swing.*
 
 
 // TODO: lock buttons for not available actions, like go up if already at root
-class TopBarView(private val frame: JFrame) {
+class TopBarView(private val frame: JFrame) : SettingsObserver {
     private val topBar = JSplitPane()
     private val leftPanel = JPanel()
     private val rightPanel = JPanel(FlowLayout(FlowLayout.RIGHT))
@@ -18,6 +15,10 @@ class TopBarView(private val frame: JFrame) {
     private var settingsDialog: SettingsDialog? = null
     private val filterPanel = FilterPanel()
 
+    init {
+        createPanel()
+        Settings.addObserver(this)
+    }
 
     private fun createButton(icon: ImageIcon,
                              size: Int,
@@ -51,7 +52,7 @@ class TopBarView(private val frame: JFrame) {
         }
     }
 
-    init {
+    private fun createPanel() {
         leftPanel.layout = BoxLayout(leftPanel, BoxLayout.X_AXIS)
 
         // Buttons on the left: for navigation
@@ -109,6 +110,12 @@ class TopBarView(private val frame: JFrame) {
 
         val addressBar = addressBarView.getPanel()
         val filterLabel = JLabel(" /*. ")
+        filterLabel.foreground = if (Settings.colorTheme == ColorTheme.LIGHT) {
+            Color.BLACK
+        } else {
+            Color.WHITE
+        }
+        filterLabel.font = Font("Arial", Font.PLAIN, 14)
         val filterView = filterPanel.getPanel()
 
         leftPanel.add(addressBar)
@@ -131,9 +138,46 @@ class TopBarView(private val frame: JFrame) {
         topBar.leftComponent = leftPanel
         topBar.rightComponent = rightPanel
         topBar.resizeWeight = 0.7
+
+        if (Settings.colorTheme == ColorTheme.DARK) {
+            leftPanel.background = Color.DARK_GRAY
+            rightPanel.background = Color.DARK_GRAY
+            topBar.background = Color.DARK_GRAY
+        } else {
+            leftPanel.background = Constants.DEFAULT_SWING_BACKGROUND_COLOR
+            rightPanel.background = Constants.DEFAULT_SWING_BACKGROUND_COLOR
+            topBar.background = Constants.DEFAULT_SWING_BACKGROUND_COLOR
+        }
     }
 
     fun getPanel(): JSplitPane {
         return topBar
+    }
+
+    override fun onShowHiddenFilesChanged(newShowHiddenFiles: Boolean) {
+        // TODO("Not yet implemented")
+    }
+
+    override fun onViewModeChanged(newViewMode: ViewMode) {
+        // TODO("Not yet implemented")
+    }
+
+    override fun onColorThemeChanged(newColorTheme: ColorTheme) {
+        // remove all components
+        leftPanel.removeAll()
+        rightPanel.removeAll()
+
+        // recreate panel
+        createPanel()
+
+        // update view
+        addressBarView.updateView()
+        filterPanel.setupFilterPanel()
+
+        // revalidate and repaint
+        leftPanel.revalidate()
+        leftPanel.repaint()
+        rightPanel.revalidate()
+        rightPanel.repaint()
     }
 }

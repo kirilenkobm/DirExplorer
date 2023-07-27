@@ -1,11 +1,12 @@
 package views.directoryviews
 
 import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Test
 
 class AbstractDirectoryViewTest {
     private val abstractDirectoryView = IconsDirectoryView()
 
-    @org.junit.jupiter.api.Test
+    @Test
     fun `matchesExtension$DirExplorer`() {
         assertTrue(abstractDirectoryView.matchesExtension("jpg", "jpg"), "Failed to match the same extensions")
 
@@ -24,7 +25,7 @@ class AbstractDirectoryViewTest {
         assertTrue(abstractDirectoryView.matchesExtension("png", "p.*"), "Failed to match regex pattern in filter")
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     fun filterAndSortContents() {
     }
 }

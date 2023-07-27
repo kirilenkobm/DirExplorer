@@ -1,6 +1,12 @@
 package views
 
 import dataModels.ExplorerDirectory
+import state.ColorTheme
+import state.Settings
+import java.awt.AlphaComposite
+import java.awt.Graphics2D
+import java.awt.Image
+import java.awt.image.BufferedImage
 import javax.swing.ImageIcon
 
 //  that handles all the icons downloaded and provides easy access to them
@@ -31,7 +37,36 @@ object IconManager {
     var backSpaceIcon: ImageIcon = loadImageIcon("/images/baseline_backspace_black_18dp.png")
 
     private fun loadImageIcon(path: String): ImageIcon {
-        return ImageIcon(javaClass.getResource(path))
+        val originalIcon = ImageIcon(javaClass.getResource(path))
+        val originalImage: Image = originalIcon.image
+        val width = originalImage.getWidth(null)
+        val height = originalImage.getHeight(null)
+        val bufferedImage = BufferedImage(
+            width,
+            height,
+            BufferedImage.TYPE_INT_ARGB
+        )
+
+        val transparency: Float = if (Settings.colorTheme == ColorTheme.DARK) {
+            0.65F
+        } else {
+            0.8F
+        }
+        val g2d: Graphics2D = bufferedImage.createGraphics()
+        g2d.composite = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, transparency)
+        g2d.drawImage(originalImage, 0, 0, null)
+        g2d.dispose()
+
+        if (Settings.colorTheme == ColorTheme.DARK) {
+            for (i in 0..<width) {
+                for (j in 0..<height) {
+                    val rgba = bufferedImage.getRGB(i, j)
+                    bufferedImage.setRGB(i, j, rgba xor 0x00ffffff)
+                }
+            }
+        }
+
+        return ImageIcon(bufferedImage)
     }
 
     fun getIconForFileType(fileType: String): ImageIcon {

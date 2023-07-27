@@ -16,7 +16,8 @@ import kotlin.coroutines.CoroutineContext
 abstract class AbstractDirectoryView:
     CoroutineScope,
     DirectoryObserver,
-    SettingsObserver {
+    SettingsObserver
+{
     private val job = Job()
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.Main + job
@@ -162,12 +163,9 @@ abstract class AbstractDirectoryView:
         updateView()
     }
 
-    override fun onViewModeChanged(newViewMode: ViewMode) {
-        // Irrelevant -> handled by MainView
-    }
-
     override fun onColorThemeChanged(newColorTheme: ColorTheme) {
         // Only if I implement theme changes
+        updateView()
     }
 
     // TODO: do not forget

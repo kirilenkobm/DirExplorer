@@ -1,4 +1,5 @@
 package dataModels
+import Constants
 import java.nio.file.Files
 import java.nio.file.Paths
 
@@ -13,5 +14,5 @@ class ExplorerFile(override val path: String): FileSystemEntity {
 
     val fileType: String
         // Java built in method to determine file type
-        get() = Files.probeContentType(Paths.get(path)) ?: "unknown"
+        get() = Files.probeContentType(Paths.get(path)) ?: Constants.UNKNOWN_FILE_TYPE
 }

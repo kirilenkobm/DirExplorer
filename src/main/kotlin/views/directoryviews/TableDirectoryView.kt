@@ -1,11 +1,14 @@
 package views.directoryviews
 
+import Constants
 import dataModels.*
 import kotlinx.coroutines.launch
 import state.AppState
+import state.ColorTheme
 import state.Settings
+import state.ViewMode
 import views.IconManager
-import views.Utils
+import utils.Utils
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
 import java.util.*
@@ -37,6 +40,11 @@ class TableDirectoryView : AbstractDirectoryView() {
             // Set the column width here
             table.columnModel.getColumn(0).preferredWidth = 20
             table.columnModel.getColumn(0).maxWidth = 20
+            table.background = if (Settings.colorTheme == ColorTheme.LIGHT) {
+                Constants.BACKGROUND_COLOR_LIGHT
+            } else {
+                Constants.BACKGROUND_COLOR_DARK
+            }
         }
     }
 
@@ -148,5 +156,9 @@ class TableDirectoryView : AbstractDirectoryView() {
 
     fun getTable(): JTable {
         return table
+    }
+
+    override fun onViewModeChanged(newViewMode: ViewMode) {
+        // TODO: implement
     }
 }
