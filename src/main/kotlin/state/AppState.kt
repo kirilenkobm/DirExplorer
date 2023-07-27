@@ -2,6 +2,7 @@
 package state
 import Constants
 import dataModels.*
+import kotlinx.coroutines.sync.Semaphore
 import views.showErrorDialog
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -31,6 +32,9 @@ object AppState {
     val zipArchives: MutableList<ZipArchive> = mutableListOf()
     // Only to replace zipTempDir names to zip Filenames in the address bar
     val zipDirMapping = HashMap<String, String>()
+
+    val imagePreviewsSemaphore = Semaphore(Constants.MAX_IMAGE_PREVIEWS)
+    val textPreviewsSemaphore = Semaphore(Constants.MAX_TEXT_PREVIEWS)
 
     /**
     / * New explorer directory -> where to go

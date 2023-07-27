@@ -17,10 +17,6 @@ class IconsDirectoryView : AbstractDirectoryView() {
     private val panel = JPanel(BorderLayout())
     private var filteredAndSortedContents: List<FileSystemEntity> = emptyList()
     // Limit number of thumbnails rendered at once
-    private val semaphorePermitsForImagePreviewsGeneration = 2
-    private val imagePreviewsSemaphore = Semaphore(semaphorePermitsForImagePreviewsGeneration)
-    private val semaphorePermitsForTextPreviewsGeneration = 10  // pretty lightweight
-    private val textPreviewsSemaphore = Semaphore(semaphorePermitsForTextPreviewsGeneration)
     private val fileIconViews = mutableListOf<FileIconView>()  // keep track of all launched thumbnail generation jobs
     private var selectedView: AbstractIconEntityView? = null  // TODO: move down to IconView
     private val columnWidth = 90
@@ -28,13 +24,6 @@ class IconsDirectoryView : AbstractDirectoryView() {
     init {
         gridPanel.isOpaque = false
         panel.add(gridPanel, BorderLayout.NORTH)
-//        panel.addComponentListener(object : ComponentAdapter() {
-//            override fun componentResized(e: ComponentEvent?) {
-//                super.componentResized(e)
-//                gridPanel.revalidate()
-//                gridPanel.repaint()
-//            }
-//        })
         panel.background = if (Settings.colorTheme == ColorTheme.LIGHT) {
             Constants.BACKGROUND_COLOR_LIGHT
         } else {
@@ -49,8 +38,6 @@ class IconsDirectoryView : AbstractDirectoryView() {
                 val view = FileIconView(
                     entity,
                     this,
-                    imagePreviewsSemaphore,
-                    textPreviewsSemaphore,
                     Settings.colorTheme
                 )
                 fileIconViews.add(view)
@@ -58,7 +45,7 @@ class IconsDirectoryView : AbstractDirectoryView() {
             }
             is ExplorerDirectory -> DirectoryIconView(entity, this, Settings.colorTheme).createView()
             is ExplorerSymLink -> SymlinkIconView(entity, this, Settings.colorTheme).createView()
-            is ZipArchive -> ZipArchiveIconView(entity, this, Settings.colorTheme).createView()  // Add this line
+            is ZipArchive -> ZipArchiveIconView(entity, this, Settings.colorTheme).createView()
             else -> {
                 // To handle type mismatch in else branch:
                 // UnknownEntity handles all other possible cases
@@ -96,7 +83,6 @@ class IconsDirectoryView : AbstractDirectoryView() {
         launch {
             currentContents = AppState.currentExplorerDirectory.getContents()
             filteredAndSortedContents = filterAndSortContents(currentContents)
-
             SwingUtilities.invokeLater {
                 gridPanel.removeAll()
                 updateLayout()
@@ -106,6 +92,7 @@ class IconsDirectoryView : AbstractDirectoryView() {
                     entityIcon.isOpaque = false
                     gridPanel.add(entityIcon)
                 }
+
                 gridPanel.revalidate()
                 gridPanel.repaint()
             }

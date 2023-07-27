@@ -43,12 +43,6 @@ abstract class AbstractIconEntityView(
         iconLabel.alignmentX = Component.CENTER_ALIGNMENT
         textLabel.alignmentX = Component.CENTER_ALIGNMENT
 
-//        iconLabel.background = if (Settings.colorTheme == ColorTheme.LIGHT) {
-//            Constants.BACKGROUND_COLOR_LIGHT
-//        } else {
-//            Constants.BACKGROUND_COLOR_DARK
-//        }
-
         // BoxLayout allows to limit height
         entityPanel.layout = BoxLayout(entityPanel, BoxLayout.Y_AXIS)
         entityPanel.add(iconLabel)
