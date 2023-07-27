@@ -72,7 +72,6 @@ object IconManager: SettingsObserver {
                 }
             }
         }
-
         return ImageIcon(bufferedImage)
     }
 

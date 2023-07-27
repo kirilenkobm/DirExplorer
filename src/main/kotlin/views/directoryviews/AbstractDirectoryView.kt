@@ -119,7 +119,7 @@ abstract class AbstractDirectoryView:
                     when (it) {
                         is ExplorerDirectory -> 0
                         is ExplorerFile -> 1
-                        // TODO: add filter by extension
+                        // TODO: add sort by extension
                         is ExplorerSymLink -> 2
                         else -> 3
                     }

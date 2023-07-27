@@ -16,6 +16,7 @@ import kotlin.coroutines.CoroutineContext
 class StatusBarView : JPanel(), CoroutineScope, DirectoryObserver, SettingsObserver
 {
     private val statusLabel = JLabel()
+    private val additionalLabel = JLabel()
     private var job = Job()
 
     override val coroutineContext: CoroutineContext
@@ -24,16 +25,29 @@ class StatusBarView : JPanel(), CoroutineScope, DirectoryObserver, SettingsObser
     init {
         AppState.addDirectoryObserver(this)
         Settings.addObserver(this)
+
         layout = BorderLayout()
         preferredSize = Dimension(1280, 20)
-        statusLabel.border = BorderFactory.createEmptyBorder(0, 0, 0, 20)  // padding 10 right
+        additionalLabel.border = BorderFactory.createEmptyBorder(0, 20, 0, 0)  // padding 20 left
+        statusLabel.border = BorderFactory.createEmptyBorder(0, 0, 0, 20)  // padding 20 right
+        additionalLabel.text = ""
+        add(additionalLabel, BorderLayout.WEST)
         add(statusLabel, BorderLayout.EAST)
-        background = if (Settings.colorTheme == ColorTheme.LIGHT) {
-            Color.LIGHT_GRAY
+
+        if (Settings.colorTheme == ColorTheme.LIGHT) {
+            background = Color.LIGHT_GRAY
+            statusLabel.foreground = Color.BLACK
+            additionalLabel.foreground = Color.BLACK
         } else {
-            Color.DARK_GRAY
+            background = Color.DARK_GRAY
+            statusLabel.foreground = Color.LIGHT_GRAY
+            additionalLabel.foreground = Color.LIGHT_GRAY
         }
         onDirectoryChanged(AppState.currentExplorerDirectory)
+    }
+
+    private fun updateAdditionalData() {
+        additionalLabel.text = "test"
     }
 
     private fun updateStatus(itemsCount: Int?, totalSize: Long?) {
@@ -65,6 +79,7 @@ class StatusBarView : JPanel(), CoroutineScope, DirectoryObserver, SettingsObser
             val itemsCount = newDirectory.getItemsCount()
             val totalSize = newDirectory.getTotalSize()
             updateStatus(itemsCount, totalSize)
+            updateAdditionalData()
         }
     }
 

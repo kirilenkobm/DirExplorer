@@ -11,12 +11,15 @@ _I beleive these 3 are connected:_
 * ~~Fix extension filter -> now does not affect anything~~
 * Fix bug with back and forward for archives
 * Table view: sorting -> only after I fix view updates
-* Unit tests
-* Stress tests ???
 * Get rid of magic numbers and strings
 * README and documentation
 * Error handling for thumbnail creation like:
   * SEVERE: Cannot read JPEG2000 image: Java Advanced Imaging (JAI) Image I/O Tools are not installed
+* BUG: resizing icon view
+* BUG: filter crashes if I insert "?"
+* Detach logic from UI entirely
+* Unit tests
+* Manual test protocol
 * ~~Fix filesystem listener~~
 * ~~Entity select on one click, open on two~~
   * ~~In tables~~
@@ -28,23 +31,23 @@ _I beleive these 3 are connected:_
 * ~~Handle symlinks - depending on destination, pick appropriate handle function~~
 * ~~Decomposition for mouse Click functions~~
 * ~~ZIP files bug: only DEFLATED entries can have EXT descriptor~~
-* Filter bug if I insert ?
 
 # Prefer to do
 
+* If open in external app - warn about it?
+* Spinner when ZIP file is being unpacked
+* Thumbnail LRU cache in zip files
+* Localization
+* Table - different color for even and odd rows
 * ~~On system event in a directory -> update cache accordingly, instead of calling getContents() again~~ -> WON'T DO
 * ~~Thumbnails - extract if exist~~ -> not sure whether it actually works
 * ~~PDF previews - extract if exist~~ -> in fact, I generate them from page...
-* Better localization
-* If open in external app -warn about it?
-* Spinner when ZIP file is being unpacked
-* Thumbnail LRU cache in zip files
 * ~~PNG preview -> transparency on icons~~
 
 # Nice to have
 
 * Lock buttons for not available actions, like go up if already at root
-* Dark and light theme
 * Hotkeys ??
 * Mouseover hints
-* Cyrillic languages
+* Localization: Cyrillic languages
+* ~~Dark and light theme~~

@@ -41,7 +41,7 @@ class FileIconView(
         "rb", "log", "iml", "bat",
         "kts", "csh", "sh", "fasta",
         "fa", "fastq", "nf", "json",
-        "swift"
+        "swift", ".s"
     )
 
     override val coroutineContext: CoroutineContext

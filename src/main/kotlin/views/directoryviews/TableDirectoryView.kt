@@ -10,6 +10,7 @@ import state.ViewMode
 import views.IconManager
 import utils.Utils
 import java.awt.Color
+import java.awt.Component
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
 import java.util.*
@@ -17,13 +18,14 @@ import javax.swing.ImageIcon
 import javax.swing.JTable
 import javax.swing.SwingUtilities
 import javax.swing.table.DefaultTableModel
+import javax.swing.table.TableCellRenderer
 
 
 /**
  * View that controls directory view in the table mode
  */
 class TableDirectoryView : AbstractDirectoryView() {
-    private val table = JTable()
+    private var table = JTable()
     private var model: DefaultTableModel? = null
     private val entityIconSize: Int = 16
     private var filteredAndSortedContents: List<FileSystemEntity> = emptyList()
@@ -31,7 +33,23 @@ class TableDirectoryView : AbstractDirectoryView() {
     private val firstColumnWidth = 20
 
     init {
+        // Override prepareRenderer to make even and odd rows colored differently
+        table = object : JTable() {
+            override fun prepareRenderer(renderer: TableCellRenderer, row: Int, column: Int): Component {
+                val component = super.prepareRenderer(renderer, row, column)
+                if (Settings.colorTheme == ColorTheme.LIGHT) {
+                    val color = if (row % 2 == 0) Color(237, 237, 237) else Color.WHITE // Change colors as needed for light theme
+                    component.background = color
+                } else {
+                    val color = if (row % 2 == 0) Color(50, 50, 50) else Color(30, 30, 30) // Change colors as needed for dark theme
+                    component.background = color
+                }
+                return component
+            }
+        }
+
         setupTableMouseListener()
+
         launch {
             currentContents = AppState.currentExplorerDirectory.getContents()
             filteredAndSortedContents = filterAndSortContents(currentContents)
