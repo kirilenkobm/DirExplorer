@@ -9,6 +9,7 @@ import state.Settings
 import state.ViewMode
 import views.IconManager
 import utils.Utils
+import java.awt.Color
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
 import java.util.*
@@ -40,10 +41,17 @@ class TableDirectoryView : AbstractDirectoryView() {
             // Set the column width here
             table.columnModel.getColumn(0).preferredWidth = 20
             table.columnModel.getColumn(0).maxWidth = 20
-            table.background = if (Settings.colorTheme == ColorTheme.LIGHT) {
-                Constants.BACKGROUND_COLOR_LIGHT
+            if (Settings.colorTheme == ColorTheme.LIGHT) {
+                table.background = Constants.BACKGROUND_COLOR_LIGHT
+                table.foreground = Color.DARK_GRAY
+                table.tableHeader.background = Constants.DEFAULT_SWING_BACKGROUND_COLOR
+                table.tableHeader.foreground = Color.BLACK
+
             } else {
-                Constants.BACKGROUND_COLOR_DARK
+                table.background = Constants.BACKGROUND_COLOR_DARK
+                table.foreground = Color.LIGHT_GRAY
+                table.tableHeader.background = Color.DARK_GRAY
+                table.tableHeader.foreground = Color.WHITE
             }
         }
     }
@@ -133,6 +141,20 @@ class TableDirectoryView : AbstractDirectoryView() {
                 // Set the column width here
                 table.columnModel.getColumn(0).preferredWidth = firstColumnWidth
                 table.columnModel.getColumn(0).maxWidth = firstColumnWidth
+
+                // TODO: create a separate function
+                if (Settings.colorTheme == ColorTheme.LIGHT) {
+                    table.background = Constants.BACKGROUND_COLOR_LIGHT
+                    table.foreground = Color.DARK_GRAY
+                    table.tableHeader.background = Constants.DEFAULT_SWING_BACKGROUND_COLOR
+                    table.tableHeader.foreground = Color.BLACK
+
+                } else {
+                    table.background = Constants.BACKGROUND_COLOR_DARK
+                    table.foreground = Color.LIGHT_GRAY
+                    table.tableHeader.background = Color.DARK_GRAY
+                    table.tableHeader.foreground = Color.WHITE
+                }
             }
         }
 

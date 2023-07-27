@@ -10,6 +10,7 @@ import javax.swing.JScrollPane
 import javax.swing.JPanel
 import views.directoryviews.IconsDirectoryView
 import views.directoryviews.TableDirectoryView
+import java.awt.Color
 import java.awt.Dimension
 
 
@@ -47,11 +48,15 @@ class MainView: DirectoryObserver, SettingsObserver {
      */
     private fun updateViewMode() {
         mainPanel.removeAll()
+        mainPanel.background = Color.RED
 
         when (Settings.viewMode) {
             ViewMode.TABLE -> {
                 val scrollPane = JScrollPane(tableView.getTable())
                 scrollPane.border = null
+                if (Settings.colorTheme == ColorTheme.DARK) {
+                    scrollPane.viewport.background = Constants.BACKGROUND_COLOR_DARK
+                }
                 mainPanel.add(scrollPane, BorderLayout.CENTER)
             }
             ViewMode.ICONS -> {
