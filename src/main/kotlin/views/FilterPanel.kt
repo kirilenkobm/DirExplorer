@@ -15,9 +15,8 @@ import javax.swing.event.DocumentEvent
 import javax.swing.event.DocumentListener
 
 
-// TODO: implement update on filter
 class FilterPanel {
-    private val filterPanel = JPanel()
+    private val filterPanel = JPanel(BorderLayout())
     private val filterField = JTextField()
     private val clearFilterButton = JButton()
 
@@ -25,7 +24,7 @@ class FilterPanel {
         setupFilterPanel()
     }
 
-    fun setupFilterPanel() {
+    private fun setupFilterPanel() {
         // Configure filter field
         filterField.text = AppState.currentExtensionFilter
         filterField.border = BorderFactory.createEmptyBorder()
@@ -40,17 +39,6 @@ class FilterPanel {
         } else {
             Color.WHITE
         }
-
-        filterPanel.layout = BorderLayout()
-        filterPanel.add(filterField, BorderLayout.CENTER)
-
-        filterPanel.preferredSize = Dimension(200, filterField.preferredSize.height)
-        filterPanel.minimumSize = Dimension(200, filterField.preferredSize.height)
-        filterPanel.maximumSize = Dimension(200, filterField.preferredSize.height)
-
-        // Set the maximum height to the preferred height to prevent vertical growth
-        filterPanel.maximumSize = Dimension(filterPanel.maximumSize.width, filterPanel.preferredSize.height)
-
         // Add a document listener to update AppState.currentFilter whenever the text changes
         filterField.document.addDocumentListener(object : DocumentListener {
             override fun insertUpdate(e: DocumentEvent?) {
@@ -66,6 +54,8 @@ class FilterPanel {
             }
         })
 
+        filterPanel.add(filterField, BorderLayout.CENTER)
+
         // Configure clear filter button
         clearFilterButton.icon = IconManager.backSpaceIcon
         clearFilterButton.isContentAreaFilled = false // transparent
@@ -76,13 +66,17 @@ class FilterPanel {
             AppState.updateFilter("")
         }
         filterPanel.add(clearFilterButton, BorderLayout.EAST)
+
         filterPanel.border = BorderFactory.createMatteBorder(1, 1, 1, 1, Color.BLACK)
         filterPanel.background = if (Settings.colorTheme == ColorTheme.LIGHT) {
             Color(255, 255, 255, 255)
         } else {
             Color.DARK_GRAY
         }
+    }
 
+    fun updateView() {
+        setupFilterPanel()
         filterPanel.revalidate()
         filterPanel.repaint()
     }

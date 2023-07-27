@@ -4,11 +4,12 @@ import views.directoryviews.IconsDirectoryView
 import dataModels.ExplorerDirectory
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
+import state.ColorTheme
 
 class AbstractIconEntityViewTest {
     private val testDirectory = ExplorerDirectory(System.getProperty("user.home"))
     private val testParentView = IconsDirectoryView()
-    private val iconEntityView = DirectoryIconView(testDirectory, testParentView)
+    private val iconEntityView = DirectoryIconView(testDirectory, testParentView, ColorTheme.LIGHT)
 
     @Test
     fun resizeIcon() {

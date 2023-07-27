@@ -25,7 +25,6 @@ class AddressBarView: DirectoryObserver {
 
     init {
         AppState.addDirectoryObserver(this)
-        addressBar.layout = BoxLayout(addressBar, BoxLayout.X_AXIS)
         addressBarPanel.add(addressBar, BorderLayout.NORTH)
         updateView()
     }

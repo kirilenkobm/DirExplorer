@@ -172,7 +172,8 @@ class TopBarView(private val frame: JFrame) : SettingsObserver {
 
         // update view
         addressBarView.updateView()
-        filterPanel.setupFilterPanel()
+        filterPanel.updateView()
+
 
         // revalidate and repaint
         leftPanel.revalidate()
@@ -180,4 +181,5 @@ class TopBarView(private val frame: JFrame) : SettingsObserver {
         rightPanel.revalidate()
         rightPanel.repaint()
     }
+
 }

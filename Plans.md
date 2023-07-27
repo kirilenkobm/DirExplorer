@@ -4,8 +4,9 @@
 
 _I beleive these 3 are connected:_
 * ~~Settings - apply after close immediately~~ -> added settings observer
-* Fix and order view updates
-* BUG: sometimes just does not update dir content view, updating State and AddressBar
+* ~~Fix and order view updates~~
+* ~~BUG: sometimes just does not update dir content view, updating State and AddressBar~~
+-> probably no longer an issue
 
 * ~~Fix extension filter -> now does not affect anything~~
 * Fix bug with back and forward for archives
@@ -27,6 +28,7 @@ _I beleive these 3 are connected:_
 * ~~Handle symlinks - depending on destination, pick appropriate handle function~~
 * ~~Decomposition for mouse Click functions~~
 * ~~ZIP files bug: only DEFLATED entries can have EXT descriptor~~
+* Filter bug if I insert ?
 
 # Prefer to do
 
