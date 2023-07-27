@@ -2,24 +2,19 @@ package views.directoryviews
 
 import Constants
 import dataModels.*
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Semaphore
 import state.*
+import views.WrapLayout
 import views.iconviews.*
 import java.awt.*
-import java.awt.event.ComponentAdapter
-import java.awt.event.ComponentEvent
 import javax.swing.JPanel
 import javax.swing.SwingUtilities
 
 
-// TODO: evaluate all constraints
 class IconsDirectoryView : AbstractDirectoryView() {
     private val gridPanel = JPanel()
     private val panel = JPanel(BorderLayout())
-    private var updateJob: Job? = null
     private var filteredAndSortedContents: List<FileSystemEntity> = emptyList()
     // Limit number of thumbnails rendered at once
     private val semaphorePermitsForImagePreviewsGeneration = 2
@@ -28,29 +23,24 @@ class IconsDirectoryView : AbstractDirectoryView() {
     private val textPreviewsSemaphore = Semaphore(semaphorePermitsForTextPreviewsGeneration)
     private val fileIconViews = mutableListOf<FileIconView>()  // keep track of all launched thumbnail generation jobs
     private var selectedView: AbstractIconEntityView? = null  // TODO: move down to IconView
+    private val columnWidth = 90
 
     init {
         gridPanel.isOpaque = false
         panel.add(gridPanel, BorderLayout.NORTH)
-        panel.addComponentListener(object : ComponentAdapter() {
-            override fun componentResized(e: ComponentEvent?) {
-                super.componentResized(e)
-                // debouncing -> such that update view involving async
-                // is executed only if needed, and prev jobs are cancelled
-                updateJob?.cancel() // cancel the previous job if it's still running
-                updateJob = launch {
-                    delay(400) // wait for X milliseconds before updating the view
-                    updateView()
-                }
-            }
-        })
-        updateView()
-        // panel.isOpaque = false
+//        panel.addComponentListener(object : ComponentAdapter() {
+//            override fun componentResized(e: ComponentEvent?) {
+//                super.componentResized(e)
+//                gridPanel.revalidate()
+//                gridPanel.repaint()
+//            }
+//        })
         panel.background = if (Settings.colorTheme == ColorTheme.LIGHT) {
             Constants.BACKGROUND_COLOR_LIGHT
         } else {
             Constants.BACKGROUND_COLOR_DARK
         }
+        updateView()
     }
 
     private fun createEntityView(entity: FileSystemEntity): JPanel {
@@ -78,6 +68,19 @@ class IconsDirectoryView : AbstractDirectoryView() {
         }
     }
 
+    /**
+     * Update number of columns according to the view width
+     */
+    private fun updateLayout() {
+//         var numberOfColumns = panel.width / columnWidth - 1
+//         if  (numberOfColumns <= 0) { numberOfColumns = 1}
+        // gridPanel.layout = GridLayout(0, numberOfColumns) // Set new layout with updated number of columns
+        gridPanel.layout = WrapLayout(FlowLayout.LEFT, 10, 10)
+        // gridPanel.layout = GridBagLayout()
+        gridPanel.revalidate()
+        gridPanel.repaint()
+    }
+
     override fun updateView() {
         // Cancel all ongoing thumbnail generation tasks
         for (view in fileIconViews) {
@@ -96,11 +99,7 @@ class IconsDirectoryView : AbstractDirectoryView() {
 
             SwingUtilities.invokeLater {
                 gridPanel.removeAll()
-
-                val columnWidth = 90
-                var numberOfColumns = panel.width / columnWidth - 1
-                if  (numberOfColumns <= 0) { numberOfColumns = 1}
-                gridPanel.layout = GridLayout(0, numberOfColumns) // Set new layout with updated number of columns
+                updateLayout()
 
                 for (entity in filteredAndSortedContents) {
                     val entityIcon = createEntityView(entity)

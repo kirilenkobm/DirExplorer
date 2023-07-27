@@ -47,14 +47,16 @@ class TableDirectoryView : AbstractDirectoryView() {
                 return component
             }
         }
-
-        setupTableMouseListener()
+        table.showHorizontalLines = false
+        table.showVerticalLines = false
+        table.border = null
 
         launch {
             currentContents = AppState.currentExplorerDirectory.getContents()
             filteredAndSortedContents = filterAndSortContents(currentContents)
             model = createTableModel()
             table.model = model
+            setupTableMouseListener()
 
             // Set the column width here
             table.columnModel.getColumn(0).preferredWidth = 20

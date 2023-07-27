@@ -4,14 +4,13 @@ import Constants
 import dataModels.DirectoryObserver
 import dataModels.ExplorerDirectory
 import state.*
-import java.awt.BorderLayout
-import javax.swing.JFrame
-import javax.swing.JScrollPane
-import javax.swing.JPanel
 import views.directoryviews.IconsDirectoryView
 import views.directoryviews.TableDirectoryView
-import java.awt.Color
-import java.awt.Dimension
+import java.awt.*
+import javax.swing.JFrame
+import javax.swing.JPanel
+import javax.swing.JScrollPane
+import javax.swing.SwingUtilities
 
 
 class MainView: DirectoryObserver, SettingsObserver {
@@ -48,7 +47,6 @@ class MainView: DirectoryObserver, SettingsObserver {
      */
     private fun updateViewMode() {
         mainPanel.removeAll()
-        mainPanel.background = Color.RED
 
         when (Settings.viewMode) {
             ViewMode.TABLE -> {
@@ -62,6 +60,8 @@ class MainView: DirectoryObserver, SettingsObserver {
             ViewMode.ICONS -> {
                 val scrollPane = JScrollPane(iconsView.getPanel())
                 scrollPane.border = null
+                scrollPane.horizontalScrollBarPolicy = JScrollPane.HORIZONTAL_SCROLLBAR_NEVER // disable horizontal scrolling
+                scrollPane.verticalScrollBarPolicy = JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED // enable vertical scrolling
                 mainPanel.add(scrollPane, BorderLayout.CENTER)
             }
         }
