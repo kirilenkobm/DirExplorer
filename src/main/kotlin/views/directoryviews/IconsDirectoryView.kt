@@ -3,7 +3,6 @@ package views.directoryviews
 import Constants
 import dataModels.*
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.sync.Semaphore
 import state.*
 import views.WrapLayout
 import views.iconviews.*
@@ -19,7 +18,7 @@ class IconsDirectoryView : AbstractDirectoryView() {
     // Limit number of thumbnails rendered at once
     private val fileIconViews = mutableListOf<FileIconView>()  // keep track of all launched thumbnail generation jobs
     private var selectedView: AbstractIconEntityView? = null  // TODO: move down to IconView
-    private val columnWidth = 90
+    // private val columnWidth = 90
 
     init {
         gridPanel.isOpaque = false

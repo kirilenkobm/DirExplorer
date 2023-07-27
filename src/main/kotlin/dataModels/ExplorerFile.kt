@@ -3,13 +3,11 @@ import Constants
 import kotlinx.coroutines.*
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.rendering.PDFRenderer
-import org.apache.pdfbox.contentstream.PDFStreamEngine
 import state.AppState
 import state.Settings
 import views.iconviews.IconsCache
 import java.awt.Color
 import java.awt.Image
-import java.awt.RenderingHints
 import java.awt.image.BufferedImage
 import java.io.File
 import java.io.IOException
@@ -108,9 +106,9 @@ class ExplorerFile(override val path: String): FileSystemEntity, CoroutineScope 
                             val pdfRenderer = PDFRenderer(document)
                             val image: BufferedImage = pdfRenderer.renderImageWithDPI(0, 40f)
                             document.close()
-                            thumbnail = resizeIconToRefactor(ImageIcon(image))
+                            thumbnail = resizeThumbnail(image)
                         }
-                        val safeThumbnail: Icon = thumbnail!!
+                        val safeThumbnail = thumbnail!!
                         iconCache[path] = safeThumbnail
                         safeThumbnail
                     } catch (e: IOException) {
@@ -129,7 +127,7 @@ class ExplorerFile(override val path: String): FileSystemEntity, CoroutineScope 
         }
     }
 
-    private fun createTextIcon(previewText: String): ImageIcon {
+    private fun createTextIcon(previewText: String): Icon {
         // Create an image containing text
         val image = BufferedImage(
             Settings.iconSize,
@@ -171,7 +169,7 @@ class ExplorerFile(override val path: String): FileSystemEntity, CoroutineScope 
         }
     }
 
-    private suspend fun createThumbnail(path: String): ImageIcon? {
+    private suspend fun createThumbnail(path: String): Icon? {
         // TODO: decomposition
         return withContext(Dispatchers.IO) {
             try {
@@ -195,8 +193,7 @@ class ExplorerFile(override val path: String): FileSystemEntity, CoroutineScope 
                         if (childNodes.length > 0) {
                             // Theoretically, several thumbnails can be included in the image
                             val thumbnail = reader.readThumbnail(0, 0)
-                            val resizedThumbnail = resizeThumbnail(thumbnail)
-                            return@withContext ImageIcon(resizedThumbnail)
+                            return@withContext resizeThumbnail(thumbnail)
                         }
 
                         // No thumbnail found -> just read the whole image
@@ -213,7 +210,7 @@ class ExplorerFile(override val path: String): FileSystemEntity, CoroutineScope 
                         // Read the image
                         val fullImage = reader.read(reader.minIndex)
                         val thumbnailImage = resizeThumbnail(fullImage)
-                        ImageIcon(thumbnailImage)
+                        thumbnailImage
                     } finally {
                         reader.dispose()
                         imageInputStream.close()
@@ -231,43 +228,24 @@ class ExplorerFile(override val path: String): FileSystemEntity, CoroutineScope 
         }
     }
 
-    private fun resizeThumbnail(image: BufferedImage): BufferedImage {
+    private fun resizeThumbnail(image: BufferedImage): Icon {
         val width = image.width
         val height = image.height
+        // Do not rescale what is already scaled
+        if (width == Settings.iconSize || height == Settings.iconSize) {
+            return ImageIcon(image)
+        }
         val scaleFactor = Settings.iconSize.toDouble() / max(width, height)
         val newWidth = (width * scaleFactor).toInt()
         val newHeight = (height * scaleFactor).toInt()
 
-        val resizedImage = BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_ARGB)
-        val graphics = resizedImage.createGraphics()
-        graphics.setRenderingHint(
-            RenderingHints.KEY_INTERPOLATION,
-            RenderingHints.VALUE_INTERPOLATION_BILINEAR
-        )
-        graphics.drawImage(image, 0, 0, newWidth, newHeight, null)
-        graphics.dispose()
-
-        return resizedImage
-    }
-
-    fun resizeIconToRefactor(icon: ImageIcon): ImageIcon {
-        val image = icon.image
-        val imageWidth = image.getWidth(null)
-        val imageHeight = image.getHeight(null)
-
-        // If the image's width or height is already equal to Settings.iconSize,
-        // return the original icon - do not waste resources on rescaling
-        if (imageWidth == Settings.iconSize || imageHeight == Settings.iconSize) {
-            return icon
-        }
-
-        // Otherwise, scale the image
-        val newImage = image.getScaledInstance(
-            Settings.iconSize,
-            Settings.iconSize,
+        val resizedImage = image.getScaledInstance(
+            newWidth,
+            newHeight,
             Image.SCALE_DEFAULT
         )
-        return ImageIcon(newImage)
+
+        return ImageIcon(resizedImage)
     }
 
     fun dispose() {
