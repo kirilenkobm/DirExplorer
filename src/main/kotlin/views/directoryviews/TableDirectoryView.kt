@@ -28,10 +28,8 @@ import javax.swing.table.TableCellRenderer
 class TableDirectoryView : AbstractDirectoryView() {
     private var table = JTable()
     private var model: DefaultTableModel? = null
-    private val entityIconSize: Int = 16
     private var filteredAndSortedContents: List<FileSystemEntity> = emptyList()
     private val bundle = ResourceBundle.getBundle("languages/Messages", Settings.language.getLocale())
-    private val firstColumnWidth = 20
     private val contentService = DirectoryContentService()
 
     init {
@@ -39,17 +37,7 @@ class TableDirectoryView : AbstractDirectoryView() {
         table = object : JTable() {
             override fun prepareRenderer(renderer: TableCellRenderer, row: Int, column: Int): Component {
                 val component = super.prepareRenderer(renderer, row, column)
-                if (isRowSelected(row)) {
-                    component.background = Constants.SELECTION_COLOR
-                } else if (Settings.colorTheme == ColorTheme.LIGHT) {
-                    component.background =
-                        if (row % 2 == 0) Constants.TABLE_EVEN_ROW_LIGHT_THEME_COLOR
-                        else Color.WHITE
-                } else {
-                    component.background =
-                        if (row % 2 == 0) Constants.TABLE_EVEN_ROW_DARK_THEME_COLOR
-                        else Constants.TABLE_ODD_ROW_DARK_THEME_COLOR
-                }
+                component.background = getRowColor(row)
                 return component
             }
         }
@@ -71,6 +59,18 @@ class TableDirectoryView : AbstractDirectoryView() {
         }
     }
 
+    private fun getRowColor(row: Int) = when {
+        table.isRowSelected(row) -> Constants.SELECTION_COLOR
+        Settings.colorTheme == ColorTheme.LIGHT -> getLightThemeRowColor(row)
+        else -> getDarkThemeRowColor(row)
+    }
+
+    private fun getLightThemeRowColor(row: Int) =
+        if (row % 2 == 0) Constants.TABLE_EVEN_ROW_LIGHT_THEME_COLOR else Color.WHITE
+
+    private fun getDarkThemeRowColor(row: Int) =
+        if (row % 2 == 0) Constants.TABLE_EVEN_ROW_DARK_THEME_COLOR else Constants.TABLE_ODD_ROW_DARK_THEME_COLOR
+
     private fun setTableColors() {
         if (Settings.colorTheme == ColorTheme.LIGHT) {
             table.background = Constants.BACKGROUND_COLOR_LIGHT
@@ -86,7 +86,7 @@ class TableDirectoryView : AbstractDirectoryView() {
         }
     }
 
-    private fun resizeTableIcon(icon: ImageIcon, size: Int = entityIconSize): ImageIcon {
+    private fun resizeTableIcon(icon: ImageIcon, size: Int = Constants.TABLE_ICON_SIZE): ImageIcon {
         val image = icon.image
         val newImage = image.getScaledInstance(size, size, java.awt.Image.SCALE_SMOOTH)
         return ImageIcon(newImage)
@@ -95,46 +95,49 @@ class TableDirectoryView : AbstractDirectoryView() {
     private fun mapEntitiesToData(): Array<Array<Any>> {
         return filteredAndSortedContents.map { entity ->
             when (entity) {
-                is ExplorerFile -> arrayOf<Any>(
-                    resizeTableIcon(IconManager.getIconForFileType(entity.fileType)),
-                    entity.name,
-                    Utils.humanReadableSize(entity.size),
-                    Utils.formatDate(entity.lastModified)
-                )
-                is ExplorerDirectory -> arrayOf<Any>(
-                    resizeTableIcon(IconManager.getIconForDir(entity)),
-                    entity.name,
-                    "-",
-                    Utils.formatDate(entity.lastModified)
-                )
-                is ExplorerSymLink -> arrayOf<Any>(
-                    resizeTableIcon(IconManager.linkIcon),
-                    entity.name,
-                    "-",
-                    Utils.formatDate(entity.lastModified)
-                )
-                is ZipArchive -> arrayOf<Any>(
-                    resizeTableIcon(IconManager.folderZipIcon),
-                    entity.name,
-                    Utils.humanReadableSize(entity.size),
-                    Utils.formatDate(entity.lastModified)
-                )
-                is UnknownEntity -> arrayOf<Any>(
-                    resizeTableIcon(IconManager.helpCenterIcon),
-                    entity.name,
-                    Utils.humanReadableSize(entity.size),
-                    Utils.formatDate(entity.lastModified)
-                )
-                else -> arrayOf<Any>(
-                    // should be not reachable?
-                    resizeTableIcon(IconManager.helpCenterIcon),
-                    entity.name,
-                    "-",
-                    Utils.formatDate(entity.lastModified)
-                )
+                is ExplorerFile -> mapExplorerFile(entity)
+                is ExplorerDirectory -> mapExplorerDirectory(entity)
+                is ExplorerSymLink -> mapExplorerSymLink(entity)
+                is ZipArchive -> mapZipArchive(entity)
+                else -> mapUnknownEntity(entity)
             }
         }.toTypedArray()
     }
+
+    private fun mapExplorerFile(entity: ExplorerFile) = arrayOf<Any>(
+        resizeTableIcon(IconManager.getIconForFileType(entity.fileType)),
+        entity.name,
+        Utils.humanReadableSize(entity.size),
+        Utils.formatDate(entity.lastModified)
+    )
+
+    private fun mapExplorerDirectory(entity: ExplorerDirectory) = arrayOf<Any>(
+        resizeTableIcon(IconManager.getIconForDir(entity)),
+        entity.name,
+        "-",
+        Utils.formatDate(entity.lastModified)
+    )
+
+    private fun mapExplorerSymLink(entity: ExplorerSymLink) = arrayOf<Any>(
+        resizeTableIcon(IconManager.linkIcon),
+        entity.name,
+        "-",
+        Utils.formatDate(entity.lastModified)
+    )
+
+    private fun mapZipArchive(entity: ZipArchive) = arrayOf<Any>(
+        resizeTableIcon(IconManager.folderZipIcon),
+        entity.name,
+        Utils.humanReadableSize(entity.size),
+        Utils.formatDate(entity.lastModified)
+    )
+
+    private fun mapUnknownEntity(entity: FileSystemEntity) = arrayOf<Any>(
+        resizeTableIcon(IconManager.helpCenterIcon),
+        entity.name,
+        Utils.humanReadableSize(entity.size),
+        Utils.formatDate(entity.lastModified)
+    )
 
     private fun createTableModel(): DefaultTableModel {
         val columnNames = arrayOf(
@@ -168,8 +171,8 @@ class TableDirectoryView : AbstractDirectoryView() {
                 model?.fireTableDataChanged()
 
                 // Set the column width here
-                table.columnModel.getColumn(0).preferredWidth = firstColumnWidth
-                table.columnModel.getColumn(0).maxWidth = firstColumnWidth
+                table.columnModel.getColumn(0).preferredWidth = Constants.TABLE_VIEW_FIRST_COL_SIZE
+                table.columnModel.getColumn(0).maxWidth = Constants.TABLE_VIEW_FIRST_COL_SIZE
 
                 setTableColors()
             }
@@ -197,7 +200,6 @@ class TableDirectoryView : AbstractDirectoryView() {
         return table
     }
 
-    override fun onViewModeChanged(newViewMode: ViewMode) {
-        // TODO: implement
-    }
+    // Not relevant
+    override fun onViewModeChanged(newViewMode: ViewMode) { }
 }

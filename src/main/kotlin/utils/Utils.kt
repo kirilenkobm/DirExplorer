@@ -41,6 +41,9 @@ object Utils {
      * Formats unix time number as a string.
      */
     fun formatDate(unixTime: Long): String {
+        if (unixTime == 0L) {
+            return "unknown"
+        }
         return dateFormat.format(Date(unixTime))
     }
 

@@ -31,8 +31,11 @@ object Constants {
     // View constraints
     const val PREFERRED_WIDTH = 1240
 
+    // Table view
     const val TABLE_VIEW_FIRST_COL_SIZE = 20
+    const val TABLE_ICON_SIZE = 16
 
+    // Grid view
     const val GRID_COLUMN_WIDTH = 90
     // const val GRID_COLUMN_MAX_WIDTH = 100
     const val GRID_TEXT_FRAME_HEIGHT = 35
