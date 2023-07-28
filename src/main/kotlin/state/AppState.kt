@@ -25,8 +25,8 @@ object AppState {
 
     var currentExtensionFilter: String = ""
 
-    private var backStack: MutableList<ExplorableEntity> = mutableListOf()
-    private var forwardStack: MutableList<ExplorableEntity> = mutableListOf()
+    var backStack: MutableList<ExplorableEntity> = mutableListOf()
+    var forwardStack: MutableList<ExplorableEntity> = mutableListOf()
 
     private val directoryObservers: MutableList<DirectoryObserver> = mutableListOf()
     private val observersToRemove: MutableList<DirectoryObserver> = mutableListOf()
@@ -37,7 +37,7 @@ object AppState {
     val zipServices: MutableList<ZipArchiveService> = mutableListOf()
     // Only to replace zipTempDir names to zip Filenames in the address bar
     val tempZipDirToNameMapping = HashMap<String, String>()
-    private val zipPathToTempDir = HashMap<String, Path>()
+    val zipPathToTempDir = HashMap<String, Path>()
 
     val imagePreviewsSemaphore = Semaphore(Constants.MAX_IMAGE_PREVIEWS)
     val textPreviewsSemaphore = Semaphore(Constants.MAX_TEXT_PREVIEWS)
@@ -103,9 +103,9 @@ object AppState {
             showErrorDialog(errorMessage)  // Using showErrorDialog function defined in ErrorView.kt
             currentExplorerDirectory = ExplorerDirectory(oldDirectoryInCaseOfError.path)
         }
-
-        // TODO: cleanup zip directories which are no longer in the
-        // back and forward stacks
+        backStack.forEach { explorableEntity ->
+            println(explorableEntity.path)
+        }
     }
 
     fun goHome() {
@@ -145,14 +145,7 @@ object AppState {
      */
     fun insideZip(): Boolean {
         val path = Paths.get(currentExplorerDirectory.path)
-        for (part in path) {
-            // TODO: redo hashmap to path -> String, not filename -> filename
-            val isZip = tempZipDirToNameMapping[part.toString()]
-            if (isZip != null) {
-                return true
-            }
-        }
-        return false
+        return path.any { tempZipDirToNameMapping[it.toString()] != null }
     }
 
     fun updateFilter(newFilter: String) {

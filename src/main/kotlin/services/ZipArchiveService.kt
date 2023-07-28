@@ -21,17 +21,26 @@ class ZipArchiveService(private val zipEntity: ZipArchive): CoroutineScope {
     private val job = Job()
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.Main + job
+    private var tempDirName: String? = null
 
     /**
-     * Remove temp dir if it's no longer needed
-     * by checking whether it's a part of the updated path.
+     * Remove temp dir if it's no longer needed.
+     * If they are not in the back or forward stack.
      */
     private val observer: DirectoryObserver = object : DirectoryObserver {
         override fun onDirectoryChanged(newDirectory: ExplorerDirectory) {
-//            val tempDir = zipEntity.tempDir
-//            if (tempDir != null && !newDirectory.path.startsWith(tempDir.toString())) {
-//                cleanup()
-//            }
+            val tempDir = zipEntity.tempDir ?: return
+            // clean the temporary directory up if no longer in back and forth stacks
+            val isHereRightNow = AppState.currentExplorerDirectory.path == zipEntity.tempDir.toString()
+            val isInBackStack = AppState.backStack.any { it.path.startsWith(tempDir.toString()) }
+            val isInForwardStack = AppState.forwardStack.any { it.path.startsWith(tempDir.toString()) }
+
+            // if not in this dir, not in all stakes: cleanup
+            if (!isHereRightNow && !isInBackStack && !isInForwardStack) {
+                cleanup()  // and do not forget to exclude them from caches:
+                AppState.zipPathToTempDir.remove(zipEntity.path)
+                AppState.tempZipDirToNameMapping.remove(tempDirName)
+            }
         }
     }
 
@@ -44,16 +53,17 @@ class ZipArchiveService(private val zipEntity: ZipArchive): CoroutineScope {
     fun extractTo(): Path? {
         val parentDir = Paths.get(zipEntity.path).parent
         // create hidden temp directory
-        val tempDirName = "." + Paths.get(zipEntity.path).fileName.toString() + "_" + UUID.randomUUID().toString().take(6)
-        zipEntity.tempDir = Files.createDirectory(parentDir.resolve(tempDirName))
-        AppState.tempZipDirToNameMapping[tempDirName] = Paths.get(zipEntity.path).fileName.toString()
+        tempDirName = ".${Paths.get(zipEntity.path).fileName}_${UUID.randomUUID().toString().take(6)}"
+        zipEntity.tempDir = Files.createDirectory(parentDir.resolve(tempDirName!!))
+        AppState.tempZipDirToNameMapping[tempDirName!!] = Paths.get(zipEntity.path).fileName.toString()
 
         if (System.getProperty("os.name").startsWith("Windows")) {
             // On Windows: .name is not enough, need to set the 'hidden' attribute
             Files.setAttribute(zipEntity.tempDir!!, "dos:hidden", true, LinkOption.NOFOLLOW_LINKS)
         }
-        ZipUnpackSpinner.showSpinner()
 
+        // Start coroutine: get semaphore + start spinner
+        ZipUnpackSpinner.showSpinner()
         val zipUnpackSemaphore = AppState.zipUnpackSemaphore
 
         // Extract zip contents in a background thread

@@ -42,7 +42,7 @@ class ThumbnailService(
         get() = Dispatchers.Main + job
 
     fun startThumbnailGeneration() {
-        println("Started generation of thumbnail for ${fileEntity.name}")
+        // println("Started generation of thumbnail for ${fileEntity.name}")
         val imagePreviewsSemaphore = AppState.imagePreviewsSemaphore
         val textPreviewsSemaphore = AppState.textPreviewsSemaphore
 

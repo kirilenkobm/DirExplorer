@@ -7,13 +7,13 @@ _I beleive these 3 are connected:_
 * ~~Fix and order view updates~~
 * ~~BUG: sometimes just does not update dir content view, updating State and AddressBar~~
 
-* AppState: implement a better current path breakdown
-* Table view: sorting -> only after I fix view updates
 * Adaptive grid view
+* Table view: sorting -> only after I fix view updates
 * BUG: filter crashes if I insert "?"
 * BUG: quit zip directory which is not yet unpacked
+* ~~AppState: implement "in a zip dir" function~~
 * ~~Fix bug with back and forward for archives~~
-  * Subtask: cleanup temp zips which are no longer in the history
+  * ~~Subtask: cleanup temp zips which are no longer in the history~~
 * ~~Fix extension filter -> now does not affect anything~~
 * ~~Fix filesystem listener~~
 * ~~Entity select on one click, open on two~~

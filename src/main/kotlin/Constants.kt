@@ -6,7 +6,7 @@ import javax.swing.UIManager
  */
 object Constants {
     // TODO: move all more or less meaningful constants here
-    const val HISTORY_SIZE: Int = 10  // back and forth stack sizes
+    const val HISTORY_SIZE: Int = 4  // back and forth stack sizes
     const val ELLIPSIS_LABEL = "  ...  "
 
     const val UNKNOWN_FILE_TYPE = "unknown"
