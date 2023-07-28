@@ -26,7 +26,7 @@ class FilterPanel {
 
     private fun setupFilterPanel() {
         // Configure filter field
-        filterField.text = AppState.currentExtensionFilter
+        filterField.text = AppState.getFilter()
         filterField.border = BorderFactory.createEmptyBorder()
         filterField.font = Font("Arial", Font.PLAIN, 14)
         filterField.background = if (Settings.colorTheme == ColorTheme.LIGHT) {
