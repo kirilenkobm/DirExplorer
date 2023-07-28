@@ -5,7 +5,7 @@ import javax.swing.UIManager
  * All project related constants.
  */
 object Constants {
-    // TOOD: move all more or less meaningful constants here
+    // TODO: move all more or less meaningful constants here
     const val HISTORY_SIZE: Int = 40  // back and forth stack sizes
     const val ELLIPSIS_LABEL = "  ...  "
 
