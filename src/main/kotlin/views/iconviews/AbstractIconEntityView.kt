@@ -4,6 +4,7 @@ import Constants
 import dataModels.*
 import services.EntityActionsHandler
 import state.ColorTheme
+import state.Settings
 import utils.Utils
 import views.directoryviews.GridDirectoryView
 import java.awt.*
@@ -16,9 +17,8 @@ import javax.swing.SwingConstants
 
 abstract class AbstractIconEntityView(
     private val entity: FileSystemEntity,
-    private val parentDirView: GridDirectoryView,
-    private val colorTheme: ColorTheme)
-{
+    private val parentDirView: GridDirectoryView
+) {
     // The icon view must look like a vertical stack
     // Top element - frame of the same size, regardless on the icon size
     // icon is centered in this frame
@@ -103,7 +103,7 @@ abstract class AbstractIconEntityView(
     fun createView(): JPanel {
         setIcon()
         textLabel.text = Utils.getFilenameForIcon(entity.name)
-        textLabel.foreground = if (colorTheme == ColorTheme.LIGHT) Color.BLACK else Color.WHITE
+        textLabel.foreground = if (Settings.colorTheme == ColorTheme.LIGHT) Color.BLACK else Color.WHITE
         return wrapperPanel
     }
 

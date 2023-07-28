@@ -10,9 +10,8 @@ import views.directoryviews.GridDirectoryView
 
 class FileIconView(
     entity: ExplorerFile,
-    parentDirView: GridDirectoryView,
-    colorTheme: ColorTheme
-): AbstractIconEntityView(entity, parentDirView, colorTheme) {
+    parentDirView: GridDirectoryView
+): AbstractIconEntityView(entity, parentDirView) {
     private val fileEntity = entity
     private val thumbnailService = ThumbnailService(fileEntity, this)
 

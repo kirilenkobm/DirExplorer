@@ -8,9 +8,8 @@ import views.directoryviews.GridDirectoryView
 
 class SymlinkIconView(
     entity: ExplorerSymLink,
-    parentDirView: GridDirectoryView,
-    colorTheme: ColorTheme
-): AbstractIconEntityView(entity, parentDirView, colorTheme) {
+    parentDirView: GridDirectoryView
+): AbstractIconEntityView(entity, parentDirView) {
     // private val linkEntity = entity
 
     override fun setIcon() {

@@ -2,7 +2,7 @@
 
 * Table view: sorting -> only after I fix view updates
 * BUG: quit zip directory which is not yet unpacked
-
+* BUG: fix heap issues
 * ~~BUG: filter crashes if I insert "?"~~
 * ~~BUG: dark theme in grid view is broken again~~
 * ~~Make uniform icon size regardless on text length and image size~~

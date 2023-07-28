@@ -8,9 +8,8 @@ import views.directoryviews.GridDirectoryView
 
 class DirectoryIconView(
     entity: ExplorerDirectory,
-    parentDirView: GridDirectoryView,
-    colorTheme: ColorTheme
-): AbstractIconEntityView(entity, parentDirView, colorTheme) {
+    parentDirView: GridDirectoryView
+): AbstractIconEntityView(entity, parentDirView) {
     private val dirEntity = entity
 
     override fun setIcon() {

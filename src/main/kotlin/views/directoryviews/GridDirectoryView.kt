@@ -16,7 +16,8 @@ import javax.swing.SwingUtilities
 class GridDirectoryView : AbstractDirectoryView() {
     private val gridPanel = JPanel(WrapLayout(FlowLayout.LEFT, 10, 10))
     private var filteredAndSortedContents: List<FileSystemEntity> = emptyList()
-    private val fileIconViews = mutableListOf<FileIconView>()  // keep track of all launched thumbnail generation jobs
+    // keep track of all launched thumbnail generation jobs
+    private val fileIconViews = mutableListOf<FileIconView>()
     // see setSelectedIcon
     private var selectedView: AbstractIconEntityView? = null
     private val contentService = DirectoryContentService()
@@ -28,25 +29,23 @@ class GridDirectoryView : AbstractDirectoryView() {
 
     private fun createEntityView(entity: FileSystemEntity): JPanel {
         return when (entity) {
-            is ExplorerFile -> {
-                val view = FileIconView(
-                    entity,
-                    this,
-                    Settings.colorTheme
-                )
-                fileIconViews.add(view)
-                view.createView()
-            }
-            is ExplorerDirectory -> DirectoryIconView(entity, this, Settings.colorTheme).createView()
-            is ExplorerSymLink -> SymlinkIconView(entity, this, Settings.colorTheme).createView()
-            is ZipArchive -> ZipArchiveIconView(entity, this, Settings.colorTheme).createView()
-            else -> {
-                // To handle type mismatch in else branch:
-                // UnknownEntity handles all other possible cases
-                val unknownEntity = UnknownEntity(entity.path)
-                UnknownIconView(unknownEntity, this, Settings.colorTheme).createView()
-            }
+            is ExplorerFile -> createFileIconView(entity)
+            is ExplorerDirectory -> DirectoryIconView(entity, this).createView()
+            is ExplorerSymLink -> SymlinkIconView(entity, this).createView()
+            is ZipArchive -> ZipArchiveIconView(entity, this).createView()
+            else -> createUnknownIconView(entity)
         }
+    }
+
+    private fun createFileIconView(entity: ExplorerFile): JPanel {
+        val view = FileIconView(entity, this)
+        fileIconViews.add(view)
+        return view.createView()
+    }
+
+    private fun createUnknownIconView(entity: FileSystemEntity): JPanel {
+        val unknownEntity = UnknownEntity(entity.path)
+        return UnknownIconView(unknownEntity, this).createView()
     }
 
     /**

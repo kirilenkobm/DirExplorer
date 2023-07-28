@@ -9,9 +9,8 @@ import views.directoryviews.GridDirectoryView
 
 class UnknownIconView(
     entity: UnknownEntity,
-    parentDirView: GridDirectoryView,
-    colorTheme: ColorTheme
-): AbstractIconEntityView(entity, parentDirView, colorTheme) {
+    parentDirView: GridDirectoryView
+): AbstractIconEntityView(entity, parentDirView) {
     // private val unknownEntity = entity
 
     override fun setIcon() {

@@ -9,9 +9,8 @@ import views.directoryviews.GridDirectoryView
 
 class ZipArchiveIconView(
     entity: ZipArchive,
-    parentDirView: GridDirectoryView,
-    colorTheme: ColorTheme
-): AbstractIconEntityView(entity, parentDirView, colorTheme) {
+    parentDirView: GridDirectoryView
+): AbstractIconEntityView(entity, parentDirView) {
     // private val zipEntity = entity
 
     override fun setIcon() {
