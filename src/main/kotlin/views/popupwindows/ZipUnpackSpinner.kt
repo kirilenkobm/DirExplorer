@@ -19,10 +19,6 @@ object ZipUnpackSpinner {
 
     // Function to show the spinner
     fun showSpinner(){
-        // Create a JDialog
-
-
-        // Create a JProgressBar
         val progressBar = JProgressBar().apply {
             isIndeterminate = true // Set to indeterminate mode
             border = EmptyBorder(20, 20, 20, 20) // Add some padding
@@ -34,11 +30,9 @@ object ZipUnpackSpinner {
             horizontalAlignment = SwingConstants.CENTER // Center the text
         }
 
-        // Add the progress bar and label to the dialog
+        // Add the progress bar and label to the dialog and show it
         dialog.add(progressBar, BorderLayout.CENTER)
-        dialog.add(label, BorderLayout.NORTH) // Add the label above the progress bar
-
-        // Show the dialog
+        dialog.add(label, BorderLayout.NORTH)
         dialog.isVisible = true
     }
 
