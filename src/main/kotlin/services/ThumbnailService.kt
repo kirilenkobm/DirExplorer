@@ -1,5 +1,6 @@
 package services
 
+import Constants
 import dataModels.ExplorerFile
 import kotlinx.coroutines.*
 import org.apache.pdfbox.pdmodel.PDDocument
@@ -13,6 +14,7 @@ import java.awt.image.BufferedImage
 import java.io.File
 import java.io.IOException
 import javax.imageio.ImageIO
+import javax.imageio.ImageReader
 import javax.imageio.metadata.IIOMetadataFormatImpl
 import javax.imageio.metadata.IIOMetadataNode
 import javax.swing.Icon
@@ -45,6 +47,8 @@ class ThumbnailService(
         val imagePreviewsSemaphore = SemaphoreManager.imagePreviewsSemaphore
         val textPreviewsSemaphore = SemaphoreManager.textPreviewsSemaphore
 
+        // if name contains many dots, the ImageIO.getReaderFileSuffixes() can be confused
+        // so correctedExtension contains the last possible extension
         val correctedExtension = fileEntity.extension.split(".").last().lowercase()
         val fileTypeStartsWithImage = fileEntity.fileType.startsWith("image/")
         val fileTypeStartsWithText = fileEntity.fileType.startsWith("text/")
@@ -53,6 +57,7 @@ class ThumbnailService(
         val fileExtensionIsText = Constants.textFileExtensionsNotInMime.contains(correctedExtension)
 
         if (fileTypeStartsWithImage && fileHasSupportedImageIOExtension) {
+            // Generate image's preview
             launch(Dispatchers.IO) {
                 imagePreviewsSemaphore.acquire()
                 try {
@@ -61,19 +66,8 @@ class ThumbnailService(
                     imagePreviewsSemaphore.release()
                 }
             }
-        } else if (fileTypeStartsWithText || fileExtensionIsText) {
-            launch(Dispatchers.IO) {
-                textPreviewsSemaphore.acquire()
-                try {
-                    val previewText = createTextPreview(fileEntity.path)
-                    if (!previewText.isNullOrEmpty()) {
-                        fileIcon.iconLabel.icon = createTextIcon(previewText)
-                    }
-                } finally {
-                    textPreviewsSemaphore.release()
-                }
-            }
         } else if (fileTypeIsPFD)  {
+            // Generate preview for PDF
             launch(Dispatchers.IO) {
                 imagePreviewsSemaphore.acquire()
                 try {
@@ -82,9 +76,28 @@ class ThumbnailService(
                     imagePreviewsSemaphore.release()
                 }
             }
+        } else if (fileTypeStartsWithText || fileExtensionIsText) {
+            // Generate preview for text file
+            launch(Dispatchers.IO) {
+                textPreviewsSemaphore.acquire()
+                try {
+                    val previewText = getTextForPreview(fileEntity.path)
+                    if (!previewText.isNullOrEmpty()) {
+                        fileIcon.iconLabel.icon = createTextIcon(previewText)
+                    }
+                } finally {
+                    textPreviewsSemaphore.release()
+                }
+            }
         }
     }
 
+    /**
+     * The same strategy for image and pdf.
+     * If it's already in the cache -> use cached
+     * If not -> try to extract
+     * if case of success -> add to cache
+     */
     private suspend fun getFromCacheOrGenerateThumbnail(mode: String) {
         val thumbnail: Icon? = iconCache[fileEntity.path]
         val usedFunction: (suspend () -> Icon?)? = when (mode) {
@@ -103,6 +116,9 @@ class ThumbnailService(
         }
     }
 
+    /**
+     * Given a piece of text, create an image.
+     */
     private fun createTextIcon(previewText: String): Icon {
         // Create an image containing text
         val image = BufferedImage(
@@ -115,14 +131,15 @@ class ThumbnailService(
         // Draw a white rectangle
         g.color = Color.WHITE
         g.fillRect(0, 0, Settings.iconSize, Settings.iconSize)
-
-        // Draw the text
         g.color = Color.BLACK
-        g.font = g.font.deriveFont(6f)
+        g.font = g.font.deriveFont(Constants.TEXT_PREVIEW_TEXT_SIZE)
 
         val lines = previewText.split("\n")
         for ((index, line) in lines.withIndex()) {
-            g.drawString(line, 4, 12 + index * 8)
+            g.drawString(
+                line,
+                Constants.TEXT_PREVIEW_INIT_XY_OFFSET,
+                Constants.TEXT_PREVIEW_INIT_XY_OFFSET + index * Constants.TEXT_PREVIEW_LINES_INTERVAL)
         }
 
         // Clean up
@@ -130,11 +147,11 @@ class ThumbnailService(
         return ImageIcon(image)
     }
 
-    private suspend fun createTextPreview(path: String): String? {
+    private suspend fun getTextForPreview(path: String): String? {
         return withContext(Dispatchers.IO) {
             try {
                 File(path).bufferedReader().useLines { lines ->
-                    lines.take(10).joinToString("\n")
+                    lines.take(Constants.TEXT_PREVIEW_NUM_LINES_TO_TAKE).joinToString("\n")
                 }
             } catch (e: Exception) {
                 // TODO: if could not read a text file: must be something wrong with it
@@ -145,10 +162,10 @@ class ThumbnailService(
     }
 
     private suspend fun createImageThumbnail(): Icon? {
-        // TODO: decomposition
         return withContext(Dispatchers.IO) {
             try {
                 val file = File(fileEntity.path)
+                // This way of extracting data from image suppose to be quicker
                 val imageInputStream = ImageIO.createImageInputStream(file)
                 val readers = ImageIO.getImageReaders(imageInputStream)
 
@@ -157,27 +174,19 @@ class ThumbnailService(
 
                     try {
                         reader.input = imageInputStream
-
-                        // try to extract the already existing thumbnail
-                        val metadata = reader.getImageMetadata(0)
-                        val standardTree = metadata.getAsTree(
-                            IIOMetadataFormatImpl.standardMetadataFormatName
-                        ) as IIOMetadataNode
-                        val childNodes = standardTree.getElementsByTagName("Thumbnail")
-
-                        if (childNodes.length > 0) {
-                            // Theoretically, several thumbnails can be included in the image
-                            val thumbnail = reader.readThumbnail(0, 0)
-                            return@withContext resizeThumbnail(thumbnail)
+                        // First, try to acquire thumbnail if it's already
+                        // included in the image file (can work for jpeg and tiff)
+                        val includedThumbnail = extractImageThumbnailIfExists(reader)
+                        if (includedThumbnail != null) {
+                            return@withContext resizeThumbnail(includedThumbnail)
                         }
 
                         // No thumbnail found -> just read the whole image
                         val width = reader.getWidth(reader.minIndex)
                         val height = reader.getHeight(reader.minIndex)
-                        val maxDim = max(width, height)
 
                         // Skip huge images
-                        if (maxDim > Settings.maxImageSizeToShowThumbnail)
+                        if (max(width, height) > Settings.maxImageSizeToShowThumbnail)
                         {
                             return@withContext null
                         }
@@ -203,6 +212,29 @@ class ThumbnailService(
         }
     }
 
+    /**
+     * Check if metadata tree contains a thumbnail.
+     * If yes -> just return it.
+     */
+    private fun extractImageThumbnailIfExists(reader: ImageReader): BufferedImage? {
+        // try to extract the already existing thumbnail
+        val metadata = reader.getImageMetadata(0)
+        val standardTree = metadata.getAsTree(
+            IIOMetadataFormatImpl.standardMetadataFormatName
+        ) as IIOMetadataNode
+        val childNodes = standardTree.getElementsByTagName("Thumbnail")
+
+        if (childNodes.length > 0) {
+            // Theoretically, several thumbnails can be included in the image
+            return reader.readThumbnail(0, 0)
+        }
+        return null
+    }
+
+    /**
+     * Generating PDF previews: just get 1st page and
+     * read as Buffered image using PDDocument library
+     */
     private fun generatePDFThumbnail(): Icon? {
         return try {
             val document = PDDocument.load(File(fileEntity.path))

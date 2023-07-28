@@ -39,6 +39,13 @@ object Constants {
     const val MAX_TEXT_PREVIEWS = 10
     const val MAX_UNZIPPED_DIRS = 1
 
+    // Thumbnail related
+    //// Text previews
+    const val TEXT_PREVIEW_INIT_XY_OFFSET = 4
+    const val TEXT_PREVIEW_TEXT_SIZE = 6f
+    const val TEXT_PREVIEW_LINES_INTERVAL = 7
+    const val TEXT_PREVIEW_NUM_LINES_TO_TAKE = 10
+
     // File extension related
     const val ZIP_EXTENSION = ".zip"
     val textFileExtensionsNotInMime = setOf(

@@ -1,10 +1,10 @@
 # Mandatory TODO List
 
 * Table view: sorting -> only after I fix view updates
-* BUG: filter crashes if I insert "?"
 * BUG: quit zip directory which is not yet unpacked
-* BUG: dark theme in grid view is broken again
 
+* ~~BUG: filter crashes if I insert "?"~~
+* ~~BUG: dark theme in grid view is broken again~~
 * ~~Make uniform icon size regardless on text length and image size~~
 * ~~Adaptive grid view~~
 * ~~Status bar with data like how many items in the directory, total size, etc~~
@@ -39,9 +39,11 @@
 # Prefer to do
 
 * If open in external app - warn about it?
-* Thumbnail LRU cache in zip files
 * Localization
 * Localization: Cyrillic languages
+* Think about filter's behaviour better
+* Deselect action too
+* ~~Thumbnail LRU cache in zip files~~
 * ~~Table - different color for even and odd rows~~
 * ~~Spinner when ZIP file is being unpacked~~
 * ~~On system event in a directory -> update cache accordingly, instead of calling getContents() again~~ -> WON'T DO
