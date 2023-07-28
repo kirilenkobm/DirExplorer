@@ -43,6 +43,7 @@
 * Localization: Cyrillic languages
 * Think about filter's behaviour better
 * Deselect action too
+* ~~Thumbnail generation: show as soon as are generated.~~
 * ~~Thumbnail LRU cache in zip files~~
 * ~~Table - different color for even and odd rows~~
 * ~~Spinner when ZIP file is being unpacked~~

@@ -4,14 +4,11 @@ import Constants
 import dataModels.*
 import services.EntityActionsHandler
 import state.ColorTheme
-import state.Settings
 import utils.Utils
 import views.directoryviews.GridDirectoryView
 import java.awt.*
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
-import javax.swing.BoxLayout
-import javax.swing.ImageIcon
 import javax.swing.JLabel
 import javax.swing.JPanel
 import javax.swing.SwingConstants
@@ -108,21 +105,6 @@ abstract class AbstractIconEntityView(
         textLabel.text = Utils.getFilenameForIcon(entity.name)
         textLabel.foreground = if (colorTheme == ColorTheme.LIGHT) Color.BLACK else Color.WHITE
         return wrapperPanel
-    }
-
-
-    fun resizeIcon(icon: ImageIcon): ImageIcon {
-        val image = icon.image
-        val imageWidth = image.getWidth(null)
-        val imageHeight = image.getHeight(null)
-
-        // If the image's width or height is already equal to Settings.iconSize,
-        // return the original icon - do not waste resources on rescaling
-        return if (imageWidth == Settings.iconSize || imageHeight == Settings.iconSize) {
-            icon
-        } else {
-            ImageIcon(image.getScaledInstance(Settings.iconSize, Settings.iconSize, Image.SCALE_DEFAULT))
-        }
     }
 
     fun setSelected(selected: Boolean) {

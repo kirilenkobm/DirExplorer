@@ -1,8 +1,11 @@
 package utils
 
+import state.Settings
+import java.awt.Image
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.regex.PatternSyntaxException
+import javax.swing.ImageIcon
 
 /**
  * Utility object that provides helper functions.
@@ -101,5 +104,19 @@ object Utils {
         }
 
         return "<html>$splitName</html>"
+    }
+
+    fun resizeIcon(icon: ImageIcon): ImageIcon {
+        val image = icon.image
+        val imageWidth = image.getWidth(null)
+        val imageHeight = image.getHeight(null)
+
+        // If the image's width or height is already equal to Settings.iconSize,
+        // return the original icon - do not waste resources on rescaling
+        return if (imageWidth == Settings.iconSize || imageHeight == Settings.iconSize) {
+            icon
+        } else {
+            ImageIcon(image.getScaledInstance(Settings.iconSize, Settings.iconSize, Image.SCALE_DEFAULT))
+        }
     }
 }

@@ -4,6 +4,7 @@ import dataModels.ExplorerFile
 import kotlinx.coroutines.*
 import services.ThumbnailService
 import state.ColorTheme
+import utils.Utils
 import views.IconManager
 import views.directoryviews.GridDirectoryView
 import kotlin.coroutines.CoroutineContext
@@ -19,7 +20,7 @@ class FileIconView(
 
     override fun setIcon() {
         // default base image
-        iconLabel.icon = resizeIcon(IconManager.getIconForFileType(fileEntity.fileType))
+        iconLabel.icon = Utils.resizeIcon(IconManager.getIconForFileType(fileEntity.fileType))
         // TODO: choose one of them
         thumbnailService.startThumbnailGeneration()
         // Start thumbnail generation without waiting for it to finish

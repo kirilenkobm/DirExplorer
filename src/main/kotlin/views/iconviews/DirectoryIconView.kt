@@ -2,6 +2,7 @@ package views.iconviews
 
 import dataModels.ExplorerDirectory
 import state.ColorTheme
+import utils.Utils
 import views.IconManager
 import views.directoryviews.GridDirectoryView
 
@@ -14,9 +15,9 @@ class DirectoryIconView(
 
     override fun setIcon() {
         iconLabel.icon = if (dirEntity.isEmpty) {
-            resizeIcon(IconManager.folderOpenIcon)
+            Utils.resizeIcon(IconManager.folderOpenIcon)
         } else {
-            resizeIcon(IconManager.folderIcon)
+            Utils.resizeIcon(IconManager.folderIcon)
         }
     }
 }

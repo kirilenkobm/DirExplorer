@@ -2,6 +2,7 @@ package views.iconviews
 
 import dataModels.UnknownEntity
 import state.ColorTheme
+import utils.Utils
 import views.IconManager
 import views.directoryviews.GridDirectoryView
 
@@ -14,6 +15,6 @@ class UnknownIconView(
     private val unknownEntity = entity
 
     override fun setIcon() {
-        iconLabel.icon = resizeIcon(IconManager.helpCenterIcon)
+        iconLabel.icon = Utils.resizeIcon(IconManager.helpCenterIcon)
     }
 }

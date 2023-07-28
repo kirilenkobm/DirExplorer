@@ -2,6 +2,7 @@ package views.iconviews
 
 import dataModels.ExplorerSymLink
 import state.ColorTheme
+import utils.Utils
 import views.IconManager
 import views.directoryviews.GridDirectoryView
 
@@ -13,6 +14,6 @@ class SymlinkIconView(
     private val linkEntity = entity
 
     override fun setIcon() {
-        iconLabel.icon = resizeIcon(IconManager.linkIcon)
+        iconLabel.icon = Utils.resizeIcon(IconManager.linkIcon)
     }
 }
