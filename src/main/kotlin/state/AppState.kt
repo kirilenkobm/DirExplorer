@@ -21,7 +21,6 @@ object AppState {
             DirectoryWatcher.startWatching(value)
         }
     var currentExtensionFilter: String = ""
-    // private var selectedExplorerFile: ExplorerFile? = null  // TODO: maybe UI layer?
     private var backStack: MutableList<ExplorableEntity> = mutableListOf()
     private var forwardStack: MutableList<ExplorableEntity> = mutableListOf()
     private const val HISTORY_SIZE = Constants.HISTORY_SIZE
@@ -67,7 +66,6 @@ object AppState {
                     backStack.add(currentExplorerDirectory)
                 }
                 if (clearForwardStack) forwardStack.clear()
-                currentExplorerDirectory.invalidateCache()
                 currentExplorerDirectory = newExplorerDirectory as ExplorerDirectory
             }
         } else if (pathExists && isReadable && isZipArchive){
@@ -77,15 +75,19 @@ object AppState {
             // TODO: idea works poorly with "back" and "forward" functions
             // add zip files to back and forward stack instead of tempDirNames
             val tempDir = (newExplorerDirectory as ZipArchive).extractTo()
-            currentExplorerDirectory.invalidateCache()
-            currentExplorerDirectory = ExplorerDirectory(tempDir.toString())
+            currentExplorerDirectory = if (tempDir != null) {
+                ExplorerDirectory(tempDir.toString())
+            } else {
+                val errorMessage = "Could not enter the ${newExplorerDirectory.path}"
+                showErrorDialog(errorMessage)
+                ExplorerDirectory(oldDirectoryInCaseOfError.path)
+            }
         } else {
             // Error occurred: show a message and recover the original state
             val errorMessage = when {
                 !pathExists -> "Error! Target directory ${newExplorerDirectory.path} does not exist"
                 !isDirectory -> "Error! ${newExplorerDirectory.path} is not a directory"
-                !isReadable -> "Error! Unable to access directory ${newExplorerDirectory.path}"
-                else -> "Unknown error"
+                else -> "Error! Unable to access directory ${newExplorerDirectory.path}"
             }
             showErrorDialog(errorMessage)  // Using showErrorDialog function defined in ErrorView.kt
             currentExplorerDirectory = ExplorerDirectory(oldDirectoryInCaseOfError.path)
@@ -122,6 +124,10 @@ object AppState {
             val newExplorerDirectory = forwardStack.removeAt(forwardStack.size - 1)
             updateDirectory(newExplorerDirectory, clearForwardStack = false)
         }
+    }
+
+    fun insideZip(): Boolean {
+        return false
     }
 
     fun updateFilter(newFilter: String) {

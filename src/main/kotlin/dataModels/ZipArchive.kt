@@ -17,6 +17,9 @@ class ZipArchive(override val path: String) : ExplorableEntity, CoroutineScope {
     private val job = Job()
     var tempDir: Path? = null
 
+    /** Remove temp dir if it's no longer needed
+     * by checking whether it's a part of the updated path.
+     */
     private val observer: DirectoryObserver = object : DirectoryObserver {
         override fun onDirectoryChanged(newDirectory: ExplorerDirectory) {
             val tempDir = this@ZipArchive.tempDir
@@ -36,7 +39,7 @@ class ZipArchive(override val path: String) : ExplorableEntity, CoroutineScope {
         get() = Dispatchers.Main + job
 
 
-    fun extractTo(): Path {
+    fun extractTo(): Path? {
         val parentDir = Paths.get(path).parent
         // create hidden temp directory
         val tempDirName = "." + Paths.get(path).fileName.toString() + "_" + UUID.randomUUID().toString().take(6)
@@ -66,7 +69,7 @@ class ZipArchive(override val path: String) : ExplorableEntity, CoroutineScope {
 
         // Return temp dir before the zip is unzipped
         // TODO: return optional, show error if null
-        return tempDir!!  // I hope it's safe...
+        return tempDir  // I hope it's safe...
     }
 
     fun cleanup() {

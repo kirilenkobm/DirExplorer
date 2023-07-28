@@ -34,20 +34,24 @@ class StatusBarView : JPanel(), CoroutineScope, DirectoryObserver, SettingsObser
         add(additionalLabel, BorderLayout.WEST)
         add(statusLabel, BorderLayout.EAST)
 
-        if (Settings.colorTheme == ColorTheme.LIGHT) {
-            background = Color.LIGHT_GRAY
-            statusLabel.foreground = Color.BLACK
-            additionalLabel.foreground = Color.BLACK
-        } else {
-            background = Color.DARK_GRAY
-            statusLabel.foreground = Color.LIGHT_GRAY
-            additionalLabel.foreground = Color.LIGHT_GRAY
-        }
+        setupColors()
         onDirectoryChanged(AppState.currentExplorerDirectory)
     }
 
     private fun updateAdditionalData() {
-        additionalLabel.text = "test"
+        // Indicate if hidden files are shown
+        val showingHiddenLabel = if (Settings.showHiddenFiles) {
+            "showing hidden files"
+        } else {
+            ""
+        }
+        // Indicate if we are inside a zip archive
+        val insideZipLabel = if (AppState.insideZip()) {
+            "inside a zip"
+        } else {
+            ""
+        }
+        additionalLabel.text = "$showingHiddenLabel $insideZipLabel"
     }
 
     private fun updateStatus(itemsCount: Int?, totalSize: Long?) {
@@ -57,6 +61,18 @@ class StatusBarView : JPanel(), CoroutineScope, DirectoryObserver, SettingsObser
             statusLabel.text = "Empty"
         } else {
             statusLabel.text = "Items: $itemsCount, Total size: ${Utils.humanReadableSize(totalSize)}"
+        }
+    }
+
+    private fun setupColors() {
+        if (Settings.colorTheme == ColorTheme.LIGHT) {
+            background = Color.LIGHT_GRAY
+            statusLabel.foreground = Color.BLACK
+            additionalLabel.foreground = Color.BLACK
+        } else {
+            background = Color.DARK_GRAY
+            statusLabel.foreground = Color.LIGHT_GRAY
+            additionalLabel.foreground = Color.LIGHT_GRAY
         }
     }
 
@@ -84,7 +100,9 @@ class StatusBarView : JPanel(), CoroutineScope, DirectoryObserver, SettingsObser
     }
 
     override fun onShowHiddenFilesChanged(newShowHiddenFiles: Boolean) {
-        // TODO: add or delete a mark about it?
+        // refresh the view
+        onDirectoryChanged(AppState.currentExplorerDirectory)
+
     }
 
     override fun onViewModeChanged(newViewMode: ViewMode) {
@@ -92,12 +110,6 @@ class StatusBarView : JPanel(), CoroutineScope, DirectoryObserver, SettingsObser
     }
 
     override fun onColorThemeChanged(newColorTheme: ColorTheme) {
-        if (newColorTheme == ColorTheme.LIGHT) {
-            background = Color.LIGHT_GRAY
-            statusLabel.foreground = Color.BLACK
-        } else {
-            background = Color.DARK_GRAY
-            statusLabel.foreground = Color.LIGHT_GRAY
-        }
+        setupColors()
     }
 }
