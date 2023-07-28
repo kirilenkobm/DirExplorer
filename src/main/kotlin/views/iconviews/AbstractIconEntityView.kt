@@ -2,6 +2,7 @@ package views.iconviews
 
 import Constants
 import dataModels.*
+import services.EntityActionsHandler
 import state.ColorTheme
 import state.Settings
 import utils.Utils
@@ -81,7 +82,7 @@ abstract class AbstractIconEntityView(
                     1 -> parentDirView.setSelectedIcon(this@AbstractIconEntityView)
                     2 -> {
                         parentDirView.setSelectedIcon(this@AbstractIconEntityView)
-                        parentDirView.performEntityAction(entity)
+                        EntityActionsHandler.performEntityAction(entity)
                     }
                 }
             }
@@ -97,7 +98,7 @@ abstract class AbstractIconEntityView(
         }
         add(entityPanel, gbc)
         preferredSize = Dimension(Constants.GRID_COLUMN_WIDTH, Constants.GRID_ROW_HEIGHT)
-        maximumSize = preferredSize
+        maximumSize = Dimension(Constants.GRID_COLUMN_WIDTH, Constants.GRID_ROW_HEIGHT)
     }
 
     protected abstract fun setIcon()

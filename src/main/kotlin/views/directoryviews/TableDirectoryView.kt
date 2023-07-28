@@ -4,6 +4,7 @@ import Constants
 import dataModels.*
 import kotlinx.coroutines.launch
 import services.DirectoryContentService
+import services.EntityActionsHandler
 import state.AppState
 import state.ColorTheme
 import state.Settings
@@ -186,7 +187,7 @@ class TableDirectoryView : AbstractDirectoryView() {
                     val row = table.rowAtPoint(e.point)
                     if (row >= 0 && row < filteredAndSortedContents.size) {
                         val entity = filteredAndSortedContents[row]
-                        performEntityAction(entity)
+                        EntityActionsHandler.performEntityAction(entity)
                     }
                 }
             }

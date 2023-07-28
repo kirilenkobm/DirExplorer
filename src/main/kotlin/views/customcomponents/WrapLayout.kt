@@ -82,7 +82,7 @@ class WrapLayout : FlowLayout {
             //  has not yet been calculated so lets ask for the maximum.
             var targetWidth: Int = target.getSize().width
             var container: Container = target
-            while (container.getSize().width === 0 && container.getParent() != null) {
+            while (container.size.width == 0 && container.getParent() != null) {
                 container = container.getParent()
             }
             targetWidth = container.getSize().width
@@ -115,7 +115,7 @@ class WrapLayout : FlowLayout {
                         rowWidth += hgap
                     }
                     rowWidth += d.width
-                    rowHeight = Math.max(rowHeight, d.height)
+                    rowHeight = rowHeight.coerceAtLeast(d.height)
                 }
             }
             addRow(dim, rowWidth, rowHeight)
@@ -124,10 +124,10 @@ class WrapLayout : FlowLayout {
 
             //	When using a scroll pane or the DecoratedLookAndFeel we need to
             //  make sure the preferred size is less than the size of the
-            //  target containter so shrinking the container size works
+            //  target container so shrinking the container size works
             //  correctly. Removing the horizontal gap is an easy way to do this.
             val scrollPane: Container? = SwingUtilities.getAncestorOfClass(JScrollPane::class.java, target)
-            if (scrollPane != null && target.isValid()) {
+            if (scrollPane != null && target.isValid) {
                 dim.width -= hgap + 1
             }
             return dim
