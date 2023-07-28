@@ -49,28 +49,33 @@ class TopBarView(private val frame: JFrame) : SettingsObserver {
         leftPanel.add(Box.createHorizontalStrut(20)) // add 100px of space
     }
 
-    private fun addAddressBarAndFilter() {
+    private fun setupAddressBarPanel(): JPanel {
         val addressBarPanel = addressBarView.getPanel()
         addressBarPanel.maximumSize = Dimension(addressBarPanel.maximumSize.width, addressBarPanel.preferredSize.height)
         addressBarPanel.preferredSize = Dimension(400, addressBarPanel.preferredSize.height)
         addressBarPanel.minimumSize = Dimension(400, addressBarPanel.preferredSize.height)
+        return addressBarPanel
+    }
 
-        val addressBar = addressBarView.getPanel()
-        val filterLabel = JLabel(" /*. ")
-        filterLabel.foreground = if (Settings.colorTheme == ColorTheme.LIGHT) {
-            Color.BLACK
-        } else {
-            Color.WHITE
-        }
-        filterLabel.font = Font("Arial", Font.PLAIN, 14)
+    private fun setupFilterView(addressBarHeight: Int): JPanel {
         val filterView = filterPanel.getPanel()
-
-        val addressBarHeight = addressBar.preferredSize.height
         filterView.preferredSize = Dimension(filterView.preferredSize.width, addressBarHeight)
         filterView.minimumSize = Dimension(filterView.minimumSize.width, addressBarHeight)
         filterView.maximumSize = Dimension(filterView.maximumSize.width, addressBarHeight)
+        return filterView
+    }
 
-        leftPanel.add(addressBar)
+    private fun addAddressBarAndFilter() {
+        val addressBarPanel = setupAddressBarPanel()
+
+        val filterLabel = JLabel(" /*. ").apply {
+            foreground = if (Settings.colorTheme == ColorTheme.LIGHT) Color.BLACK else Color.WHITE
+            font = Font("Arial", Font.PLAIN, 14)
+        }
+
+        val filterView = setupFilterView(addressBarPanel.preferredSize.height)
+
+        leftPanel.add(addressBarPanel)
         leftPanel.add(filterLabel)
         leftPanel.add(filterView)
     }
@@ -122,6 +127,8 @@ class TopBarView(private val frame: JFrame) : SettingsObserver {
         }
     }
 
+    // Buttons are almost the same, to avoid code duplication
+    // I created an abstract button
     private fun <T : AbstractButton> createButtonWithIcon(
         button: T,
         iconArg: ImageIcon,
@@ -151,26 +158,28 @@ class TopBarView(private val frame: JFrame) : SettingsObserver {
         return topBar
     }
 
+    // not applicable here
     override fun onShowHiddenFilesChanged(newShowHiddenFiles: Boolean) { }
 
+    // not applicable here
     override fun onViewModeChanged(newViewMode: ViewMode) { }
 
-    override fun onColorThemeChanged(newColorTheme: ColorTheme) {
-        // remove all components
-        leftPanel.removeAll()
-        rightPanel.removeAll()
-
-        // recreate panel
-        configurePanel()
-
-        // update view
-        addressBarView.updateView()
-        filterPanel.updateView()
-
-        // revalidate and repaint
+    private fun refreshUIComponents() {
         leftPanel.revalidate()
         leftPanel.repaint()
         rightPanel.revalidate()
         rightPanel.repaint()
+    }
+
+    override fun onColorThemeChanged(newColorTheme: ColorTheme) {
+        // remove all components and recreate the panel
+        leftPanel.removeAll()
+        rightPanel.removeAll()
+        configurePanel()
+
+        // update subviews
+        addressBarView.updateView()
+        filterPanel.updateView()
+        refreshUIComponents()
     }
 }
