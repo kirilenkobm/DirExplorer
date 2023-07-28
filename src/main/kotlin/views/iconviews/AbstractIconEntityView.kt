@@ -1,5 +1,6 @@
 package views.iconviews
 
+import Constants
 import dataModels.*
 import state.ColorTheme
 import state.Settings
@@ -23,9 +24,7 @@ abstract class AbstractIconEntityView(
     private val textLabel = JLabel()
     private val entityPanel = JPanel()
     private val wrapperPanel = JPanel(GridBagLayout())
-    private val maxNameLen = 24
     // private val maxExtensionLen = 7
-    private val maxIconHeight = 120
 
     init {
         val gbc = GridBagConstraints()
@@ -45,7 +44,10 @@ abstract class AbstractIconEntityView(
         entityPanel.add(iconLabel)
         entityPanel.add(textLabel)
 
-        entityPanel.maximumSize = Dimension(entityPanel.maximumSize.width, maxIconHeight)
+        entityPanel.maximumSize = Dimension(
+            entityPanel.maximumSize.width,
+            Constants.GRIG_ROW_HEIGHT
+        )
         wrapperPanel.add(entityPanel, gbc)
         entityPanel.isOpaque = false
 
@@ -102,8 +104,8 @@ abstract class AbstractIconEntityView(
         val extension = filename.substringAfterLast(".", "")
         val nameWithoutExtension = filename.substringBeforeLast(".")
 
-        val finalName = if (filename.length > maxNameLen) {
-            val trimLength = maxOf(0, maxNameLen - extension.length - 3)
+        val finalName = if (filename.length > Constants.MAX_SHOWN_NAME_LENGTH) {
+            val trimLength = maxOf(0, Constants.MAX_SHOWN_NAME_LENGTH - extension.length - 3)
             val trimmedName = nameWithoutExtension.take(trimLength)
             "$trimmedName...$extension"
         } else {
@@ -111,24 +113,23 @@ abstract class AbstractIconEntityView(
         }
 
         // split into two lines if it's too long
-        val splitName = if (finalName.length > maxNameLen / 2) {
+        val splitName = if (finalName.length > Constants.MAX_SHOWN_NAME_LENGTH / 2) {
             val firstHalf = finalName.take(finalName.length / 2)
             val secondHalf = finalName.substring(finalName.length / 2)
             "$firstHalf<br>$secondHalf"
         } else {
-            finalName
+            "$finalName<br>"
         }
 
-        val filenameToShow = "<html>$splitName</html>"
-        return filenameToShow
+        return "<html>$splitName</html>"
     }
 
     fun setSelected(selected: Boolean) {
         if (selected) {
-            entityPanel.background = Color(66, 135, 245, 255)
+            entityPanel.background = Constants.SELECTION_COLOR
             entityPanel.isOpaque = true
         } else {
-            entityPanel.background = Color(0, 0, 0, 0)
+            entityPanel.background = Constants.TRANSPARENT_COLOR
             entityPanel.isOpaque = false
         }
     }

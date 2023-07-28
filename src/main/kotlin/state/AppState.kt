@@ -24,7 +24,6 @@ object AppState {
     var currentExtensionFilter: String = ""
     private var backStack: MutableList<ExplorableEntity> = mutableListOf()
     private var forwardStack: MutableList<ExplorableEntity> = mutableListOf()
-    private const val HISTORY_SIZE = Constants.HISTORY_SIZE
     private val directoryObservers: MutableList<DirectoryObserver> = mutableListOf()
     private val observersToRemove: MutableList<DirectoryObserver> = mutableListOf()
     // Track all zipArchives that were present during the session to remove
@@ -61,7 +60,7 @@ object AppState {
             if (newPath != oldPath) {
                 // This check should not throw an error -> just do nothing
                 if (addToBackStack) {
-                    if (backStack.size >= HISTORY_SIZE) {
+                    if (backStack.size >= Constants.HISTORY_SIZE) {
                         backStack.removeAt(0)
                     }
                     backStack.add(currentExplorerDirectory)

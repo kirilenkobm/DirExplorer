@@ -40,13 +40,15 @@ class TableDirectoryView : AbstractDirectoryView() {
             override fun prepareRenderer(renderer: TableCellRenderer, row: Int, column: Int): Component {
                 val component = super.prepareRenderer(renderer, row, column)
                 if (isRowSelected(row)) {
-                    component.background = Color.BLUE
+                    component.background = Constants.SELECTION_COLOR
                 } else if (Settings.colorTheme == ColorTheme.LIGHT) {
-                    val color = if (row % 2 == 0) Color(237, 237, 237) else Color.WHITE
-                    component.background = color
+                    component.background =
+                        if (row % 2 == 0) Constants.TABLE_EVEN_ROW_LIGHT_THEME_COLOR
+                        else Color.WHITE
                 } else {
-                    val color = if (row % 2 == 0) Color(50, 50, 50) else Color(30, 30, 30)
-                    component.background = color
+                    component.background =
+                        if (row % 2 == 0) Constants.TABLE_EVEN_ROW_DARK_THEME_COLOR
+                        else Constants.TABLE_ODD_ROW_DARK_THEME_COLOR
                 }
                 return component
             }
@@ -62,20 +64,25 @@ class TableDirectoryView : AbstractDirectoryView() {
             setupTableMouseListener()
 
             // Set the column width here
-            table.columnModel.getColumn(0).preferredWidth = 20
-            table.columnModel.getColumn(0).maxWidth = 20
-            if (Settings.colorTheme == ColorTheme.LIGHT) {
-                table.background = Constants.BACKGROUND_COLOR_LIGHT
-                table.foreground = Color.DARK_GRAY
-                table.tableHeader.background = Constants.DEFAULT_SWING_BACKGROUND_COLOR
-                table.tableHeader.foreground = Color.BLACK
+            table.columnModel.getColumn(0).preferredWidth = Constants.TABLE_VIEW_FIRST_COL_SIZE
+            table.columnModel.getColumn(0).maxWidth = Constants.TABLE_VIEW_FIRST_COL_SIZE
+            setTableColors()
 
-            } else {
-                table.background = Constants.BACKGROUND_COLOR_DARK
-                table.foreground = Color.LIGHT_GRAY
-                table.tableHeader.background = Color.DARK_GRAY
-                table.tableHeader.foreground = Color.WHITE
-            }
+        }
+    }
+
+    private fun setTableColors() {
+        if (Settings.colorTheme == ColorTheme.LIGHT) {
+            table.background = Constants.BACKGROUND_COLOR_LIGHT
+            table.foreground = Color.DARK_GRAY
+            table.tableHeader.background = Constants.DEFAULT_SWING_BACKGROUND_COLOR
+            table.tableHeader.foreground = Color.BLACK
+
+        } else {
+            table.background = Constants.BACKGROUND_COLOR_DARK
+            table.foreground = Color.LIGHT_GRAY
+            table.tableHeader.background = Color.DARK_GRAY
+            table.tableHeader.foreground = Color.WHITE
         }
     }
 
@@ -164,19 +171,7 @@ class TableDirectoryView : AbstractDirectoryView() {
                 table.columnModel.getColumn(0).preferredWidth = firstColumnWidth
                 table.columnModel.getColumn(0).maxWidth = firstColumnWidth
 
-                // TODO: create a separate function
-                if (Settings.colorTheme == ColorTheme.LIGHT) {
-                    table.background = Constants.BACKGROUND_COLOR_LIGHT
-                    table.foreground = Color.DARK_GRAY
-                    table.tableHeader.background = Constants.DEFAULT_SWING_BACKGROUND_COLOR
-                    table.tableHeader.foreground = Color.BLACK
-
-                } else {
-                    table.background = Constants.BACKGROUND_COLOR_DARK
-                    table.foreground = Color.LIGHT_GRAY
-                    table.tableHeader.background = Color.DARK_GRAY
-                    table.tableHeader.foreground = Color.WHITE
-                }
+                setTableColors()
             }
         }
 
