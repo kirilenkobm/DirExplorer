@@ -2,46 +2,42 @@ package views.iconviews
 
 import dataModels.ExplorerFile
 import kotlinx.coroutines.*
+import services.ThumbnailService
 import state.ColorTheme
 import views.IconManager
-import views.directoryviews.IconsDirectoryView
-import javax.swing.SwingUtilities
+import views.directoryviews.GridDirectoryView
 import kotlin.coroutines.CoroutineContext
 
 
 class FileIconView(
     entity: ExplorerFile,
-    parentDirView: IconsDirectoryView,
+    parentDirView: GridDirectoryView,
     colorTheme: ColorTheme
-): AbstractIconEntityView(entity, parentDirView, colorTheme), CoroutineScope {
+): AbstractIconEntityView(entity, parentDirView, colorTheme) {
     private val fileEntity = entity
-    private val job = Job()
-
-    override val coroutineContext: CoroutineContext
-        get() = Dispatchers.Main + job
+    private val thumbnailService = ThumbnailService(fileEntity, this)
 
     override fun setIcon() {
         // default base image
         iconLabel.icon = resizeIcon(IconManager.getIconForFileType(fileEntity.fileType))
-
+        // TODO: choose one of them
+        thumbnailService.startThumbnailGeneration()
         // Start thumbnail generation without waiting for it to finish
-        val thumbnailDeferred = fileEntity.startThumbnailGeneration()
 
-        // Launch a new coroutine to update the UI as soon as the thumbnail is ready
-        launch {
-            val thumbnail = thumbnailDeferred.await()
-
-            // If the thumbnail is not null, set it
-            if (thumbnail != null) {
-                SwingUtilities.invokeLater {
-                    iconLabel.icon = thumbnail
-                }
-            }
-        }
+//        val thumbnailDeferred = fileEntity.startThumbnailGeneration()
+//
+//        // Launch a new coroutine to update the UI as soon as the thumbnail is ready
+//        launch {
+//            val thumbnail = thumbnailDeferred.await()
+//
+//            // If the thumbnail is not null, set it
+//            if (thumbnail != null) {
+//                iconLabel.icon = thumbnail
+//            }
+//        }
     }
 
     fun dispose() {
-        job.cancel()
-        fileEntity.dispose()
+        thumbnailService.dispose()
     }
 }

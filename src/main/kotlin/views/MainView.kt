@@ -4,7 +4,7 @@ import Constants
 import dataModels.DirectoryObserver
 import dataModels.ExplorerDirectory
 import state.*
-import views.directoryviews.IconsDirectoryView
+import views.directoryviews.GridDirectoryView
 import views.directoryviews.TableDirectoryView
 import java.awt.*
 import javax.swing.JFrame
@@ -16,7 +16,7 @@ class MainView: DirectoryObserver, SettingsObserver {
     private val frame = JFrame("DirExplorer")
     private val topBarView = TopBarView(frame)
     private val tableView = TableDirectoryView()
-    private val iconsView = IconsDirectoryView()
+    private val iconsView = GridDirectoryView()
     private val mainPanel = JPanel(BorderLayout())
     private val statusBarView = StatusBarView()
 
@@ -59,8 +59,8 @@ class MainView: DirectoryObserver, SettingsObserver {
             ViewMode.ICONS -> {
                 val scrollPane = JScrollPane(iconsView.getPanel())
                 scrollPane.border = null
-                scrollPane.horizontalScrollBarPolicy = JScrollPane.HORIZONTAL_SCROLLBAR_NEVER // disable horizontal scrolling
-                scrollPane.verticalScrollBarPolicy = JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED // enable vertical scrolling
+                scrollPane.horizontalScrollBarPolicy = JScrollPane.HORIZONTAL_SCROLLBAR_NEVER
+                scrollPane.verticalScrollBarPolicy = JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED
                 mainPanel.add(scrollPane, BorderLayout.CENTER)
             }
         }
@@ -73,7 +73,6 @@ class MainView: DirectoryObserver, SettingsObserver {
     /**
      * When the AppState notifies the MainView about the
      * change of the current directory.
-     * Update the view at least.
      */
     override fun onDirectoryChanged(newDirectory: ExplorerDirectory) {
         // No need to do anything here if the views update themselves

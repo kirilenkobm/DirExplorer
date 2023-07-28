@@ -11,7 +11,6 @@ import state.SortOrder
 
 // Open to allow inheritance in ZipArchive
 open class ExplorerDirectory(override val path: String): ExplorableEntity {
-    var sortOrder: SortOrder = SortOrder.TYPE
     private var contentsCache: List<FileSystemEntity>? = null
     private val mutex = Mutex()
 
@@ -72,7 +71,6 @@ open class ExplorerDirectory(override val path: String): ExplorableEntity {
             0L
         }
     }
-
 
     fun invalidateCache() {
         contentsCache = null

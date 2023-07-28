@@ -3,6 +3,7 @@ package views.directoryviews
 import Constants
 import dataModels.*
 import kotlinx.coroutines.launch
+import services.DirectoryContentService
 import state.AppState
 import state.ColorTheme
 import state.Settings
@@ -31,6 +32,7 @@ class TableDirectoryView : AbstractDirectoryView() {
     private var filteredAndSortedContents: List<FileSystemEntity> = emptyList()
     private val bundle = ResourceBundle.getBundle("languages/Messages", Settings.language.getLocale())
     private val firstColumnWidth = 20
+    private val contentService = DirectoryContentService()
 
     init {
         // Override prepareRenderer to make even and odd rows colored differently
@@ -38,10 +40,10 @@ class TableDirectoryView : AbstractDirectoryView() {
             override fun prepareRenderer(renderer: TableCellRenderer, row: Int, column: Int): Component {
                 val component = super.prepareRenderer(renderer, row, column)
                 if (Settings.colorTheme == ColorTheme.LIGHT) {
-                    val color = if (row % 2 == 0) Color(237, 237, 237) else Color.WHITE // Change colors as needed for light theme
+                    val color = if (row % 2 == 0) Color(237, 237, 237) else Color.WHITE
                     component.background = color
                 } else {
-                    val color = if (row % 2 == 0) Color(50, 50, 50) else Color(30, 30, 30) // Change colors as needed for dark theme
+                    val color = if (row % 2 == 0) Color(50, 50, 50) else Color(30, 30, 30)
                     component.background = color
                 }
                 return component
@@ -52,8 +54,7 @@ class TableDirectoryView : AbstractDirectoryView() {
         table.border = null
 
         launch {
-            currentContents = AppState.currentExplorerDirectory.getContents()
-            filteredAndSortedContents = filterAndSortContents(currentContents)
+            filteredAndSortedContents = contentService.generateContentForView()
             model = createTableModel()
             table.model = model
             setupTableMouseListener()
@@ -147,8 +148,7 @@ class TableDirectoryView : AbstractDirectoryView() {
 
     override fun updateView() {
         launch {
-            currentContents = AppState.currentExplorerDirectory.getContents()
-            filteredAndSortedContents = filterAndSortContents(currentContents)
+            filteredAndSortedContents = contentService.generateContentForView()
             val data = mapEntitiesToData()
 
             SwingUtilities.invokeLater {

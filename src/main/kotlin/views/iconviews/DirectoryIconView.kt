@@ -2,13 +2,12 @@ package views.iconviews
 
 import dataModels.ExplorerDirectory
 import state.ColorTheme
-import state.ViewMode
 import views.IconManager
-import views.directoryviews.IconsDirectoryView
+import views.directoryviews.GridDirectoryView
 
 class DirectoryIconView(
     entity: ExplorerDirectory,
-    parentDirView: IconsDirectoryView,
+    parentDirView: GridDirectoryView,
     colorTheme: ColorTheme
 ): AbstractIconEntityView(entity, parentDirView, colorTheme) {
     private val dirEntity = entity

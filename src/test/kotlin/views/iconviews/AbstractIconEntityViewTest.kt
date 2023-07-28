@@ -1,6 +1,6 @@
 package views.iconviews
 
-import views.directoryviews.IconsDirectoryView
+import views.directoryviews.GridDirectoryView
 import dataModels.ExplorerDirectory
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
@@ -8,7 +8,7 @@ import state.ColorTheme
 
 class AbstractIconEntityViewTest {
     private val testDirectory = ExplorerDirectory(System.getProperty("user.home"))
-    private val testParentView = IconsDirectoryView()
+    private val testParentView = GridDirectoryView()
     private val iconEntityView = DirectoryIconView(testDirectory, testParentView, ColorTheme.LIGHT)
 
     @Test

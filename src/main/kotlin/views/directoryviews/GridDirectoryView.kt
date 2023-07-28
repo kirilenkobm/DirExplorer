@@ -3,6 +3,7 @@ package views.directoryviews
 import Constants
 import dataModels.*
 import kotlinx.coroutines.launch
+import services.DirectoryContentService
 import state.*
 import views.WrapLayout
 import views.iconviews.*
@@ -11,13 +12,15 @@ import javax.swing.JPanel
 import javax.swing.SwingUtilities
 
 
-class IconsDirectoryView : AbstractDirectoryView() {
+class GridDirectoryView : AbstractDirectoryView() {
     private val gridPanel = JPanel()
     private val panel = JPanel(BorderLayout())
     private var filteredAndSortedContents: List<FileSystemEntity> = emptyList()
     // Limit number of thumbnails rendered at once
     private val fileIconViews = mutableListOf<FileIconView>()  // keep track of all launched thumbnail generation jobs
     private var selectedView: AbstractIconEntityView? = null  // TODO: move down to IconView
+    private val contentService = DirectoryContentService()
+
     // private val columnWidth = 90
 
     init {
@@ -80,8 +83,7 @@ class IconsDirectoryView : AbstractDirectoryView() {
         }
 
         launch {
-            currentContents = AppState.currentExplorerDirectory.getContents()
-            filteredAndSortedContents = filterAndSortContents(currentContents)
+            filteredAndSortedContents = contentService.generateContentForView()
             SwingUtilities.invokeLater {
                 gridPanel.removeAll()
                 updateLayout()

@@ -1,7 +1,7 @@
 package utils
 
 import java.text.SimpleDateFormat
-import java.util.Date
+import java.util.*
 
 /**
  * Utility object that provides helper functions.
@@ -35,5 +35,36 @@ object Utils {
      */
     fun formatDate(unixTime: Long): String {
         return dateFormat.format(Date(unixTime))
+    }
+
+    /**
+     * Function to check whether file extension matches the extension filter.
+     */
+    fun matchesExtension(entityExtensionRaw: String, filterExtensionRaw: String): Boolean {
+        // Maybe case-insensitive is better?
+        val entityExtension = entityExtensionRaw.lowercase(Locale.getDefault())
+        val filterExtension = filterExtensionRaw.lowercase()
+        // Check if filter starts with ~ and should invert the result
+        val invertResult = filterExtension.startsWith("~")
+        val cleanedFilter = if (invertResult) filterExtension.drop(1) else filterExtension
+
+        // if there is a full match, return true (or false if inverted)
+        if(entityExtension == cleanedFilter) return !invertResult
+
+        // check for partial match in case of complex extension
+        val entitySubExtensions = entityExtension.split('.')
+        if (!invertResult) {
+            if (entitySubExtensions.any { it == filterExtension }) return true
+        } else {
+            if (entitySubExtensions.none { it == filterExtension }) return true
+        }
+
+        // check for match with regex pattern
+        val regexPattern = filterExtension
+            .replace("*", ".*")
+
+        val regex = regexPattern.toRegex()
+        val matches = regex.containsMatchIn(entityExtension)
+        return if (invertResult) !matches else matches
     }
 }

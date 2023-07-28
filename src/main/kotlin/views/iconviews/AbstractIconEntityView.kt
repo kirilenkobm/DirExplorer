@@ -1,12 +1,9 @@
 package views.iconviews
 
-import Constants
 import dataModels.*
 import state.ColorTheme
 import state.Settings
-import state.SettingsObserver
-import state.ViewMode
-import views.directoryviews.IconsDirectoryView
+import views.directoryviews.GridDirectoryView
 import java.awt.*
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
@@ -19,10 +16,10 @@ import javax.swing.SwingConstants
 
 abstract class AbstractIconEntityView(
     private val entity: FileSystemEntity,
-    private val parentDirView: IconsDirectoryView,
+    private val parentDirView: GridDirectoryView,
     private val colorTheme: ColorTheme)
 {
-    protected val iconLabel = JLabel()
+    val iconLabel = JLabel()
     private val textLabel = JLabel()
     private val entityPanel = JPanel()
     private val wrapperPanel = JPanel(GridBagLayout())

@@ -3,11 +3,11 @@ package views.iconviews
 import dataModels.ExplorerSymLink
 import state.ColorTheme
 import views.IconManager
-import views.directoryviews.IconsDirectoryView
+import views.directoryviews.GridDirectoryView
 
 class SymlinkIconView(
     entity: ExplorerSymLink,
-    parentDirView: IconsDirectoryView,
+    parentDirView: GridDirectoryView,
     colorTheme: ColorTheme
 ): AbstractIconEntityView(entity, parentDirView, colorTheme) {
     private val linkEntity = entity

@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 
 class AbstractDirectoryViewTest {
-    private val abstractDirectoryView = IconsDirectoryView()
+    private val abstractDirectoryView = GridDirectoryView()
 
     @Test
     fun `matchesExtension$DirExplorer`() {

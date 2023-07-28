@@ -3,6 +3,7 @@ package state
 import Constants
 import dataModels.*
 import kotlinx.coroutines.sync.Semaphore
+import services.DirectoryWatcher
 import views.showErrorDialog
 import java.nio.file.Files
 import java.nio.file.Paths

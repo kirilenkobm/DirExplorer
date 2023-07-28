@@ -1,5 +1,6 @@
-package dataModels
+package services
 
+import dataModels.ExplorerDirectory
 import kotlinx.coroutines.*
 import state.AppState
 import java.nio.file.FileSystems
