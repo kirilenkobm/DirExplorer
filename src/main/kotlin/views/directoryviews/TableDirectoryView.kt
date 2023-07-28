@@ -39,7 +39,9 @@ class TableDirectoryView : AbstractDirectoryView() {
         table = object : JTable() {
             override fun prepareRenderer(renderer: TableCellRenderer, row: Int, column: Int): Component {
                 val component = super.prepareRenderer(renderer, row, column)
-                if (Settings.colorTheme == ColorTheme.LIGHT) {
+                if (isRowSelected(row)) {
+                    component.background = Color.BLUE
+                } else if (Settings.colorTheme == ColorTheme.LIGHT) {
                     val color = if (row % 2 == 0) Color(237, 237, 237) else Color.WHITE
                     component.background = color
                 } else {
