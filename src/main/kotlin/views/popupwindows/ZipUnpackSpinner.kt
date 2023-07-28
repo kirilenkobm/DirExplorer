@@ -11,28 +11,25 @@ import javax.swing.border.EmptyBorder
  * Object that controls whether a zip unpacking bar is shown or not.
  */
 object ZipUnpackSpinner {
-    private val dialog = JDialog().apply {
-        setSize(200, 150)
-        setLocationRelativeTo(null) // Center on screen
-        layout = BorderLayout()
+    private val progressBar = JProgressBar().apply {
+        isIndeterminate = true
+        border = EmptyBorder(20, 20, 20, 20)
     }
 
-    // Function to show the spinner
-    fun showSpinner(){
-        val progressBar = JProgressBar().apply {
-            isIndeterminate = true // Set to indeterminate mode
-            border = EmptyBorder(20, 20, 20, 20) // Add some padding
-        }
+    private val label = JLabel("Unpacking zip...").apply {
+        border = EmptyBorder(10, 10, 10, 10)
+        horizontalAlignment = SwingConstants.CENTER
+    }
 
-        // Create a JLabel for the message
-        val label = JLabel("Unpacking zip...").apply {
-            border = EmptyBorder(10, 10, 10, 10) // Add some padding
-            horizontalAlignment = SwingConstants.CENTER // Center the text
-        }
+    private val dialog = JDialog().apply {
+        setSize(200, 150)
+        setLocationRelativeTo(null)
+        layout = BorderLayout()
+        add(progressBar, BorderLayout.CENTER)
+        add(label, BorderLayout.NORTH)
+    }
 
-        // Add the progress bar and label to the dialog and show it
-        dialog.add(progressBar, BorderLayout.CENTER)
-        dialog.add(label, BorderLayout.NORTH)
+    fun showSpinner() {
         dialog.isVisible = true
     }
 
