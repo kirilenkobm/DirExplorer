@@ -57,35 +57,47 @@ class GridDirectoryView : AbstractDirectoryView() {
     }
 
     override fun updateView() {
-        // Cancel all ongoing thumbnail generation tasks
-        for (view in fileIconViews) {
-            view.dispose()
-        }
-        fileIconViews.clear()
+        cancelThumbnailGenerationTasks()
 
         launch {
             filteredAndSortedContents = contentService.generateContentForView()
             SwingUtilities.invokeLater {
                 setBackgroundColor()
-                gridPanel.removeAll()
-                updateLayout()
+                clearAndRedrawGridPanel()
+                revalidateAndRepaintScrollPane()
+            }
+        }
+    }
 
-                for (entity in filteredAndSortedContents) {
-                    val entityIcon = createEntityView(entity)
-                    entityIcon.isOpaque = false
-                    gridPanel.add(entityIcon)
-                }
+    private fun cancelThumbnailGenerationTasks() {
+        fileIconViews.forEach { it.dispose() }
+        fileIconViews.clear()
+    }
 
-                gridPanel.revalidate()
-                gridPanel.repaint()
-                // Had to add this bc otherwise if a directory contains
-                // too many items, vertical scroll might be not present
-                // at rare occasion. ? to avoid NullPointerException
-                if (gridPanel.parent?.parent is JScrollPane) {
-                    (gridPanel.parent?.parent as JScrollPane?)?.revalidate()
-                    (gridPanel.parent?.parent as JScrollPane?)?.repaint()
-                }
+    private fun clearAndRedrawGridPanel() {
+        gridPanel.removeAll()
+        updateLayout()
 
+        for (entity in filteredAndSortedContents) {
+            val entityIcon = createEntityView(entity)
+            entityIcon.isOpaque = false
+            gridPanel.add(entityIcon)
+        }
+
+        gridPanel.revalidate()
+        gridPanel.repaint()
+    }
+
+    /**
+     * Had to add this because otherwise if a directory contains
+     * too many items, vertical scroll might be not present
+     * at rare occasion. ? to avoid NullPointerException
+     */
+    private fun revalidateAndRepaintScrollPane() {
+        if (gridPanel.parent?.parent is JScrollPane) {
+            (gridPanel.parent?.parent as JScrollPane?)?.apply {
+                revalidate()
+                repaint()
             }
         }
     }
