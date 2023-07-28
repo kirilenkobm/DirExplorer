@@ -22,12 +22,7 @@ class GridDirectoryView : AbstractDirectoryView() {
     private val contentService = DirectoryContentService()
 
     init {
-        gridPanel.isOpaque = false
-        gridPanel.background = if (Settings.colorTheme == ColorTheme.LIGHT) {
-            Constants.BACKGROUND_COLOR_LIGHT
-        } else {
-            Constants.BACKGROUND_COLOR_DARK
-        }
+        setBackgroundColor()
         updateView()
     }
 
@@ -72,6 +67,7 @@ class GridDirectoryView : AbstractDirectoryView() {
         launch {
             filteredAndSortedContents = contentService.generateContentForView()
             SwingUtilities.invokeLater {
+                setBackgroundColor()
                 gridPanel.removeAll()
                 updateLayout()
 
@@ -100,6 +96,14 @@ class GridDirectoryView : AbstractDirectoryView() {
         selectedView?.setSelected(false)
         iconView.setSelected(true)
         selectedView = iconView
+    }
+
+    private fun setBackgroundColor() {
+        gridPanel.background = if (Settings.colorTheme == ColorTheme.LIGHT) {
+            Constants.BACKGROUND_COLOR_LIGHT
+        } else {
+            Constants.BACKGROUND_COLOR_DARK
+        }
     }
 
     fun getPanel(): JPanel {

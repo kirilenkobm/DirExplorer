@@ -23,8 +23,8 @@ abstract class AbstractIconEntityView(
 {
     // The icon view must look like a vertical stack
     // Top element - frame of the same size, regardless on the icon size
-    // icon is sentered in this frame
-    // Text -> the same size too, but having lesses height
+    // icon is centered in this frame
+    // Text -> the same size too, but having lesser height
     // text aligned to top by y-axis, to center by x-axis
     val iconLabel = JLabel().apply {
         horizontalAlignment = SwingConstants.CENTER
@@ -37,7 +37,10 @@ abstract class AbstractIconEntityView(
     }
 
     private val textPanel = JPanel(BorderLayout()).apply {
-        preferredSize = Dimension(90, 35)
+        preferredSize = Dimension(
+            Constants.GRID_COLUMN_WIDTH,
+            Constants.GRID_TEXT_FRAME_HEIGHT
+        )
         maximumSize = preferredSize
         isOpaque = false
         add(textLabel, BorderLayout.NORTH)
@@ -55,7 +58,10 @@ abstract class AbstractIconEntityView(
         constraints.weighty = 1.0
         constraints.fill = GridBagConstraints.BOTH
         constraints.insets = Insets(0, 0, 0, 0)
-        iconLabel.preferredSize = Dimension(90, 85)
+        iconLabel.preferredSize = Dimension(
+            Constants.GRID_COLUMN_WIDTH,
+            Constants.GRID_IMAGE_FRAME_HEIGHT
+        )
         iconLabel.maximumSize = iconLabel.preferredSize
         add(iconLabel, constraints)
 
@@ -63,7 +69,10 @@ abstract class AbstractIconEntityView(
         constraints.gridy = 1
         add(textPanel, constraints)
 
-        preferredSize = Dimension(90, 120)
+        preferredSize = Dimension(
+            Constants.GRID_COLUMN_WIDTH,
+            Constants.GRID_ROW_HEIGHT
+        )
         maximumSize = preferredSize
         isOpaque = false
         addMouseListener(object : MouseAdapter() {
@@ -87,7 +96,7 @@ abstract class AbstractIconEntityView(
             weighty = 1.0
         }
         add(entityPanel, gbc)
-        preferredSize = Dimension(90, 120)
+        preferredSize = Dimension(Constants.GRID_COLUMN_WIDTH, Constants.GRID_ROW_HEIGHT)
         maximumSize = preferredSize
     }
 

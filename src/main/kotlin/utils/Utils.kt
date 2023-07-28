@@ -91,7 +91,7 @@ object Utils {
             val secondHalf = finalName.substring(finalName.length / 2)
             "$firstHalf<br>$secondHalf"
         } else {
-            "$finalName<br>"
+            finalName
         }
 
         return "<html>$splitName</html>"

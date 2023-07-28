@@ -25,8 +25,11 @@ object Constants {
 
     // View constraints
     const val TABLE_VIEW_FIRST_COL_SIZE = 20
+
     const val GRID_COLUMN_WIDTH = 90
-    const val GRIG_ROW_HEIGHT = 120
+    const val GRID_TEXT_FRAME_HEIGHT = 35
+    const val GRID_IMAGE_FRAME_HEIGHT = 85
+    const val GRID_ROW_HEIGHT = 120
 
     const val MAX_SHOWN_NAME_LENGTH = 20
 
