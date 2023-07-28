@@ -1,16 +1,16 @@
 # Mandatory TODO List
 
-* ~~Status bar with data like how many items in the directory, total size, etc~~
-
-_I beleive these 3 are connected:_
-* ~~Settings - apply after close immediately~~ -> added settings observer
-* ~~Fix and order view updates~~
-* ~~BUG: sometimes just does not update dir content view, updating State and AddressBar~~
-
-* Adaptive grid view
+* Make uniform icon size regardless on text length and image size
 * Table view: sorting -> only after I fix view updates
 * BUG: filter crashes if I insert "?"
 * BUG: quit zip directory which is not yet unpacked
+
+* ~~Adaptive grid view~~
+* ~~Status bar with data like how many items in the directory, total size, etc~~
+* ~~_I believe these 3 are connected:_~~
+* ~~Settings - apply after close immediately~~ -> added settings observer
+* ~~Fix and order view updates~~
+* ~~BUG: sometimes just does not update dir content view, updating State and AddressBar~~
 * ~~AppState: implement "in a zip dir" function~~
 * ~~Fix bug with back and forward for archives~~
   * ~~Subtask: cleanup temp zips which are no longer in the history~~
@@ -40,7 +40,8 @@ _I beleive these 3 are connected:_
 * If open in external app - warn about it?
 * Thumbnail LRU cache in zip files
 * Localization
-* Table - different color for even and odd rows
+* Localization: Cyrillic languages
+* ~~Table - different color for even and odd rows~~
 * ~~Spinner when ZIP file is being unpacked~~
 * ~~On system event in a directory -> update cache accordingly, instead of calling getContents() again~~ -> WON'T DO
 * ~~Thumbnails - extract if exist~~ -> not sure whether it actually works
@@ -52,6 +53,5 @@ _I beleive these 3 are connected:_
 * Lock buttons for not available actions, like go up if already at root
 * Hotkeys ??
 * Mouseover hints
-* Localization: Cyrillic languages
 * ~~Status bar: shows whether hidden files are shown and whether inside a zip~~
 * ~~Dark and light theme~~

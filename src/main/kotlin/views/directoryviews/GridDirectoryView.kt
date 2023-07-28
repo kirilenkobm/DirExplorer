@@ -5,28 +5,24 @@ import dataModels.*
 import kotlinx.coroutines.launch
 import services.DirectoryContentService
 import state.*
-import views.WrapLayout
+import views.customcomponents.WrapLayout
 import views.iconviews.*
 import java.awt.*
 import javax.swing.JPanel
+import javax.swing.JScrollPane
 import javax.swing.SwingUtilities
 
 
 class GridDirectoryView : AbstractDirectoryView() {
-    private val gridPanel = JPanel()
-    private val panel = JPanel(BorderLayout())
+    private val gridPanel = JPanel(WrapLayout(FlowLayout.LEFT, 10, 10))
     private var filteredAndSortedContents: List<FileSystemEntity> = emptyList()
-    // Limit number of thumbnails rendered at once
     private val fileIconViews = mutableListOf<FileIconView>()  // keep track of all launched thumbnail generation jobs
     private var selectedView: AbstractIconEntityView? = null  // TODO: move down to IconView
     private val contentService = DirectoryContentService()
 
-    // private val columnWidth = 90
-
     init {
         gridPanel.isOpaque = false
-        panel.add(gridPanel, BorderLayout.NORTH)
-        panel.background = if (Settings.colorTheme == ColorTheme.LIGHT) {
+        gridPanel.background = if (Settings.colorTheme == ColorTheme.LIGHT) {
             Constants.BACKGROUND_COLOR_LIGHT
         } else {
             Constants.BACKGROUND_COLOR_DARK
@@ -61,11 +57,6 @@ class GridDirectoryView : AbstractDirectoryView() {
      * Update number of columns according to the view width
      */
     private fun updateLayout() {
-//         var numberOfColumns = panel.width / columnWidth - 1
-//         if  (numberOfColumns <= 0) { numberOfColumns = 1}
-        // gridPanel.layout = GridLayout(0, numberOfColumns) // Set new layout with updated number of columns
-        gridPanel.layout = WrapLayout(FlowLayout.LEFT, 10, 10)
-        // gridPanel.layout = GridBagLayout()
         gridPanel.revalidate()
         gridPanel.repaint()
     }
@@ -76,11 +67,6 @@ class GridDirectoryView : AbstractDirectoryView() {
             view.dispose()
         }
         fileIconViews.clear()
-        panel.background = if (Settings.colorTheme == ColorTheme.LIGHT) {
-            Constants.BACKGROUND_COLOR_LIGHT
-        } else {
-            Constants.BACKGROUND_COLOR_DARK
-        }
 
         launch {
             filteredAndSortedContents = contentService.generateContentForView()
@@ -96,6 +82,14 @@ class GridDirectoryView : AbstractDirectoryView() {
 
                 gridPanel.revalidate()
                 gridPanel.repaint()
+
+                // Had to add this bc otherwise if a directory contains
+                // too many items, vertical scroll might be not present
+                // at rare occasion
+                if (gridPanel.parent.parent is JScrollPane) {
+                    (gridPanel.parent.parent as JScrollPane).revalidate()
+                    (gridPanel.parent.parent as JScrollPane).repaint()
+                }
             }
         }
     }
@@ -107,7 +101,7 @@ class GridDirectoryView : AbstractDirectoryView() {
     }
 
     fun getPanel(): JPanel {
-        return panel
+        return gridPanel
     }
 
     override fun onViewModeChanged(newViewMode: ViewMode) {

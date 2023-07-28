@@ -4,6 +4,7 @@ import Constants
 import dataModels.DirectoryObserver
 import dataModels.ExplorerDirectory
 import state.*
+import views.customcomponents.CustomScrollPane
 import views.directoryviews.GridDirectoryView
 import views.directoryviews.TableDirectoryView
 import java.awt.*
@@ -57,10 +58,8 @@ class MainView: DirectoryObserver, SettingsObserver {
                 mainPanel.add(scrollPane, BorderLayout.CENTER)
             }
             ViewMode.ICONS -> {
-                val scrollPane = JScrollPane(iconsView.getPanel())
+                val scrollPane = CustomScrollPane(iconsView.getPanel())
                 scrollPane.border = null
-                scrollPane.horizontalScrollBarPolicy = JScrollPane.HORIZONTAL_SCROLLBAR_NEVER
-                scrollPane.verticalScrollBarPolicy = JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED
                 mainPanel.add(scrollPane, BorderLayout.CENTER)
             }
         }
