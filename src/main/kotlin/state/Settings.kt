@@ -14,7 +14,7 @@ object Settings {
             observers.forEach { it.onShowHiddenFilesChanged(value) }
         }
 
-    var viewMode: ViewMode = ViewMode.ICONS
+    var viewMode: ViewMode = ViewMode.GRID
         set(value) {
             field = value
             observers.forEach { it.onViewModeChanged(value) }

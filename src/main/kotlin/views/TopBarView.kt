@@ -89,9 +89,9 @@ class TopBarView(private val frame: JFrame) : SettingsObserver {
         }
 
         val iconButton = createToggleButton(IconManager.viewModuleIcon, Settings.buttonSize) {
-            Settings.updateViewMode(ViewMode.ICONS)
+            Settings.updateViewMode(ViewMode.GRID)
         }.apply {
-            isSelected = Settings.viewMode == ViewMode.ICONS
+            isSelected = Settings.viewMode == ViewMode.GRID
         }
 
         viewModeGroup.add(tableButton)
