@@ -1,4 +1,4 @@
-package views
+package views.popupwindows
 
 import state.ColorTheme
 import state.Language

@@ -47,9 +47,9 @@ object DirectoryWatcher: CoroutineScope {
                         StandardWatchEventKinds.ENTRY_DELETE,
                         StandardWatchEventKinds.ENTRY_CREATE,
                         StandardWatchEventKinds.ENTRY_MODIFY -> {
-//                            println("Event kind: ${watchEvent.kind()}")
-//                            println("Event count: ${watchEvent.count()}")
-//                            println("Event context: ${watchEvent.context()}")
+                            println("Event kind: ${watchEvent.kind()}")
+                            println("Event count: ${watchEvent.count()}")
+                            println("Event context: ${watchEvent.context()}")
                             // Don't want to make notifyDirectoryObservers() public
                             // probably it's the best way to notify the UI
                             AppState.refreshCurrentDirectory()

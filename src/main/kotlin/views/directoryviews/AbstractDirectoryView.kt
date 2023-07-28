@@ -3,11 +3,10 @@ package views.directoryviews
 import dataModels.*
 import kotlinx.coroutines.*
 import state.*
-import views.showErrorDialog
+import views.popupwindows.showErrorDialog
 import java.awt.Desktop
 import java.io.File
 import java.io.IOException
-import java.util.*
 import kotlin.coroutines.CoroutineContext
 
 /** Abstract class that implements all the methods needed to show

@@ -4,7 +4,8 @@ import Constants
 import dataModels.*
 import kotlinx.coroutines.sync.Semaphore
 import services.DirectoryWatcher
-import views.showErrorDialog
+import services.ZipArchiveService
+import views.popupwindows.showErrorDialog
 import java.nio.file.Files
 import java.nio.file.Paths
 
@@ -29,7 +30,7 @@ object AppState {
     // Track all zipArchives that were present during the session to remove
     // all temp directories which could be forgotten when the app closes
     // Or if the app was closed in a zip Archive
-    val zipArchives: MutableList<ZipArchive> = mutableListOf()
+    val zipServices: MutableList<ZipArchiveService> = mutableListOf()
     // Only to replace zipTempDir names to zip Filenames in the address bar
     val zipDirMapping = HashMap<String, String>()
 
@@ -74,7 +75,8 @@ object AppState {
             // files could be a bit too much
             // TODO: idea works poorly with "back" and "forward" functions
             // add zip files to back and forward stack instead of tempDirNames
-            val tempDir = (newExplorerDirectory as ZipArchive).extractTo()
+            val zipArchiveService = ZipArchiveService(newExplorerDirectory as ZipArchive)
+            val tempDir = zipArchiveService.extractTo()
             currentExplorerDirectory = if (tempDir != null) {
                 ExplorerDirectory(tempDir.toString())
             } else {
@@ -153,13 +155,13 @@ object AppState {
         removeMarkedObservers()
     }
 
-    fun addZipArchive(zipArchive: ZipArchive) {
-        zipArchives.add(zipArchive)
+    fun addZipArchive(zipArchiveService: ZipArchiveService) {
+        zipServices.add(zipArchiveService)
     }
 
     fun cleanupAllZipArchives() {
         // to avoid ConcurrentModificationException
-        val zipArchivesCopy = ArrayList(zipArchives)
+        val zipArchivesCopy = ArrayList(zipServices)
         zipArchivesCopy.forEach { it.cleanup() }
     }
 

@@ -1,4 +1,4 @@
-package views
+package views.popupwindows
 
 import javax.swing.*
 

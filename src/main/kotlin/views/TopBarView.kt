@@ -2,6 +2,7 @@ package views
 
 import Constants
 import state.*
+import views.popupwindows.SettingsDialog
 import java.awt.*
 import javax.swing.*
 
