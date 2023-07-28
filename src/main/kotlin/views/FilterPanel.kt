@@ -42,7 +42,7 @@ class FilterPanel {
             font = Font("Arial", Font.PLAIN, 14)
             background = getBackgroundColor()
             foreground = getForegroundColor()
-            caretColor = getForegroundColor() // Set cursor color
+            caretColor = getForegroundColor()
             document.addDocumentListener(object : DocumentListener {
                 override fun insertUpdate(e: DocumentEvent?) {
                     AppState.updateFilter(text)

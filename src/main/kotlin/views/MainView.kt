@@ -28,7 +28,7 @@ class MainView: DirectoryObserver, SettingsObserver {
 
     fun createAndShowGUI() {
         frame.defaultCloseOperation = JFrame.EXIT_ON_CLOSE
-        mainPanel.preferredSize = Dimension(1280, 960)
+        mainPanel.preferredSize = Dimension(Constants.PREFERRED_WIDTH, 960)
 
         // draw the proper main panel that shows the directory view
         updateViewMode()

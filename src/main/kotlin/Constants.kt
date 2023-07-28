@@ -23,21 +23,25 @@ object Constants {
     val TABLE_EVEN_ROW_DARK_THEME_COLOR = Color(50, 50, 50)
     val TABLE_ODD_ROW_DARK_THEME_COLOR = Color(30, 30, 30)
 
+    // Semaphore limits
+    const val MAX_IMAGE_PREVIEWS = 2
+    const val MAX_TEXT_PREVIEWS = 10
+    const val MAX_UNZIPPED_DIRS = 1
+
     // View constraints
+    const val PREFERRED_WIDTH = 1240
+
     const val TABLE_VIEW_FIRST_COL_SIZE = 20
 
     const val GRID_COLUMN_WIDTH = 90
-    const val GRID_COLUMN_MAX_WIDTH = 100
+    // const val GRID_COLUMN_MAX_WIDTH = 100
     const val GRID_TEXT_FRAME_HEIGHT = 35
     const val GRID_IMAGE_FRAME_HEIGHT = 85
     const val GRID_ROW_HEIGHT = 120
 
     const val MAX_SHOWN_NAME_LENGTH = 20
 
-    // Semaphore limits
-    const val MAX_IMAGE_PREVIEWS = 2
-    const val MAX_TEXT_PREVIEWS = 10
-    const val MAX_UNZIPPED_DIRS = 1
+
 
     // Thumbnail related
     //// Text previews

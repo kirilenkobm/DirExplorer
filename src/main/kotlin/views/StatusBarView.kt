@@ -1,5 +1,6 @@
 package views
 
+import Constants
 import dataModels.DirectoryObserver
 import dataModels.ExplorerDirectory
 import kotlinx.coroutines.*
@@ -23,36 +24,34 @@ class StatusBarView : JPanel(), CoroutineScope, DirectoryObserver, SettingsObser
         get() = Dispatchers.Main + job
 
     init {
-        AppState.addDirectoryObserver(this)
-        Settings.addObserver(this)
-
-        layout = BorderLayout()
-        preferredSize = Dimension(1280, 20)
-        additionalLabel.border = BorderFactory.createEmptyBorder(0, 20, 0, 0)  // padding 20 left
-        statusLabel.border = BorderFactory.createEmptyBorder(0, 0, 0, 20)  // padding 20 right
-        additionalLabel.text = ""
-        add(additionalLabel, BorderLayout.WEST)
-        add(statusLabel, BorderLayout.EAST)
-
+        setupView()
         setupColors()
         onDirectoryChanged(AppState.currentExplorerDirectory)
     }
 
-    private fun updateAdditionalData() {
-        // Indicate if hidden files are shown
-        val showingHiddenLabel = if (Settings.showHiddenFiles) {
-            "showing hidden files"
-        } else {
-            ""
-        }
-        // Indicate if we are inside a zip archive
-        val insideZipLabel = if (AppState.insideZip()) {
-            "inside a zip"
-        } else {
-            ""
-        }
-        additionalLabel.text = "$showingHiddenLabel $insideZipLabel"
+    private fun setupView() {
+        AppState.addDirectoryObserver(this)
+        Settings.addObserver(this)
+
+        layout = BorderLayout()
+        preferredSize = Dimension(Constants.PREFERRED_WIDTH, 20)
+        setupLabel(additionalLabel, BorderLayout.WEST, 20, 0)
+        setupLabel(statusLabel, BorderLayout.EAST, 0, 20)
     }
+
+    private fun setupLabel(label: JLabel, position: String, leftPadding: Int, rightPadding: Int) {
+        label.border = BorderFactory.createEmptyBorder(0, leftPadding, 0, rightPadding)
+        label.text = ""
+        add(label, position)
+    }
+
+    private fun updateAdditionalData() {
+        additionalLabel.text = "${getHiddenFilesLabel()} ${getZipLabel()}"
+    }
+
+    private fun getHiddenFilesLabel() = if (Settings.showHiddenFiles) "showing hidden files" else ""
+
+    private fun getZipLabel() = if (AppState.insideZip()) "inside a zip archive" else ""
 
     private fun updateStatus(itemsCount: Int?, totalSize: Long?) {
         if (itemsCount == null || totalSize == null) {
@@ -65,51 +64,44 @@ class StatusBarView : JPanel(), CoroutineScope, DirectoryObserver, SettingsObser
     }
 
     private fun setupColors() {
-        if (Settings.colorTheme == ColorTheme.LIGHT) {
-            background = Color.LIGHT_GRAY
-            statusLabel.foreground = Color.BLACK
-            additionalLabel.foreground = Color.BLACK
-        } else {
-            background = Color.DARK_GRAY
-            statusLabel.foreground = Color.LIGHT_GRAY
-            additionalLabel.foreground = Color.LIGHT_GRAY
-        }
+        val themeColor = if (Settings.colorTheme == ColorTheme.LIGHT) Color.LIGHT_GRAY else Color.DARK_GRAY
+        val textColor = if (Settings.colorTheme == ColorTheme.LIGHT) Color.BLACK else Color.LIGHT_GRAY
+
+        background = themeColor
+        statusLabel.foreground = textColor
+        additionalLabel.foreground = textColor
     }
 
+    /**
+     * If directory changes -> recalculate values to be shown
+     */
     override fun onDirectoryChanged(newDirectory: ExplorerDirectory) {
-        // Cancel any previous job
+        resetJob()
+        calculateAndUpdateStatus(newDirectory)
+    }
+
+    private fun resetJob() {
         job.cancel()
         job = Job()
+    }
 
-        // Calculate the itemsCount and totalSize asynchronously
-        launch {
-            // Delay before showing the placeholder
-            delay(250)
+    private fun calculateAndUpdateStatus(newDirectory: ExplorerDirectory) = launch {
+        delay(250)
+        if (isActive) updateStatus(null, null)
 
-            // Check if the job is still active
-            if (isActive) {
-                // If still active -> show placeholder values
-                updateStatus(null, null)
-            }
-
-            val itemsCount = newDirectory.getItemsCount()
-            val totalSize = newDirectory.getTotalSize()
-            updateStatus(itemsCount, totalSize)
-            updateAdditionalData()
-        }
+        val itemsCount = newDirectory.getItemsCount()
+        val totalSize = newDirectory.getTotalSize()
+        updateStatus(itemsCount, totalSize)
+        updateAdditionalData()
     }
 
     override fun onShowHiddenFilesChanged(newShowHiddenFiles: Boolean) {
-        // refresh the view
         onDirectoryChanged(AppState.currentExplorerDirectory)
-
-    }
-
-    override fun onViewModeChanged(newViewMode: ViewMode) {
-        // TODO: think whether is needed
     }
 
     override fun onColorThemeChanged(newColorTheme: ColorTheme) {
         setupColors()
     }
+
+    override fun onViewModeChanged(newViewMode: ViewMode) { }
 }
