@@ -4,6 +4,7 @@ import Constants
 import dataModels.DirectoryObserver
 import dataModels.ExplorerDirectory
 import state.*
+import utils.PopupViewThemeManager
 import views.customcomponents.CustomScrollPane
 import views.directoryviews.GridDirectoryView
 import views.directoryviews.TableDirectoryView
@@ -24,6 +25,7 @@ class MainView: DirectoryObserver, SettingsObserver {
     init {
         AppState.addDirectoryObserver(this)
         Settings.addObserver(this)
+        PopupViewThemeManager.onColorThemeChanged(Settings.colorTheme)
     }
 
     fun createAndShowGUI() {
