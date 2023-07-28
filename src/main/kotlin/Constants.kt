@@ -27,6 +27,7 @@ object Constants {
     const val TABLE_VIEW_FIRST_COL_SIZE = 20
 
     const val GRID_COLUMN_WIDTH = 90
+    const val GRID_COLUMN_MAX_WIDTH = 90
     const val GRID_TEXT_FRAME_HEIGHT = 35
     const val GRID_IMAGE_FRAME_HEIGHT = 85
     const val GRID_ROW_HEIGHT = 120

@@ -2,6 +2,7 @@ package utils
 
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.regex.PatternSyntaxException
 
 /**
  * Utility object that provides helper functions.
@@ -63,12 +64,17 @@ object Utils {
         }
 
         // check for match with regex pattern
-        val regexPattern = filterExtension
-            .replace("*", ".*")
+        return try {
+            val regexPattern = filterExtension
+                .replace("*", ".*")
 
-        val regex = regexPattern.toRegex()
-        val matches = regex.containsMatchIn(entityExtension)
-        return if (invertResult) !matches else matches
+            val regex = regexPattern.toRegex()
+            val matches = regex.containsMatchIn(entityExtension)
+            if (invertResult) !matches else matches
+        } catch (e: PatternSyntaxException) {
+            println(e)
+            false
+        }
     }
 
     // In case filename is too long, I'd like to shorten

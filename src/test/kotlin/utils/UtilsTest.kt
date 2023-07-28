@@ -17,4 +17,8 @@ class UtilsTest {
     @Test
     fun matchesExtension() {
     }
+
+    @Test
+    fun getFilenameForIcon() {
+    }
 }

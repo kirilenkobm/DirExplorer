@@ -15,9 +15,10 @@ class DirectoryContentService {
 
     private fun filterAndSortContents(contents: List<FileSystemEntity>): List<FileSystemEntity> {
         // First, filter the contents by extension (if filter applied)
-        var filteredContents = if (AppState.currentExtensionFilter.isNotEmpty()) {
+        var filteredContents = if (AppState.getFilter().isNotEmpty()) {
             contents.filter { entity ->
-                entity is ExplorerFile && Utils.matchesExtension(entity.extension, AppState.currentExtensionFilter)
+                (entity is ExplorerFile && Utils.matchesExtension(entity.extension, AppState.getFilter()))
+                        || (entity is ZipArchive && Utils.matchesExtension(entity.extension, AppState.getFilter()))
             }
         } else {
             contents

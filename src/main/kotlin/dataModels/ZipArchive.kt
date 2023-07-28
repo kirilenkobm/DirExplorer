@@ -15,4 +15,7 @@ import kotlin.coroutines.CoroutineContext
 
 class ZipArchive(override val path: String) : ExplorableEntity {
     var tempDir: Path? = null
+
+    val extension: String
+        get() = Paths.get(path).fileName.toString().substringAfter(".", "")
 }
