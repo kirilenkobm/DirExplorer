@@ -64,7 +64,7 @@ class ZipArchiveService(private val zipEntity: ZipArchive): CoroutineScope {
 
         // Start coroutine: get semaphore + start spinner
         ZipUnpackSpinner.showSpinner()
-        val zipUnpackSemaphore = AppState.zipUnpackSemaphore
+        val zipUnpackSemaphore = SemaphoreManager.zipUnpackSemaphore
 
         // Extract zip contents in a background thread
         launch(Dispatchers.IO) {

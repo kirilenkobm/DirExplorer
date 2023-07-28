@@ -2,7 +2,6 @@
 package state
 import Constants
 import dataModels.*
-import kotlinx.coroutines.sync.Semaphore
 import services.DirectoryWatcher
 import services.ZipArchiveService
 import views.popupwindows.showErrorDialog
@@ -15,6 +14,7 @@ import java.nio.file.Paths
  * Suppose to be the single source of truth for the rest of the components.
  */
 object AppState {
+
     var currentExplorerDirectory: ExplorerDirectory = ExplorerDirectory(System.getProperty("user.home"))
         set(value) {
             field = value
@@ -23,7 +23,7 @@ object AppState {
             DirectoryWatcher.startWatching(value)
         }
 
-    var currentExtensionFilter: String = ""
+    private var currentExtensionFilter: String = ""
 
     var backStack: MutableList<ExplorableEntity> = mutableListOf()
     var forwardStack: MutableList<ExplorableEntity> = mutableListOf()
@@ -38,10 +38,6 @@ object AppState {
     // Only to replace zipTempDir names to zip Filenames in the address bar
     val tempZipDirToNameMapping = HashMap<String, String>()
     val zipPathToTempDir = HashMap<String, Path>()
-
-    val imagePreviewsSemaphore = Semaphore(Constants.MAX_IMAGE_PREVIEWS)
-    val textPreviewsSemaphore = Semaphore(Constants.MAX_TEXT_PREVIEWS)
-    val zipUnpackSemaphore = Semaphore(Constants.MAX_UNZIPPED_DIRS)
 
     /**
     / * New explorer directory -> where to go

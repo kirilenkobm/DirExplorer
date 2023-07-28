@@ -4,7 +4,6 @@ import dataModels.ExplorerFile
 import kotlinx.coroutines.*
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.rendering.PDFRenderer
-import state.AppState
 import state.Settings
 import views.iconviews.FileIconView
 import views.iconviews.IconsCache
@@ -43,8 +42,8 @@ class ThumbnailService(
 
     fun startThumbnailGeneration() {
         // println("Started generation of thumbnail for ${fileEntity.name}")
-        val imagePreviewsSemaphore = AppState.imagePreviewsSemaphore
-        val textPreviewsSemaphore = AppState.textPreviewsSemaphore
+        val imagePreviewsSemaphore = SemaphoreManager.imagePreviewsSemaphore
+        val textPreviewsSemaphore = SemaphoreManager.textPreviewsSemaphore
 
         val correctedExtension = fileEntity.extension.split(".").last().lowercase()
         val fileTypeStartsWithImage = fileEntity.fileType.startsWith("image/")
@@ -289,7 +288,6 @@ class ThumbnailService(
                 }
             } fileTypeIsPFD -> {
                 async(Dispatchers.IO) {
-                    // TODO: encapsulate in another method
                     imagePreviewsSemaphore.acquire()
                     try {
                         var thumbnail: Icon? = iconCache[path]
