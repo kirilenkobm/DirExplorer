@@ -1,4 +1,4 @@
-package views.iconviews
+package services
 
 import javax.swing.Icon
 import java.util.concurrent.ConcurrentHashMap
