@@ -1,10 +1,10 @@
 # Mandatory TODO List
 
-* Make uniform icon size regardless on text length and image size
 * Table view: sorting -> only after I fix view updates
 * BUG: filter crashes if I insert "?"
 * BUG: quit zip directory which is not yet unpacked
 
+* ~~Make uniform icon size regardless on text length and image size~~
 * ~~Adaptive grid view~~
 * ~~Status bar with data like how many items in the directory, total size, etc~~
 * ~~_I believe these 3 are connected:_~~

@@ -70,4 +70,30 @@ object Utils {
         val matches = regex.containsMatchIn(entityExtension)
         return if (invertResult) !matches else matches
     }
+
+    // In case filename is too long, I'd like to shorten
+    // it in the icon view, replacing part of the name
+    // with ellipsis
+    fun getFilenameForIcon(filename: String): String {
+        val extension = filename.substringAfterLast(".", "")
+        val nameWithoutExtension = filename.substringBeforeLast(".")
+
+        val finalName = if (filename.length > Constants.MAX_SHOWN_NAME_LENGTH) {
+            val trimLength = maxOf(0, Constants.MAX_SHOWN_NAME_LENGTH - extension.length - 3)
+            val trimmedName = nameWithoutExtension.take(trimLength)
+            "$trimmedName...$extension"
+        } else {
+            filename
+        }
+
+        val splitName = if (finalName.length > Constants.MAX_SHOWN_NAME_LENGTH / 2) {
+            val firstHalf = finalName.take(finalName.length / 2)
+            val secondHalf = finalName.substring(finalName.length / 2)
+            "$firstHalf<br>$secondHalf"
+        } else {
+            "$finalName<br>"
+        }
+
+        return "<html>$splitName</html>"
+    }
 }

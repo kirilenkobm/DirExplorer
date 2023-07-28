@@ -28,7 +28,7 @@ object Constants {
     const val GRID_COLUMN_WIDTH = 90
     const val GRIG_ROW_HEIGHT = 120
 
-    const val MAX_SHOWN_NAME_LENGTH = 24
+    const val MAX_SHOWN_NAME_LENGTH = 20
 
     // Semaphore limits
     const val MAX_IMAGE_PREVIEWS = 2

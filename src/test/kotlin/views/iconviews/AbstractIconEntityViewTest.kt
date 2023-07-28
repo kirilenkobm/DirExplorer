@@ -18,7 +18,7 @@ class AbstractIconEntityViewTest {
 
     @Test
     fun `setText$DirExplorer`() {
-        val result = iconEntityView.setText("someVeryLongFileNameThatDoesNotFit.txt")
+        val result = iconEntityView.getFilenameForIcon("someVeryLongFileNameThatDoesNotFit.txt")
         val expectedResult1 = "<html>someVeryLong<br>FileNa...txt</html>"
         assertTrue(result == expectedResult1, "Failed to shorten the filename")
 

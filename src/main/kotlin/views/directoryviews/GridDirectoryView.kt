@@ -17,7 +17,8 @@ class GridDirectoryView : AbstractDirectoryView() {
     private val gridPanel = JPanel(WrapLayout(FlowLayout.LEFT, 10, 10))
     private var filteredAndSortedContents: List<FileSystemEntity> = emptyList()
     private val fileIconViews = mutableListOf<FileIconView>()  // keep track of all launched thumbnail generation jobs
-    private var selectedView: AbstractIconEntityView? = null  // TODO: move down to IconView
+    // see setSelectedIcon
+    private var selectedView: AbstractIconEntityView? = null
     private val contentService = DirectoryContentService()
 
     init {
@@ -82,7 +83,6 @@ class GridDirectoryView : AbstractDirectoryView() {
 
                 gridPanel.revalidate()
                 gridPanel.repaint()
-
                 // Had to add this bc otherwise if a directory contains
                 // too many items, vertical scroll might be not present
                 // at rare occasion
@@ -94,8 +94,10 @@ class GridDirectoryView : AbstractDirectoryView() {
         }
     }
 
+    // TODO: refactor this, the only purpose of keeping it here
+    // is to make sure that 0 or 1 icons are selected at the same time
     fun setSelectedIcon(iconView: AbstractIconEntityView) {
-        selectedView?.setSelected(false)  // undo selection if any
+        selectedView?.setSelected(false)
         iconView.setSelected(true)
         selectedView = iconView
     }
