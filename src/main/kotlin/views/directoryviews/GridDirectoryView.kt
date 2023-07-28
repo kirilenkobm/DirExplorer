@@ -81,7 +81,7 @@ class GridDirectoryView : AbstractDirectoryView() {
                 gridPanel.repaint()
                 // Had to add this bc otherwise if a directory contains
                 // too many items, vertical scroll might be not present
-                // at rare occasion. ? to avoud NullPointerException
+                // at rare occasion. ? to avoid NullPointerException
                 if (gridPanel.parent?.parent is JScrollPane) {
                     (gridPanel.parent?.parent as JScrollPane?)?.revalidate()
                     (gridPanel.parent?.parent as JScrollPane?)?.repaint()
