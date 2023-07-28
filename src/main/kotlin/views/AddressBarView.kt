@@ -10,7 +10,6 @@ import java.nio.file.Path
 import java.nio.file.Paths
 import javax.swing.BorderFactory
 import javax.swing.Box
-import javax.swing.BoxLayout
 import javax.swing.JButton
 import javax.swing.JLabel
 import javax.swing.JPanel
@@ -72,7 +71,7 @@ class AddressBarView: DirectoryObserver {
         for (part in path) {
             // create a new currentPath that includes this part
             val newPath = currentPath.resolve(part)
-            val partName = AppState.zipDirMapping[part.toString()] ?: part.toString()
+            val partName = AppState.tempZipDirToNameMapping[part.toString()] ?: part.toString()
             val button = createAddressBarButton(partName, newPath)
             // update currentPath to the new path
             currentPath = newPath
@@ -96,8 +95,6 @@ class AddressBarView: DirectoryObserver {
             for (i in 0..<min(numStartComponents, components.size)) {
                 addressBar.add(components[i], constraints)
             }
-
-            // TODO: maybe? create dropdown menu
             // val middleComponents = components.subList(numStartComponents, components.size - numEndComponents)
             val ellipsisLabel = JLabel(Constants.ELLIPSIS_LABEL)
             addressBar.add(ellipsisLabel)

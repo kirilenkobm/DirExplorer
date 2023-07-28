@@ -13,4 +13,8 @@ class UtilsTest {
     @Test
     fun formatDate() {
     }
+
+    @Test
+    fun matchesExtension() {
+    }
 }

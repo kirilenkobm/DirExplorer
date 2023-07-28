@@ -14,6 +14,9 @@ object Utils {
      * Converts a size in bytes to a human-readable string.
      */
     fun humanReadableSize(bytes: Long): String {
+        if (bytes.toInt() == 0) {
+            return "empty"
+        }
         val kilobyte = 1024.0
         val megabyte = kilobyte * 1024
         val gigabyte = megabyte * 1024

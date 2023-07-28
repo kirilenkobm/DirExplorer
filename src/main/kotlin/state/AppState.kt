@@ -7,6 +7,7 @@ import services.DirectoryWatcher
 import services.ZipArchiveService
 import views.popupwindows.showErrorDialog
 import java.nio.file.Files
+import java.nio.file.Path
 import java.nio.file.Paths
 
 /**
@@ -21,20 +22,26 @@ object AppState {
             notifyDirectoryObservers(value)
             DirectoryWatcher.startWatching(value)
         }
+
     var currentExtensionFilter: String = ""
+
     private var backStack: MutableList<ExplorableEntity> = mutableListOf()
     private var forwardStack: MutableList<ExplorableEntity> = mutableListOf()
+
     private val directoryObservers: MutableList<DirectoryObserver> = mutableListOf()
     private val observersToRemove: MutableList<DirectoryObserver> = mutableListOf()
+
     // Track all zipArchives that were present during the session to remove
     // all temp directories which could be forgotten when the app closes
     // Or if the app was closed in a zip Archive
     val zipServices: MutableList<ZipArchiveService> = mutableListOf()
     // Only to replace zipTempDir names to zip Filenames in the address bar
-    val zipDirMapping = HashMap<String, String>()
+    val tempZipDirToNameMapping = HashMap<String, String>()
+    private val zipPathToTempDir = HashMap<String, Path>()
 
     val imagePreviewsSemaphore = Semaphore(Constants.MAX_IMAGE_PREVIEWS)
     val textPreviewsSemaphore = Semaphore(Constants.MAX_TEXT_PREVIEWS)
+    val zipUnpackSemaphore = Semaphore(Constants.MAX_UNZIPPED_DIRS)
 
     /**
     / * New explorer directory -> where to go
@@ -68,20 +75,23 @@ object AppState {
                 if (clearForwardStack) forwardStack.clear()
                 currentExplorerDirectory = newExplorerDirectory as ExplorerDirectory
             }
-        } else if (pathExists && isReadable && isZipArchive){
+        } else if (pathExists && isReadable && isZipArchive) {
             // I selected the following strategy: unpack and create a temp directory
-            // then destroy it once we left it. Creating a separate filesystem for zip
-            // files could be a bit too much
-            // TODO: idea works poorly with "back" and "forward" functions
+            // and destroy it at some point later.
+            // Creating a separate filesystem for zip files could be a bit too much
             // add zip files to back and forward stack instead of tempDirNames
-            val zipArchiveService = ZipArchiveService(newExplorerDirectory as ZipArchive)
-            val tempDir = zipArchiveService.extractTo()
-            currentExplorerDirectory = if (tempDir != null) {
-                ExplorerDirectory(tempDir.toString())
-            } else {
+            val zipEntity = newExplorerDirectory as ZipArchive
+            val zipArchiveService = ZipArchiveService(zipEntity)
+            val zipTempDir = zipPathToTempDir[zipEntity.path] ?: zipArchiveService.extractTo()
+
+            // Update current explorer directory if possible
+            zipTempDir?.let {
+                zipPathToTempDir[zipEntity.path] = it
+                currentExplorerDirectory = ExplorerDirectory(it.toString())
+            } ?: run {
                 val errorMessage = "Could not enter the ${newExplorerDirectory.path}"
                 showErrorDialog(errorMessage)
-                ExplorerDirectory(oldDirectoryInCaseOfError.path)
+                currentExplorerDirectory = ExplorerDirectory(oldDirectoryInCaseOfError.path)
             }
         } else {
             // Error occurred: show a message and recover the original state
@@ -93,6 +103,9 @@ object AppState {
             showErrorDialog(errorMessage)  // Using showErrorDialog function defined in ErrorView.kt
             currentExplorerDirectory = ExplorerDirectory(oldDirectoryInCaseOfError.path)
         }
+
+        // TODO: cleanup zip directories which are no longer in the
+        // back and forward stacks
     }
 
     fun goHome() {
@@ -127,7 +140,18 @@ object AppState {
         }
     }
 
+    /**
+     * Go through the current path and check whether it includes zip files or not.
+     */
     fun insideZip(): Boolean {
+        val path = Paths.get(currentExplorerDirectory.path)
+        for (part in path) {
+            // TODO: redo hashmap to path -> String, not filename -> filename
+            val isZip = tempZipDirToNameMapping[part.toString()]
+            if (isZip != null) {
+                return true
+            }
+        }
         return false
     }
 

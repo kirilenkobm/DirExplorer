@@ -6,18 +6,15 @@ _I beleive these 3 are connected:_
 * ~~Settings - apply after close immediately~~ -> added settings observer
 * ~~Fix and order view updates~~
 * ~~BUG: sometimes just does not update dir content view, updating State and AddressBar~~
--> probably no longer an issue
 
-* ~~Fix extension filter -> now does not affect anything~~
 * AppState: implement a better current path breakdown
-* Fix bug with back and forward for archives
 * Table view: sorting -> only after I fix view updates
-
-* README and documentation
-* BUG: resizing icon view
+* Adaptive grid view
 * BUG: filter crashes if I insert "?"
-* Detach logic from UI entirely
-
+* BUG: quit zip directory which is not yet unpacked
+* ~~Fix bug with back and forward for archives~~
+  * Subtask: cleanup temp zips which are no longer in the history
+* ~~Fix extension filter -> now does not affect anything~~
 * ~~Fix filesystem listener~~
 * ~~Entity select on one click, open on two~~
   * ~~In tables~~
@@ -32,17 +29,19 @@ _I beleive these 3 are connected:_
 
 # Unlimited things
 
+* Detach logic from UI entirely
 * Unit tests
 * Manual test protocol
 * Get rid of magic numbers and strings
+* README and documentation
 
 # Prefer to do
 
 * If open in external app - warn about it?
-* Spinner when ZIP file is being unpacked
 * Thumbnail LRU cache in zip files
 * Localization
 * Table - different color for even and odd rows
+* ~~Spinner when ZIP file is being unpacked~~
 * ~~On system event in a directory -> update cache accordingly, instead of calling getContents() again~~ -> WON'T DO
 * ~~Thumbnails - extract if exist~~ -> not sure whether it actually works
 * ~~PDF previews - extract if exist~~ -> in fact, I generate them from page...
@@ -54,4 +53,5 @@ _I beleive these 3 are connected:_
 * Hotkeys ??
 * Mouseover hints
 * Localization: Cyrillic languages
+* ~~Status bar: shows whether hidden files are shown and whether inside a zip~~
 * ~~Dark and light theme~~

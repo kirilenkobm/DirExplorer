@@ -6,7 +6,7 @@ import javax.swing.UIManager
  */
 object Constants {
     // TODO: move all more or less meaningful constants here
-    const val HISTORY_SIZE: Int = 40  // back and forth stack sizes
+    const val HISTORY_SIZE: Int = 10  // back and forth stack sizes
     const val ELLIPSIS_LABEL = "  ...  "
 
     const val UNKNOWN_FILE_TYPE = "unknown"
@@ -33,6 +33,7 @@ object Constants {
     // Semaphore limits
     const val MAX_IMAGE_PREVIEWS = 2
     const val MAX_TEXT_PREVIEWS = 10
+    const val MAX_UNZIPPED_DIRS = 1
 
     // File extension related
     const val ZIP_EXTENSION = ".zip"

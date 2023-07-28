@@ -28,10 +28,10 @@ class ZipArchiveService(private val zipEntity: ZipArchive): CoroutineScope {
      */
     private val observer: DirectoryObserver = object : DirectoryObserver {
         override fun onDirectoryChanged(newDirectory: ExplorerDirectory) {
-            val tempDir = zipEntity.tempDir
-            if (tempDir != null && !newDirectory.path.startsWith(tempDir.toString())) {
-                cleanup()
-            }
+//            val tempDir = zipEntity.tempDir
+//            if (tempDir != null && !newDirectory.path.startsWith(tempDir.toString())) {
+//                cleanup()
+//            }
         }
     }
 
@@ -41,14 +41,12 @@ class ZipArchiveService(private val zipEntity: ZipArchive): CoroutineScope {
         AppState.addZipArchive(this)
     }
 
-
     fun extractTo(): Path? {
         val parentDir = Paths.get(zipEntity.path).parent
         // create hidden temp directory
         val tempDirName = "." + Paths.get(zipEntity.path).fileName.toString() + "_" + UUID.randomUUID().toString().take(6)
         zipEntity.tempDir = Files.createDirectory(parentDir.resolve(tempDirName))
-        AppState.zipDirMapping[tempDirName] = Paths.get(zipEntity.path).fileName.toString()
-        // TODO: handle the case where I cannot create the dir: show ERROR instead
+        AppState.tempZipDirToNameMapping[tempDirName] = Paths.get(zipEntity.path).fileName.toString()
 
         if (System.getProperty("os.name").startsWith("Windows")) {
             // On Windows: .name is not enough, need to set the 'hidden' attribute
@@ -56,25 +54,29 @@ class ZipArchiveService(private val zipEntity: ZipArchive): CoroutineScope {
         }
         ZipUnpackSpinner.showSpinner()
 
+        val zipUnpackSemaphore = AppState.zipUnpackSemaphore
+
         // Extract zip contents in a background thread
         launch(Dispatchers.IO) {
-            ZipFile(zipEntity.path).use { zip ->
-                zip.entries().asSequence().forEach { entry ->
-                    if (!entry.isDirectory) {
-                        val inputFileStream = zip.getInputStream(entry)
-                        val outputFile = zipEntity.tempDir!!.resolve(entry.name)
-                        Files.createDirectories(outputFile.parent)
-                        Files.copy(inputFileStream, outputFile, StandardCopyOption.REPLACE_EXISTING)
-                        inputFileStream.close()
+            zipUnpackSemaphore.acquire()
+            try {
+                ZipFile(zipEntity.path).use { zip ->
+                    zip.entries().asSequence().forEach { entry ->
+                        if (!entry.isDirectory) {
+                            val inputFileStream = zip.getInputStream(entry)
+                            val outputFile = zipEntity.tempDir!!.resolve(entry.name)
+                            Files.createDirectories(outputFile.parent)
+                            Files.copy(inputFileStream, outputFile, StandardCopyOption.REPLACE_EXISTING)
+                            inputFileStream.close()
+                        }
                     }
+                    ZipUnpackSpinner.hideSpinner()
                 }
-                ZipUnpackSpinner.hideSpinner()
+            } finally {
+                zipUnpackSemaphore.release()
             }
         }
-
-        // Return temp dir before the zip is unzipped
-        // TODO: return optional, show error if null
-        return zipEntity.tempDir  // I hope it's safe...
+        return zipEntity.tempDir
     }
 
     fun cleanup() {
