@@ -80,7 +80,7 @@ class MainView: DirectoryObserver, SettingsObserver {
     }
 
     override fun onShowHiddenFilesChanged(newShowHiddenFiles: Boolean) {
-        // Do nothing here?
+        // Do nothing?
     }
 
     override fun onViewModeChanged(newViewMode: ViewMode) {

@@ -5,6 +5,7 @@ import dataModels.ExplorerDirectory
 import state.AppState
 import state.ColorTheme
 import state.Settings
+import utils.IconManager
 import java.awt.*
 import java.nio.file.Path
 import java.nio.file.Paths

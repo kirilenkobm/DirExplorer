@@ -3,7 +3,7 @@ package views.iconviews
 import dataModels.ExplorerDirectory
 import state.ColorTheme
 import utils.Utils
-import views.IconManager
+import utils.IconManager
 import views.directoryviews.GridDirectoryView
 
 class DirectoryIconView(

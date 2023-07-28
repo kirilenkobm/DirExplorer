@@ -5,11 +5,10 @@ import dataModels.*
 import kotlinx.coroutines.launch
 import services.DirectoryContentService
 import services.EntityActionsHandler
-import state.AppState
 import state.ColorTheme
 import state.Settings
 import state.ViewMode
-import views.IconManager
+import utils.IconManager
 import utils.Utils
 import java.awt.Color
 import java.awt.Component

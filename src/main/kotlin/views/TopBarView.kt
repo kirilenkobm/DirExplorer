@@ -2,12 +2,12 @@ package views
 
 import Constants
 import state.*
+import utils.IconManager
 import views.popupwindows.SettingsDialog
 import java.awt.*
 import javax.swing.*
 
 
-// TODO: lock buttons for not available actions, like go up if already at root
 class TopBarView(private val frame: JFrame) : SettingsObserver {
     private val topBar = JSplitPane()
     private val leftPanel = JPanel()
@@ -17,62 +17,65 @@ class TopBarView(private val frame: JFrame) : SettingsObserver {
     private val filterPanel = FilterPanel()
 
     init {
-        createPanel()
+        configurePanel()
         Settings.addObserver(this)
     }
 
-    private fun createButton(icon: ImageIcon,
-                             size: Int,
-                             action: () -> Unit): JButton
-    {
-        val resizedIcon = ImageIcon(icon.image.getScaledInstance(size, size, Image.SCALE_SMOOTH))
-        return JButton(resizedIcon).apply {
-            isContentAreaFilled = false // make the button transparent
-            isBorderPainted = false // remove the border
-            isFocusPainted = false // remove the focus highlight
-            cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)
-            addActionListener {
-                action()
-            }
-        }
-    }
-
-    private fun createToggleButton(icon: ImageIcon,
-                                   size: Int,
-                                   action: () -> Unit): JToggleButton
-    {
-        val resizedIcon = ImageIcon(icon.image.getScaledInstance(size, size, Image.SCALE_SMOOTH))
-        return JToggleButton(resizedIcon).apply {
-            isContentAreaFilled = false // make the button transparent
-            isBorderPainted = false // remove the border
-            isFocusPainted = false // remove the focus highlight
-            cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)
-            addActionListener {
-                action()
-            }
-        }
-    }
-
-    private fun createPanel() {
+    private fun configurePanel() {
         leftPanel.layout = BoxLayout(leftPanel, BoxLayout.X_AXIS)
+        addNavigationButtons()
+        addAddressBarAndFilter()
+        addRightPanelButtons()
+        applyThemeColors()
 
-        // Buttons on the left: for navigation
-        val backButton = createButton(IconManager.backArrowIcon, Settings.buttonSize) { AppState.goBack() }
+        topBar.leftComponent = leftPanel
+        topBar.rightComponent = rightPanel
+        topBar.resizeWeight = 0.7
+    }
 
-        val forwardButton = createButton(IconManager.forwardArrowIcon, Settings.buttonSize) { AppState.goForward() }
+    private fun addNavigationButtons() {
+        val navigationButtons = arrayOf(
+            Pair(IconManager.backArrowIcon) { AppState.goBack() },
+            Pair(IconManager.forwardArrowIcon) { AppState.goForward() },
+            Pair(IconManager.homeIcon) { AppState.goHome() },
+            Pair(IconManager.upArrowIcon) { AppState.goUp() }
+        )
 
-        val homeButton = createButton(IconManager.homeIcon, Settings.buttonSize) { AppState.goHome() }
+        navigationButtons.forEach {
+            val (icon, action) = it
+            leftPanel.add(createButton(icon, Settings.buttonSize, action))
+        }
 
-        val upButton = createButton(IconManager.upArrowIcon, Settings.buttonSize) { AppState.goUp() }
-        // >>>> Buttons on the left: navigation
+        leftPanel.add(Box.createHorizontalStrut(20)) // add 100px of space
+    }
 
-        // Address bar and filter
+    private fun addAddressBarAndFilter() {
         val addressBarPanel = addressBarView.getPanel()
         addressBarPanel.maximumSize = Dimension(addressBarPanel.maximumSize.width, addressBarPanel.preferredSize.height)
         addressBarPanel.preferredSize = Dimension(400, addressBarPanel.preferredSize.height)
         addressBarPanel.minimumSize = Dimension(400, addressBarPanel.preferredSize.height)
 
-        // Buttons on the right: Settings
+        val addressBar = addressBarView.getPanel()
+        val filterLabel = JLabel(" /*. ")
+        filterLabel.foreground = if (Settings.colorTheme == ColorTheme.LIGHT) {
+            Color.BLACK
+        } else {
+            Color.WHITE
+        }
+        filterLabel.font = Font("Arial", Font.PLAIN, 14)
+        val filterView = filterPanel.getPanel()
+
+        val addressBarHeight = addressBar.preferredSize.height
+        filterView.preferredSize = Dimension(filterView.preferredSize.width, addressBarHeight)
+        filterView.minimumSize = Dimension(filterView.minimumSize.width, addressBarHeight)
+        filterView.maximumSize = Dimension(filterView.maximumSize.width, addressBarHeight)
+
+        leftPanel.add(addressBar)
+        leftPanel.add(filterLabel)
+        leftPanel.add(filterView)
+    }
+
+    private fun addRightPanelButtons() {
         val viewModeGroup = ButtonGroup()
         val tableButton = createToggleButton(IconManager.tocIcon, Settings.buttonSize) {
             Settings.updateViewMode(ViewMode.TABLE)
@@ -100,46 +103,14 @@ class TopBarView(private val frame: JFrame) : SettingsObserver {
                 }
             }
         }
-        // >>>> Buttons on the right: Settings
 
-        // left-aligned components
-        leftPanel.add(backButton)
-        leftPanel.add(forwardButton)
-        leftPanel.add(homeButton)
-        leftPanel.add(upButton)
-        leftPanel.add(Box.createHorizontalStrut(20)) // add 100px of space
-
-        val addressBar = addressBarView.getPanel()
-        val filterLabel = JLabel(" /*. ")
-        filterLabel.foreground = if (Settings.colorTheme == ColorTheme.LIGHT) {
-            Color.BLACK
-        } else {
-            Color.WHITE
-        }
-        filterLabel.font = Font("Arial", Font.PLAIN, 14)
-        val filterView = filterPanel.getPanel()
-
-        leftPanel.add(addressBar)
-
-        val addressBarHeight = addressBar.preferredSize.height
-        filterView.preferredSize = Dimension(filterView.preferredSize.width, addressBarHeight)
-        filterView.minimumSize = Dimension(filterView.minimumSize.width, addressBarHeight)
-        filterView.maximumSize = Dimension(filterView.maximumSize.width, addressBarHeight)
-
-        // leftPanel.add(Box.createHorizontalStrut(20)) // add 100px of space
-        leftPanel.add(filterLabel)
-        leftPanel.add(filterView)
-
-        // right-aligned components
         rightPanel.add(tableButton)
         rightPanel.add(iconButton)
         rightPanel.add(Box.createHorizontalStrut(20)) // add 100px of space
         rightPanel.add(settingsButton)
+    }
 
-        topBar.leftComponent = leftPanel
-        topBar.rightComponent = rightPanel
-        topBar.resizeWeight = 0.7
-
+    private fun applyThemeColors() {
         if (Settings.colorTheme == ColorTheme.DARK) {
             leftPanel.background = Color.DARK_GRAY
             rightPanel.background = Color.DARK_GRAY
@@ -151,17 +122,38 @@ class TopBarView(private val frame: JFrame) : SettingsObserver {
         }
     }
 
+    private fun <T : AbstractButton> createButtonWithIcon(
+        button: T,
+        iconArg: ImageIcon,
+        size: Int,
+        action: () -> Unit
+    ): T {
+        val resizedIcon = ImageIcon(iconArg.image.getScaledInstance(size, size, Image.SCALE_SMOOTH))
+        return button.apply {
+            icon = resizedIcon
+            isContentAreaFilled = false // make the button transparent
+            isBorderPainted = false // remove the border
+            isFocusPainted = false // remove the focus highlight
+            cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)
+            addActionListener {
+                action()
+            }
+        }
+    }
+
+    private fun createButton(icon: ImageIcon, size: Int, action: () -> Unit) =
+        createButtonWithIcon(JButton(), icon, size, action)
+
+    private fun createToggleButton(icon: ImageIcon, size: Int, action: () -> Unit) =
+        createButtonWithIcon(JToggleButton(), icon, size, action)
+
     fun getPanel(): JSplitPane {
         return topBar
     }
 
-    override fun onShowHiddenFilesChanged(newShowHiddenFiles: Boolean) {
-        // TODO("Not yet implemented")
-    }
+    override fun onShowHiddenFilesChanged(newShowHiddenFiles: Boolean) { }
 
-    override fun onViewModeChanged(newViewMode: ViewMode) {
-        // TODO("Not yet implemented")
-    }
+    override fun onViewModeChanged(newViewMode: ViewMode) { }
 
     override fun onColorThemeChanged(newColorTheme: ColorTheme) {
         // remove all components
@@ -169,12 +161,11 @@ class TopBarView(private val frame: JFrame) : SettingsObserver {
         rightPanel.removeAll()
 
         // recreate panel
-        createPanel()
+        configurePanel()
 
         // update view
         addressBarView.updateView()
         filterPanel.updateView()
-
 
         // revalidate and repaint
         leftPanel.revalidate()
@@ -182,5 +173,4 @@ class TopBarView(private val frame: JFrame) : SettingsObserver {
         rightPanel.revalidate()
         rightPanel.repaint()
     }
-
 }

@@ -1,13 +1,11 @@
 package views.iconviews
 
 import dataModels.ExplorerFile
-import kotlinx.coroutines.*
 import services.ThumbnailService
 import state.ColorTheme
 import utils.Utils
-import views.IconManager
+import utils.IconManager
 import views.directoryviews.GridDirectoryView
-import kotlin.coroutines.CoroutineContext
 
 
 class FileIconView(
