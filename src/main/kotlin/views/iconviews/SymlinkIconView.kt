@@ -11,7 +11,7 @@ class SymlinkIconView(
     parentDirView: GridDirectoryView,
     colorTheme: ColorTheme
 ): AbstractIconEntityView(entity, parentDirView, colorTheme) {
-    private val linkEntity = entity
+    // private val linkEntity = entity
 
     override fun setIcon() {
         iconLabel.icon = Utils.resizeIcon(IconManager.linkIcon)

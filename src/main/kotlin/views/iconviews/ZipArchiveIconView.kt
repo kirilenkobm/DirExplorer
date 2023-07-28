@@ -12,7 +12,7 @@ class ZipArchiveIconView(
     parentDirView: GridDirectoryView,
     colorTheme: ColorTheme
 ): AbstractIconEntityView(entity, parentDirView, colorTheme) {
-    private val zipEntity = entity
+    // private val zipEntity = entity
 
     override fun setIcon() {
         iconLabel.icon = Utils.resizeIcon(IconManager.folderZipIcon)

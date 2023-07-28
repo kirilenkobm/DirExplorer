@@ -6,7 +6,7 @@ import java.util.concurrent.ConcurrentHashMap
 // TODO: ensure whether it belongs here, but not state package
 // TODO: work with zip archives
 // Save on device or destroy after each session?
-object IconsCache {
+object ThumbnailsCache {
     private const val maxSize: Int = 10000
     private val cache: ConcurrentHashMap<String, Icon> = ConcurrentHashMap()
     private val accessOrder = mutableListOf<String>()

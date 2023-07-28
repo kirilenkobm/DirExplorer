@@ -12,7 +12,7 @@ class UnknownIconView(
     parentDirView: GridDirectoryView,
     colorTheme: ColorTheme
 ): AbstractIconEntityView(entity, parentDirView, colorTheme) {
-    private val unknownEntity = entity
+    // private val unknownEntity = entity
 
     override fun setIcon() {
         iconLabel.icon = Utils.resizeIcon(IconManager.helpCenterIcon)

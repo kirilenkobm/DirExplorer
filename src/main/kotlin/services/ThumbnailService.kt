@@ -7,7 +7,7 @@ import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.rendering.PDFRenderer
 import state.Settings
 import views.iconviews.FileIconView
-import views.iconviews.IconsCache
+import views.iconviews.ThumbnailsCache
 import java.awt.Color
 import java.awt.Image
 import java.awt.image.BufferedImage
@@ -37,7 +37,7 @@ class ThumbnailService(
     private val fileIcon: FileIconView
 ): CoroutineScope {
     private val job = Job()
-    private val iconCache = IconsCache
+    private val iconCache = ThumbnailsCache
 
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.Main + job
