@@ -13,7 +13,7 @@ import utils.Utils
 class DirectoryContentService {
     private var sortOrder: SortOrder = SortOrder.TYPE
 
-    private fun filterAndSortContents(contents: List<FileSystemEntity>): List<FileSystemEntity> {
+    private fun filterContents(contents: List<FileSystemEntity>): List<FileSystemEntity> {
         // First, filter the contents by extension (if filter applied)
         var filteredContents = if (AppState.getFilter().isNotEmpty()) {
             contents.filter { entity ->
@@ -34,11 +34,14 @@ class DirectoryContentService {
         filteredContents = filteredContents.filter { entity ->
             !(entity.isHidden && !Settings.showHiddenFiles)
         }
+        return filteredContents
+    }
 
+    private fun sortContents(contents: List<FileSystemEntity>) : List<FileSystemEntity> {
         // Sort according to sorting function selected
         val sortedContents = when (sortOrder) {
-            SortOrder.NAME -> filteredContents.sortedBy { it.name }
-            SortOrder.TYPE -> filteredContents.sortedWith(
+            SortOrder.NAME -> contents.sortedBy { it.name }
+            SortOrder.TYPE -> contents.sortedWith(
                 compareBy<FileSystemEntity> {
                     when (it) {
                         is ExplorerDirectory -> 0
@@ -49,7 +52,7 @@ class DirectoryContentService {
                     }
                 }.thenBy { it.name }
             )
-            SortOrder.SIZE -> filteredContents.sortedWith(
+            SortOrder.SIZE -> contents.sortedWith(
                 compareBy<FileSystemEntity> {
                     when (it) {
                         is ExplorerDirectory -> 0  // directories on top
@@ -58,12 +61,16 @@ class DirectoryContentService {
                 }.thenComparingLong(FileSystemEntity::size)  // sort by size
                     .thenBy(FileSystemEntity::name)              // then by name
             )
-            SortOrder.LAST_MODIFIED -> filteredContents.sortedWith(
+            SortOrder.LAST_MODIFIED -> contents.sortedWith(
                 compareBy { it.lastModified }
             )
         }
-
         return sortedContents
+    }
+
+    private fun filterAndSortContents(contents: List<FileSystemEntity>): List<FileSystemEntity> {
+        val filteredContents = filterContents(contents)
+        return sortContents(filteredContents)
     }
 
     suspend fun generateContentForView(): List<FileSystemEntity> {

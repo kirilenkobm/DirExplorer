@@ -32,16 +32,14 @@
 
 * Detach logic from UI entirely
 * Unit tests
-* Manual test protocol
 * Get rid of magic numbers and strings
-* ~~README~~
 * Code documentation
+* ~~README~~
 
 # Prefer to do
 
-* If open in external app - warn about it?
 * Think about filter's behaviour better
-* Deselect action too
+* ~~Deselect action too~~
 * ~~ILocalization~~I
 * ~~ILocalization: Cyrillic languages~~I
 * ~~Thumbnail generation: show as soon as are generated.~~
@@ -55,8 +53,13 @@
 
 # Nice to have
 
+
+* ~~Status bar: shows whether hidden files are shown and whether inside a zip~~
+* ~~Dark and light theme~~
+
+# Won't do at first iter
+
 * Lock buttons for not available actions, like go up if already at root
 * Hotkeys ??
 * Mouseover hints
-* ~~Status bar: shows whether hidden files are shown and whether inside a zip~~
-* ~~Dark and light theme~~
+* If open in external app - warn about it?
