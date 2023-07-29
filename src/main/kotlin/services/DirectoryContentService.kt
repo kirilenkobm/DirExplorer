@@ -15,7 +15,7 @@ class DirectoryContentService {
 
     private fun filterAndSortContents(contents: List<FileSystemEntity>): List<FileSystemEntity> {
         // First, filter the contents by extension (if filter applied)
-        var filteredContents = if (AppState.getFilterList().isNotEmpty()) {
+        var filteredContents = if (AppState.getFilter().isNotEmpty()) {
             contents.filter { entity ->
                 val filters = AppState.getFilterList()
 
