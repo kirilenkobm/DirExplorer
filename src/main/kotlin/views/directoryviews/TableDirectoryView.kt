@@ -7,6 +7,7 @@ import services.DirectoryContentService
 import services.EntityActionsHandler
 import services.TableDirectoryController
 import state.ColorTheme
+import state.Language
 import state.Settings
 import state.ViewMode
 import utils.IconManager
@@ -26,8 +27,6 @@ import javax.swing.table.TableCellRenderer
 /**
  * View that controls directory view in the table mode
  */
-
-// in views/directoryviews/TableDirectoryView.kt
 class TableDirectoryView : AbstractDirectoryView() {
     private var table = JTable()
     private var model: DefaultTableModel? = null
@@ -36,10 +35,7 @@ class TableDirectoryView : AbstractDirectoryView() {
     private val controller = TableDirectoryController(contentService)
 
     // localization related
-    private val bundle = ResourceBundle.getBundle(Constants.LANGUAGE_BUNDLE_PATH, Settings.language.getLocale())
-    private val nameHeader = bundle.getString("Name")
-    private val sizeHeader = bundle.getString("Size")
-    private val lastModifiedHeader = bundle.getString("LastModified")
+    private var bundle = ResourceBundle.getBundle(Constants.LANGUAGE_BUNDLE_PATH, Settings.language.getLocale())
 
     init {
         // Override prepareRenderer to make even and odd rows colored differently
@@ -106,14 +102,17 @@ class TableDirectoryView : AbstractDirectoryView() {
         }
     }
 
-    private fun createTableModel(data: List<Array<Any>>): DefaultTableModel {
-        val columnNames = arrayOf(
+    private fun getColumnNames(): Array<String> {
+        return arrayOf(
             "",
             bundle.getString("Name"),
             bundle.getString("Size"),
             bundle.getString("LastModified")
         )
-        return object : DefaultTableModel(data.toTypedArray(), columnNames) {
+    }
+
+    private fun createTableModel(data: List<Array<Any>>): DefaultTableModel {
+        return object : DefaultTableModel(data.toTypedArray(), getColumnNames()) {
             override fun getColumnClass(column: Int): Class<*> {
                 return if (column == 0) ImageIcon::class.java else super.getColumnClass(column)
             }
@@ -148,13 +147,28 @@ class TableDirectoryView : AbstractDirectoryView() {
         table.repaint()
     }
 
-
     fun getTable(): JTable {
         return table
     }
 
     // Not relevant
     override fun onViewModeChanged(newViewMode: ViewMode) { }
+
+    override fun onLanguageChanged(newLanguage: Language) {
+        SwingUtilities.invokeLater {
+            // Update the resource bundle
+            bundle = ResourceBundle.getBundle(Constants.LANGUAGE_BUNDLE_PATH, newLanguage.getLocale())
+
+            // Update the headers
+            table.columnModel.getColumn(1).headerValue = bundle.getString("Name")
+            table.columnModel.getColumn(2).headerValue = bundle.getString("Size")
+            table.columnModel.getColumn(3).headerValue = bundle.getString("LastModified")
+
+            // This will force the JTableHeader to repaint and show the new column names
+            table.tableHeader.repaint()
+
+            // Update the view
+            updateView()
+        }
+    }
 }
-
-

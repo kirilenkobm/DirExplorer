@@ -1,10 +1,7 @@
 package utils
 
 import dataModels.ExplorerDirectory
-import state.ColorTheme
-import state.Settings
-import state.SettingsObserver
-import state.ViewMode
+import state.*
 import java.awt.AlphaComposite
 import java.awt.Graphics2D
 import java.awt.Image
@@ -120,15 +117,13 @@ object IconManager: SettingsObserver {
         }
     }
 
-    override fun onShowHiddenFilesChanged(newShowHiddenFiles: Boolean) {
-        // not applicable
-    }
+    override fun onShowHiddenFilesChanged(newShowHiddenFiles: Boolean) { }
 
-    override fun onViewModeChanged(newViewMode: ViewMode) {
-        // not applicable
-    }
+    override fun onViewModeChanged(newViewMode: ViewMode) { }
 
     override fun onColorThemeChanged(newColorTheme: ColorTheme) {
         loadAllIcons()
     }
+
+    override fun onLanguageChanged(newLanguage: Language) { }
 }

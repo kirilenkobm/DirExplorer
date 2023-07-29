@@ -93,4 +93,6 @@ class MainView: DirectoryObserver, SettingsObserver {
     override fun onColorThemeChanged(newColorTheme: ColorTheme) {
         updateViewMode()
     }
+
+    override fun onLanguageChanged(newLanguage: Language) { }
 }

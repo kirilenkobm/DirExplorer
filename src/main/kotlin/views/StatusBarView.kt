@@ -9,6 +9,7 @@ import utils.Utils
 import java.awt.BorderLayout
 import java.awt.Color
 import java.awt.Dimension
+import java.util.ResourceBundle
 import javax.swing.BorderFactory
 import javax.swing.JLabel
 import javax.swing.JPanel
@@ -16,6 +17,7 @@ import kotlin.coroutines.CoroutineContext
 
 class StatusBarView : JPanel(), CoroutineScope, DirectoryObserver, SettingsObserver
 {
+    private var bundle = ResourceBundle.getBundle(Constants.LANGUAGE_BUNDLE_PATH, Settings.language.getLocale())
     private val statusLabel = JLabel()
     private val additionalLabel = JLabel()
     private var job = Job()
@@ -49,17 +51,19 @@ class StatusBarView : JPanel(), CoroutineScope, DirectoryObserver, SettingsObser
         additionalLabel.text = "${getHiddenFilesLabel()} ${getZipLabel()}"
     }
 
-    private fun getHiddenFilesLabel() = if (Settings.showHiddenFiles) "showing hidden files" else ""
+    private fun getHiddenFilesLabel() = if (Settings.showHiddenFiles) bundle.getString("ShowHidden") else ""
 
-    private fun getZipLabel() = if (AppState.insideZip()) "inside a zip archive" else ""
+    private fun getZipLabel() = if (AppState.insideZip()) bundle.getString("InsideZip") else ""
 
     private fun updateStatus(itemsCount: Int?, totalSize: Long?) {
         if (itemsCount == null || totalSize == null) {
-            statusLabel.text = "Loading ..."
+            statusLabel.text = "${bundle.getString("Loading")}..."
         } else if (itemsCount == 0) {
-            statusLabel.text = "Empty"
+            statusLabel.text = bundle.getString("Empty")
         } else {
-            statusLabel.text = "Items: $itemsCount, Total size: ${Utils.humanReadableSize(totalSize)}"
+            val itemsLabel = bundle.getString("Items")
+            val totalSizeLabel = bundle.getString("TotalSize")
+            statusLabel.text = "$itemsLabel: $itemsCount, $totalSizeLabel: ${Utils.humanReadableSize(totalSize)}"
         }
     }
 
@@ -104,4 +108,10 @@ class StatusBarView : JPanel(), CoroutineScope, DirectoryObserver, SettingsObser
     }
 
     override fun onViewModeChanged(newViewMode: ViewMode) { }
+
+    override fun onLanguageChanged(newLanguage: Language) {
+        // Update the resource bundle
+        bundle = ResourceBundle.getBundle(Constants.LANGUAGE_BUNDLE_PATH, newLanguage.getLocale())
+        onDirectoryChanged(AppState.currentExplorerDirectory)
+    }
 }

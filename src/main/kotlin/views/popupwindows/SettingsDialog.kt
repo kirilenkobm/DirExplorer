@@ -56,7 +56,6 @@ class SettingsDialog: JDialog() {
             this.isSelected = isSelected
             addItemListener {
                 onItemSelected()
-                this.isSelected = isSelected
             }
         }
     }

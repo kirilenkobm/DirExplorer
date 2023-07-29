@@ -29,6 +29,10 @@ object Settings {
     var buttonSize: Int = 20
     var iconSize: Int = 72
     var language: Language = Language.ENGLISH
+        set(value) {
+            field = value
+            observers.forEach { it.onLanguageChanged(value) }
+        }
 
     var maxImageSizeToShowThumbnail = 6000
 
@@ -45,7 +49,6 @@ object Settings {
     }
 
     fun updateLanguage(newLanguage: Language) {
-        // TODO: update language does not work
         language = newLanguage
     }
 
@@ -56,6 +59,7 @@ object Settings {
             showHiddenFiles = properties.getProperty("showHiddenFiles", "false").toBoolean()
             colorTheme = ColorTheme.valueOf(properties.getProperty("colorTheme", "SYSTEM"))
             viewMode = ViewMode.valueOf(properties.getProperty("viewMode", "TABLE"))
+            language = Language.valueOf(properties.getProperty("language", "ENGLISH"))
         } catch (e: Exception) {
             // TODO: handle exception, just pass?
             println("Error! Could not load settings")
@@ -67,6 +71,7 @@ object Settings {
         properties.setProperty("showHiddenFiles", showHiddenFiles.toString())
         properties.setProperty("colorTheme", colorTheme.name)
         properties.setProperty("viewMode", viewMode.name)
+        properties.setProperty("language", language.name)
 
         try {
             FileOutputStream(SETTINGS_FILE).use { properties.store(it, null) }

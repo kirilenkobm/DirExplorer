@@ -1,9 +1,6 @@
 package utils
 
-import state.ColorTheme
-import state.Settings
-import state.SettingsObserver
-import state.ViewMode
+import state.*
 import java.awt.Color
 import javax.swing.UIManager
 
@@ -43,4 +40,6 @@ object PopupViewThemeManager : SettingsObserver {
     override fun onShowHiddenFilesChanged(newShowHiddenFiles: Boolean) { }
 
     override fun onViewModeChanged(newViewMode: ViewMode) { }
+
+    override fun onLanguageChanged(newLanguage: Language) { }
 }

@@ -182,4 +182,6 @@ class TopBarView(private val frame: JFrame) : SettingsObserver {
         filterPanel.updateView()
         refreshUIComponents()
     }
+
+    override fun onLanguageChanged(newLanguage: Language) { }
 }

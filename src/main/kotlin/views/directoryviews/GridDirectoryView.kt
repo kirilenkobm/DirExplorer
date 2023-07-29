@@ -102,4 +102,6 @@ class GridDirectoryView : AbstractDirectoryView() {
     override fun onViewModeChanged(newViewMode: ViewMode) {
         updateView()
     }
+
+    override fun onLanguageChanged(newLanguage: Language) { }
 }
