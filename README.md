@@ -45,9 +45,7 @@ To run the application, open the project in IntelliJ IDEA and execute it.
 You can either run the application (which opens in the home directory),
 or open the desired directory from the command line.
 
-### Navigation
-
-#### Using navigation buttons
+### Navigation buttons
 
 The application provides several navigation buttons for easy directory browsing.
 
@@ -58,12 +56,17 @@ The application provides several navigation buttons for easy directory browsing.
 * Home: Navigate to the home directory. The home directory is determined based on the operating system.
 * Level Up: Navigate to the parent directory.
 
-#### Using address bar
+### Address bar and filter
 
 The address bar allows you to jump into any parent directory.
 Use the field after "/*" to filter files by extension.
 
 ![Address bar](readme_images/address_bar.png)
+
+Filter, in particular, allows to filter for multiple extensions and supports wildcards.
+Use comma to separate filters.
+
+![Filter](readme_images/filter.png)
 
 #### Right panel
 

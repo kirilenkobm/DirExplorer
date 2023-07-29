@@ -19,8 +19,10 @@ class DirectoryContentService {
             contents.filter { entity ->
                 val filters = AppState.getFilterList()
 
-                val isExplorerFileAndMatches = entity is ExplorerFile && filters.any { filter -> Utils.matchesExtension(entity.extension, filter) }
-                val isZipArchiveAndMatches = entity is ZipArchive && filters.any { filter -> Utils.matchesExtension(entity.extension, filter) }
+                val isExplorerFileAndMatches =
+                    entity is ExplorerFile && filters.any { filter -> Utils.matchesExtension(entity.extension, filter) }
+                val isZipArchiveAndMatches =
+                    entity is ZipArchive && filters.any { filter -> Utils.matchesExtension(entity.extension, filter) }
 
                 isExplorerFileAndMatches || isZipArchiveAndMatches
             }
