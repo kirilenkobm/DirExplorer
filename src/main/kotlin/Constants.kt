@@ -44,7 +44,7 @@ object Constants {
 
     const val MAX_SHOWN_NAME_LENGTH = 20
 
-
+    const val LANGUAGE_BUNDLE_PATH = "languages/Messages"
 
     // Thumbnail related
     //// Text previews

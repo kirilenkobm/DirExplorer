@@ -5,6 +5,7 @@ import dataModels.*
 import kotlinx.coroutines.launch
 import services.DirectoryContentService
 import services.EntityActionsHandler
+import services.TableDirectoryController
 import state.ColorTheme
 import state.Settings
 import state.ViewMode
@@ -25,12 +26,20 @@ import javax.swing.table.TableCellRenderer
 /**
  * View that controls directory view in the table mode
  */
+
+// in views/directoryviews/TableDirectoryView.kt
 class TableDirectoryView : AbstractDirectoryView() {
     private var table = JTable()
     private var model: DefaultTableModel? = null
     private var filteredAndSortedContents: List<FileSystemEntity> = emptyList()
-    private val bundle = ResourceBundle.getBundle("languages/Messages", Settings.language.getLocale())
     private val contentService = DirectoryContentService()
+    private val controller = TableDirectoryController(contentService)
+
+    // localization related
+    private val bundle = ResourceBundle.getBundle(Constants.LANGUAGE_BUNDLE_PATH, Settings.language.getLocale())
+    private val nameHeader = bundle.getString("Name")
+    private val sizeHeader = bundle.getString("Size")
+    private val lastModifiedHeader = bundle.getString("LastModified")
 
     init {
         // Override prepareRenderer to make even and odd rows colored differently
@@ -44,12 +53,24 @@ class TableDirectoryView : AbstractDirectoryView() {
         table.showHorizontalLines = false
         table.showVerticalLines = false
         table.border = null
+        table.addMouseListener(object : MouseAdapter() {
+            override fun mouseClicked(e: MouseEvent) {
+                if (e.clickCount == 2) {
+                    val row = table.rowAtPoint(e.point)
+                    if (row >= 0 && row < filteredAndSortedContents.size) {
+                        val entity = filteredAndSortedContents[row]
+                        println("Calling entity action for: ${entity.path}")
+                        EntityActionsHandler.performEntityAction(entity)
+                    }
+                }
+            }
+        })
 
         launch {
-            filteredAndSortedContents = contentService.generateContentForView()
-            model = createTableModel()
+            val (entities, data) = controller.getContentForView()
+            filteredAndSortedContents = entities
+            model = createTableModel(data)
             table.model = model
-            setupTableMouseListener()
 
             // Set the column width here
             table.columnModel.getColumn(0).preferredWidth = Constants.TABLE_VIEW_FIRST_COL_SIZE
@@ -85,68 +106,14 @@ class TableDirectoryView : AbstractDirectoryView() {
         }
     }
 
-    private fun resizeTableIcon(icon: ImageIcon, size: Int = Constants.TABLE_ICON_SIZE): ImageIcon {
-        val image = icon.image
-        val newImage = image.getScaledInstance(size, size, java.awt.Image.SCALE_SMOOTH)
-        return ImageIcon(newImage)
-    }
-
-    private fun mapEntitiesToData(): Array<Array<Any>> {
-        return filteredAndSortedContents.map { entity ->
-            when (entity) {
-                is ExplorerFile -> mapExplorerFile(entity)
-                is ExplorerDirectory -> mapExplorerDirectory(entity)
-                is ExplorerSymLink -> mapExplorerSymLink(entity)
-                is ZipArchive -> mapZipArchive(entity)
-                else -> mapUnknownEntity(entity)
-            }
-        }.toTypedArray()
-    }
-
-    private fun mapExplorerFile(entity: ExplorerFile) = arrayOf<Any>(
-        resizeTableIcon(IconManager.getIconForFileType(entity.fileType)),
-        entity.name,
-        Utils.humanReadableSize(entity.size),
-        Utils.formatDate(entity.lastModified)
-    )
-
-    private fun mapExplorerDirectory(entity: ExplorerDirectory) = arrayOf<Any>(
-        resizeTableIcon(IconManager.getIconForDir(entity)),
-        entity.name,
-        "-",
-        Utils.formatDate(entity.lastModified)
-    )
-
-    private fun mapExplorerSymLink(entity: ExplorerSymLink) = arrayOf<Any>(
-        resizeTableIcon(IconManager.linkIcon),
-        entity.name,
-        "-",
-        Utils.formatDate(entity.lastModified)
-    )
-
-    private fun mapZipArchive(entity: ZipArchive) = arrayOf<Any>(
-        resizeTableIcon(IconManager.folderZipIcon),
-        entity.name,
-        Utils.humanReadableSize(entity.size),
-        Utils.formatDate(entity.lastModified)
-    )
-
-    private fun mapUnknownEntity(entity: FileSystemEntity) = arrayOf<Any>(
-        resizeTableIcon(IconManager.helpCenterIcon),
-        entity.name,
-        Utils.humanReadableSize(entity.size),
-        Utils.formatDate(entity.lastModified)
-    )
-
-    private fun createTableModel(): DefaultTableModel {
+    private fun createTableModel(data: List<Array<Any>>): DefaultTableModel {
         val columnNames = arrayOf(
             "",
             bundle.getString("Name"),
             bundle.getString("Size"),
             bundle.getString("LastModified")
         )
-        val data = mapEntitiesToData()
-        return object : DefaultTableModel(data, columnNames) {
+        return object : DefaultTableModel(data.toTypedArray(), columnNames) {
             override fun getColumnClass(column: Int): Class<*> {
                 return if (column == 0) ImageIcon::class.java else super.getColumnClass(column)
             }
@@ -159,8 +126,8 @@ class TableDirectoryView : AbstractDirectoryView() {
 
     override fun updateView() {
         launch {
-            filteredAndSortedContents = contentService.generateContentForView()
-            val data = mapEntitiesToData()
+            val (entities, data) = controller.getContentForView()
+            filteredAndSortedContents = entities
 
             SwingUtilities.invokeLater {
                 model?.dataVector?.clear()
@@ -181,19 +148,6 @@ class TableDirectoryView : AbstractDirectoryView() {
         table.repaint()
     }
 
-    private fun setupTableMouseListener() {
-        table.addMouseListener(object : MouseAdapter() {
-            override fun mouseClicked(e: MouseEvent) {
-                if (e.clickCount == 2) {
-                    val row = table.rowAtPoint(e.point)
-                    if (row >= 0 && row < filteredAndSortedContents.size) {
-                        val entity = filteredAndSortedContents[row]
-                        EntityActionsHandler.performEntityAction(entity)
-                    }
-                }
-            }
-        })
-    }
 
     fun getTable(): JTable {
         return table
@@ -202,3 +156,5 @@ class TableDirectoryView : AbstractDirectoryView() {
     // Not relevant
     override fun onViewModeChanged(newViewMode: ViewMode) { }
 }
+
+
