@@ -12,6 +12,8 @@ import utils.Utils
  */
 class DirectoryContentService {
     private var sortOrder: SortOrder = SortOrder.TYPE
+    private var sortInverse: Boolean = false
+
 
     private fun filterContents(contents: List<FileSystemEntity>): List<FileSystemEntity> {
         // First, filter the contents by extension (if filter applied)
@@ -39,7 +41,7 @@ class DirectoryContentService {
 
     private fun sortContents(contents: List<FileSystemEntity>) : List<FileSystemEntity> {
         // Sort according to sorting function selected
-        val sortedContents = when (sortOrder) {
+        var sortedContents = when (sortOrder) {
             SortOrder.NAME -> contents.sortedBy { it.name }
             SortOrder.TYPE -> contents.sortedWith(
                 compareBy<FileSystemEntity> {
@@ -65,6 +67,12 @@ class DirectoryContentService {
                 compareBy { it.lastModified }
             )
         }
+
+        if (sortInverse) {
+            sortedContents = sortedContents.asReversed()
+        }
+
+
         return sortedContents
     }
 
@@ -76,5 +84,15 @@ class DirectoryContentService {
     suspend fun generateContentForView(): List<FileSystemEntity> {
         val currentContents = AppState.currentExplorerDirectory.getContents()
         return filterAndSortContents(currentContents)
+    }
+
+    // Double click inverts sorting order
+    fun updateSortOrder(order: SortOrder) {
+        if (sortOrder == order) {
+            sortInverse = !sortInverse
+        } else {
+            sortOrder = order
+            sortInverse = false
+        }
     }
 }

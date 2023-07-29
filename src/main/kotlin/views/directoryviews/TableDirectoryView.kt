@@ -6,12 +6,7 @@ import kotlinx.coroutines.launch
 import services.DirectoryContentService
 import services.EntityActionsHandler
 import services.TableDirectoryController
-import state.ColorTheme
-import state.Language
-import state.Settings
-import state.ViewMode
-import utils.IconManager
-import utils.Utils
+import state.*
 import java.awt.Color
 import java.awt.Component
 import java.awt.event.MouseAdapter
@@ -59,6 +54,17 @@ class TableDirectoryView : AbstractDirectoryView() {
                         EntityActionsHandler.performEntityAction(entity)
                     }
                 }
+            }
+        })
+        table.tableHeader.addMouseListener(object : MouseAdapter() {
+            override fun mouseClicked(e: MouseEvent) {
+                when (table.columnAtPoint(e.point)) {
+                    0 -> contentService.updateSortOrder(SortOrder.TYPE)
+                    1 -> contentService.updateSortOrder(SortOrder.NAME)
+                    2 -> contentService.updateSortOrder(SortOrder.SIZE)
+                    3 -> contentService.updateSortOrder(SortOrder.LAST_MODIFIED)
+                }
+                updateView()
             }
         })
 

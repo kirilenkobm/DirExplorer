@@ -6,7 +6,6 @@ import utils.IconManager
 import utils.Utils
 import javax.swing.ImageIcon
 
-
 /**
  * Class that handles content for table.
  * Extracts entities from current content Service and maps
