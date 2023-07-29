@@ -30,22 +30,22 @@ class GridDirectoryView : AbstractDirectoryView() {
     private fun createEntityView(entity: FileSystemEntity): JPanel {
         return when (entity) {
             is ExplorerFile -> createFileIconView(entity)
-            is ExplorerDirectory -> DirectoryIconView(entity, this).createView()
-            is ExplorerSymLink -> SymlinkIconView(entity, this).createView()
-            is ZipArchive -> ZipArchiveIconView(entity, this).createView()
+            is ExplorerDirectory -> DirectoryIconView(entity).createView()
+            is ExplorerSymLink -> SymlinkIconView(entity).createView()
+            is ZipArchive -> ZipArchiveIconView(entity).createView()
             else -> createUnknownIconView(entity)
         }
     }
 
     private fun createFileIconView(entity: ExplorerFile): JPanel {
-        val view = FileIconView(entity, this)
+        val view = FileIconView(entity)
         fileIconViews.add(view)
         return view.createView()
     }
 
     private fun createUnknownIconView(entity: FileSystemEntity): JPanel {
         val unknownEntity = UnknownEntity(entity.path)
-        return UnknownIconView(unknownEntity, this).createView()
+        return UnknownIconView(unknownEntity).createView()
     }
 
     /**

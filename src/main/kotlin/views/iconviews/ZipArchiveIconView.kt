@@ -1,16 +1,13 @@
 package views.iconviews
 
 import dataModels.ZipArchive
-import state.ColorTheme
 import utils.Utils
 import utils.IconManager
-import views.directoryviews.GridDirectoryView
 
 
 class ZipArchiveIconView(
     entity: ZipArchive,
-    parentDirView: GridDirectoryView
-): AbstractIconEntityView(entity, parentDirView) {
+): AbstractIconEntityView(entity) {
     // private val zipEntity = entity
 
     override fun setIcon() {

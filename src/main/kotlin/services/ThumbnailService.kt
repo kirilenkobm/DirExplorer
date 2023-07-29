@@ -8,7 +8,6 @@ import org.apache.pdfbox.rendering.PDFRenderer
 import state.Settings
 import views.iconviews.FileIconView
 import java.awt.Color
-import java.awt.Image
 import java.awt.RenderingHints
 import java.awt.image.BufferedImage
 import java.io.File
@@ -207,7 +206,6 @@ class ThumbnailService(
                         // apply subsampling to load smaller image into RAM
                         // and increase processing speed
                         val subsamplingVal = getSubsamplingValue(maxDimension)
-                        val res = maxDimension / subsamplingVal
                         param.setSourceSubsampling(subsamplingVal, subsamplingVal, 0, 0)
                         val fullImage = reader.read(reader.minIndex, param)
                         val thumbnailImage = resizeThumbnail(fullImage)

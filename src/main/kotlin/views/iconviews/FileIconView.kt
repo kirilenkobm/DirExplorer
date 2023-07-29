@@ -2,16 +2,13 @@ package views.iconviews
 
 import dataModels.ExplorerFile
 import services.ThumbnailService
-import state.ColorTheme
 import utils.Utils
 import utils.IconManager
-import views.directoryviews.GridDirectoryView
 
 
 class FileIconView(
     entity: ExplorerFile,
-    parentDirView: GridDirectoryView
-): AbstractIconEntityView(entity, parentDirView) {
+): AbstractIconEntityView(entity) {
     private val fileEntity = entity
     private val thumbnailService = ThumbnailService(fileEntity, this)
 

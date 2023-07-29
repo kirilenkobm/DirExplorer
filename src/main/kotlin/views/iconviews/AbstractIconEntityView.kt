@@ -4,9 +4,9 @@ import Constants
 import dataModels.*
 import services.EntityActionsHandler
 import state.ColorTheme
+import state.SelectedIconManager
 import state.Settings
 import utils.Utils
-import views.directoryviews.GridDirectoryView
 import java.awt.*
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
@@ -17,7 +17,6 @@ import javax.swing.SwingConstants
 
 abstract class AbstractIconEntityView(
     private val entity: FileSystemEntity,
-    private val parentDirView: GridDirectoryView
 ) {
     // The icon view must look like a vertical stack
     // Top element - frame of the same size, regardless on the icon size
@@ -76,9 +75,9 @@ abstract class AbstractIconEntityView(
         addMouseListener(object : MouseAdapter() {
             override fun mouseClicked(e: MouseEvent) {
                 when (e.clickCount) {
-                    1 -> parentDirView.setSelectedIcon(this@AbstractIconEntityView)
+                    1 -> SelectedIconManager.setSelectedIcon(this@AbstractIconEntityView)
                     2 -> {
-                        parentDirView.setSelectedIcon(this@AbstractIconEntityView)
+                        SelectedIconManager.setSelectedIcon(this@AbstractIconEntityView)
                         EntityActionsHandler.performEntityAction(entity)
                     }
                 }
