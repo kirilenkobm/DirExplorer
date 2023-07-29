@@ -140,6 +140,10 @@ object AppState {
         return currentExtensionFilter
     }
 
+    fun getFilterList(): List<String> {
+        return currentExtensionFilter.split(",")
+    }
+
     /**
      * Go through the current path and check whether it includes zip files or not.
      */

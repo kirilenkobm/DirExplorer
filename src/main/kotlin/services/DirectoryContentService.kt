@@ -15,14 +15,12 @@ class DirectoryContentService {
 
     private fun filterAndSortContents(contents: List<FileSystemEntity>): List<FileSystemEntity> {
         // First, filter the contents by extension (if filter applied)
-        var filteredContents = if (AppState.getFilter().isNotEmpty()) {
+        var filteredContents = if (AppState.getFilterList().isNotEmpty()) {
             contents.filter { entity ->
-                val filter = AppState.getFilter()
+                val filters = AppState.getFilterList()
 
-                val isExplorerFileAndMatches =
-                    entity is ExplorerFile && Utils.matchesExtension(entity.extension, filter)
-                val isZipArchiveAndMatches =
-                    entity is ZipArchive && Utils.matchesExtension(entity.extension, filter)
+                val isExplorerFileAndMatches = entity is ExplorerFile && filters.any { filter -> Utils.matchesExtension(entity.extension, filter) }
+                val isZipArchiveAndMatches = entity is ZipArchive && filters.any { filter -> Utils.matchesExtension(entity.extension, filter) }
 
                 isExplorerFileAndMatches || isZipArchiveAndMatches
             }
