@@ -2,7 +2,7 @@
 
 * Table view: sorting -> only after I fix view updates
 * BUG: quit zip directory which is not yet unpacked
-* BUG: fix heap issues
+* ~~BUG: fix heap issues~~
 * ~~BUG: filter crashes if I insert "?"~~
 * ~~BUG: dark theme in grid view is broken again~~
 * ~~Make uniform icon size regardless on text length and image size~~
@@ -34,15 +34,16 @@
 * Unit tests
 * Manual test protocol
 * Get rid of magic numbers and strings
-* README and documentation
+* ~~README~~
+* Code documentation
 
 # Prefer to do
 
 * If open in external app - warn about it?
-* Localization
-* Localization: Cyrillic languages
 * Think about filter's behaviour better
 * Deselect action too
+* ~~ILocalization~~I
+* ~~ILocalization: Cyrillic languages~~I
 * ~~Thumbnail generation: show as soon as are generated.~~
 * ~~Thumbnail LRU cache in zip files~~
 * ~~Table - different color for even and odd rows~~
