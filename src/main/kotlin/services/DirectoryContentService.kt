@@ -14,7 +14,6 @@ class DirectoryContentService {
     private var sortOrder: SortOrder = SortOrder.TYPE
     private var sortInverse: Boolean = false
 
-
     private fun filterContents(contents: List<FileSystemEntity>): List<FileSystemEntity> {
         // First, filter the contents by extension (if filter applied)
         var filteredContents = if (AppState.getFilter().isNotEmpty()) {
@@ -48,10 +47,12 @@ class DirectoryContentService {
                     when (it) {
                         is ExplorerDirectory -> 0
                         is ExplorerFile -> 1
-                        // TODO: add sort by extension
-                        is ExplorerSymLink -> 2
-                        else -> 3
+                        is ZipArchive -> 2
+                        is ExplorerSymLink -> 3
+                        else -> 4
                     }
+                }.thenBy {
+                    if (it is ExplorerFile) it.extension else ""
                 }.thenBy { it.name }
             )
             SortOrder.SIZE -> contents.sortedWith(
@@ -67,12 +68,7 @@ class DirectoryContentService {
                 compareBy { it.lastModified }
             )
         }
-
-        if (sortInverse) {
-            sortedContents = sortedContents.asReversed()
-        }
-
-
+        if (sortInverse) { sortedContents = sortedContents.asReversed() }
         return sortedContents
     }
 
