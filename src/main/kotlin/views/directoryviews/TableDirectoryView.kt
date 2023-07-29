@@ -55,7 +55,6 @@ class TableDirectoryView : AbstractDirectoryView() {
             table.columnModel.getColumn(0).preferredWidth = Constants.TABLE_VIEW_FIRST_COL_SIZE
             table.columnModel.getColumn(0).maxWidth = Constants.TABLE_VIEW_FIRST_COL_SIZE
             setTableColors()
-
         }
     }
 

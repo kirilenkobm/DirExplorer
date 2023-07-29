@@ -3,10 +3,7 @@ package services
 import dataModels.DirectoryObserver
 import dataModels.ExplorerDirectory
 import dataModels.ZipArchive
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import state.AppState
 import views.popupwindows.ZipUnpackSpinner
 import java.io.IOException
@@ -18,7 +15,7 @@ import kotlin.coroutines.CoroutineContext
 
 
 class ZipArchiveService(private val zipEntity: ZipArchive): CoroutineScope {
-    private val job = Job()
+    val job = Job()
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.Main + job
     private var tempDirName: String? = null
@@ -72,6 +69,7 @@ class ZipArchiveService(private val zipEntity: ZipArchive): CoroutineScope {
             try {
                 ZipFile(zipEntity.path).use { zip ->
                     zip.entries().asSequence().forEach { entry ->
+                        ensureActive()  // to force coroutine to check whether it's cancelled I guess
                         if (!entry.isDirectory) {
                             val inputFileStream = zip.getInputStream(entry)
                             val outputFile = zipEntity.tempDir!!.resolve(entry.name)

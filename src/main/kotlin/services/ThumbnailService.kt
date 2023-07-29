@@ -9,6 +9,7 @@ import state.Settings
 import views.iconviews.FileIconView
 import java.awt.Color
 import java.awt.Image
+import java.awt.RenderingHints
 import java.awt.image.BufferedImage
 import java.io.File
 import java.io.IOException
@@ -160,6 +161,16 @@ class ThumbnailService(
         }
     }
 
+    private fun getSubsamplingValue(maxDimension: Int): Int {
+        return  when {
+            maxDimension <= 1200 -> 1
+            maxDimension <= 2200 -> 2
+            maxDimension <= 3400 -> 3
+            maxDimension <= 4200 -> 6
+            else -> 10
+        }
+    }
+
     private suspend fun createImageThumbnail(): Icon? {
         return withContext(Dispatchers.IO) {
             try {
@@ -177,21 +188,28 @@ class ThumbnailService(
                         // included in the image file (can work for jpeg and tiff)
                         val includedThumbnail = extractImageThumbnailIfExists(reader)
                         if (includedThumbnail != null) {
+                            println("")
                             return@withContext resizeThumbnail(includedThumbnail)
                         }
 
                         // No thumbnail found -> just read the whole image
                         val width = reader.getWidth(reader.minIndex)
                         val height = reader.getHeight(reader.minIndex)
-
+                        val maxDimension = max(width, height)
                         // Skip huge images
-                        if (max(width, height) > Settings.maxImageSizeToShowThumbnail)
+                        if (maxDimension > Settings.maxImageSizeToShowThumbnail)
                         {
                             return@withContext null
                         }
 
                         // Read the image
-                        val fullImage = reader.read(reader.minIndex)
+                        val param = reader.defaultReadParam
+                        // apply subsampling to load smaller image into RAM
+                        // and increase processing speed
+                        val subsamplingVal = getSubsamplingValue(maxDimension)
+                        val res = maxDimension / subsamplingVal
+                        param.setSourceSubsampling(subsamplingVal, subsamplingVal, 0, 0)
+                        val fullImage = reader.read(reader.minIndex, param)
                         val thumbnailImage = resizeThumbnail(fullImage)
                         thumbnailImage
                     } finally {
@@ -246,6 +264,27 @@ class ThumbnailService(
         }
     }
 
+    // TODO: check whether another implementation provides indeed better quality
+//    private fun resizeThumbnail(image: BufferedImage): Icon {
+//        val width = image.width
+//        val height = image.height
+//        // Do not rescale what is already scaled
+//        if (width == Settings.iconSize || height == Settings.iconSize) {
+//            return ImageIcon(image)
+//        }
+//        val scaleFactor = Settings.iconSize.toDouble() / max(width, height)
+//        val newWidth = (width * scaleFactor).toInt()
+//        val newHeight = (height * scaleFactor).toInt()
+//
+//        val resizedImage = image.getScaledInstance(
+//            newWidth,
+//            newHeight,
+//            Image.SCALE_DEFAULT
+//        )
+//
+//        return ImageIcon(resizedImage)
+//    }
+
     private fun resizeThumbnail(image: BufferedImage): Icon {
         val width = image.width
         val height = image.height
@@ -257,14 +296,24 @@ class ThumbnailService(
         val newWidth = (width * scaleFactor).toInt()
         val newHeight = (height * scaleFactor).toInt()
 
-        val resizedImage = image.getScaledInstance(
-            newWidth,
-            newHeight,
-            Image.SCALE_DEFAULT
-        )
+        // Sometimes TIFF causes the Unknown image type 0 exception
+        val imageType =
+            if (image.type != BufferedImage.TYPE_CUSTOM) image.type
+            else BufferedImage.TYPE_INT_ARGB
+        val resizedImage = BufferedImage(newWidth, newHeight, imageType)
+        val g = resizedImage.createGraphics()
+        // ideally, with these keys quality will be a bit better
+        g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC)
+        g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY)
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
+
+        g.drawImage(image, 0, 0, newWidth, newHeight, null)
+        g.dispose()
 
         return ImageIcon(resizedImage)
     }
+
+
 
     fun dispose() {
         job.cancel()
