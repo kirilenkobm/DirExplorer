@@ -3,8 +3,7 @@ package services
 import javax.swing.Icon
 import java.util.concurrent.ConcurrentHashMap
 
-// TODO: ensure whether it belongs here, but not state package
-// TODO: work with zip archives
+
 // Save on device or destroy after each session?
 object ThumbnailsCache {
     private const val maxSize: Int = 10000

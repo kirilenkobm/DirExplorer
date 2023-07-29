@@ -31,7 +31,7 @@ import kotlin.math.max
  * - if text file: read first N lines and generate an image
  * - if pdf - generate thumbnail from the 1st page
  */
-class ThumbnailService(
+class ThumbnailGenerationService(
     private val fileEntity: ExplorerFile,
     private val fileIcon: FileIconView
 ): CoroutineScope {

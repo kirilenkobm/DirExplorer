@@ -4,10 +4,13 @@ import Constants
 import dataModels.*
 import kotlinx.coroutines.launch
 import services.DirectoryContentService
+import services.EntityIconViewFactory
+import services.ThumbnailsJobsManager
 import state.*
 import views.customcomponents.WrapLayout
-import views.iconviews.*
 import java.awt.*
+import java.awt.event.MouseAdapter
+import java.awt.event.MouseEvent
 import javax.swing.JPanel
 import javax.swing.JScrollPane
 import javax.swing.SwingUtilities
@@ -17,35 +20,22 @@ class GridDirectoryView : AbstractDirectoryView() {
     private val gridPanel = JPanel(WrapLayout(FlowLayout.LEFT, 10, 10))
     private var filteredAndSortedContents: List<FileSystemEntity> = emptyList()
     // keep track of all launched thumbnail generation jobs
-    private val fileIconViews = mutableListOf<FileIconView>()
-    // see setSelectedIcon
-    private var selectedView: AbstractIconEntityView? = null
     private val contentService = DirectoryContentService()
 
     init {
         setBackgroundColor()
         updateView()
+        setupMouseListener()  // simply to deselect selected icon if clicked outside any icon
     }
 
-    private fun createEntityView(entity: FileSystemEntity): JPanel {
-        return when (entity) {
-            is ExplorerFile -> createFileIconView(entity)
-            is ExplorerDirectory -> DirectoryIconView(entity).createView()
-            is ExplorerSymLink -> SymlinkIconView(entity).createView()
-            is ZipArchive -> ZipArchiveIconView(entity).createView()
-            else -> createUnknownIconView(entity)
-        }
-    }
-
-    private fun createFileIconView(entity: ExplorerFile): JPanel {
-        val view = FileIconView(entity)
-        fileIconViews.add(view)
-        return view.createView()
-    }
-
-    private fun createUnknownIconView(entity: FileSystemEntity): JPanel {
-        val unknownEntity = UnknownEntity(entity.path)
-        return UnknownIconView(unknownEntity).createView()
+    private fun setupMouseListener() {
+        gridPanel.addMouseListener(object : MouseAdapter() {
+            override fun mouseClicked(e: MouseEvent) {
+                if (e.source == gridPanel) {
+                    SelectedIconManager.deselect()
+                }
+            }
+        })
     }
 
     /**
@@ -57,7 +47,7 @@ class GridDirectoryView : AbstractDirectoryView() {
     }
 
     override fun updateView() {
-        cancelThumbnailGenerationTasks()
+        ThumbnailsJobsManager.cancelThumbnailGenerationTasks()
 
         launch {
             filteredAndSortedContents = contentService.generateContentForView()
@@ -69,17 +59,12 @@ class GridDirectoryView : AbstractDirectoryView() {
         }
     }
 
-    private fun cancelThumbnailGenerationTasks() {
-        fileIconViews.forEach { it.dispose() }
-        fileIconViews.clear()
-    }
-
     private fun clearAndRedrawGridPanel() {
         gridPanel.removeAll()
         updateLayout()
 
         for (entity in filteredAndSortedContents) {
-            val entityIcon = createEntityView(entity)
+            val entityIcon = EntityIconViewFactory.createEntityView(entity)
             entityIcon.isOpaque = false
             gridPanel.add(entityIcon)
         }
@@ -100,14 +85,6 @@ class GridDirectoryView : AbstractDirectoryView() {
                 repaint()
             }
         }
-    }
-
-    // TODO: refactor this, the only purpose of keeping it here
-    // is to make sure that 0 or 1 icons are selected at the same time
-    fun setSelectedIcon(iconView: AbstractIconEntityView) {
-        selectedView?.setSelected(false)
-        iconView.setSelected(true)
-        selectedView = iconView
     }
 
     private fun setBackgroundColor() {

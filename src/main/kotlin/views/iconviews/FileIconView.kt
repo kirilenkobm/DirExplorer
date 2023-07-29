@@ -1,7 +1,7 @@
 package views.iconviews
 
 import dataModels.ExplorerFile
-import services.ThumbnailService
+import services.ThumbnailGenerationService
 import utils.Utils
 import utils.IconManager
 
@@ -10,13 +10,13 @@ class FileIconView(
     entity: ExplorerFile,
 ): AbstractIconEntityView(entity) {
     private val fileEntity = entity
-    private val thumbnailService = ThumbnailService(fileEntity, this)
+    private val thumbnailGenerationService = ThumbnailGenerationService(fileEntity, this)
 
     override fun setIcon() {
         // default base image
         iconLabel.icon = Utils.resizeIcon(IconManager.getIconForFileType(fileEntity.fileType))
         // TODO: choose one of them
-        thumbnailService.startThumbnailGeneration()
+        thumbnailGenerationService.startThumbnailGeneration()
         // Start thumbnail generation without waiting for it to finish
 
 //        val thumbnailDeferred = fileEntity.startThumbnailGeneration()
@@ -33,6 +33,6 @@ class FileIconView(
     }
 
     fun dispose() {
-        thumbnailService.dispose()
+        thumbnailGenerationService.dispose()
     }
 }

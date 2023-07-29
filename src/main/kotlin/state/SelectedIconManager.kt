@@ -12,6 +12,7 @@ object SelectedIconManager {
     }
 
     fun deselect() {
+        selectedIcon?.setSelected(false)
         selectedIcon = null
     }
 }
