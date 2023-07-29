@@ -29,6 +29,8 @@ class AddressBarView: DirectoryObserver {
         updateView()
     }
 
+    // Address bar buttons indicate parts of the current path separated by > character
+    // Click on it triggers the AppState change.
     private fun createAddressBarButton(partName: String, newPath: Path): JButton {
         return JButton(partName).apply {
             isContentAreaFilled = false  // transparent button

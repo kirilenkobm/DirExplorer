@@ -18,8 +18,10 @@ object Utils {
      * Converts a size in bytes to a human-readable string.
      */
     fun humanReadableSize(bytes: Long): String {
-        if (bytes.toInt() == 0) {
+        if (bytes == 0L) {
             return "empty"
+        } else if (bytes < 0L) {
+            return "undefined"
         }
         val kilobyte = 1024.0
         val megabyte = kilobyte * 1024
@@ -41,10 +43,11 @@ object Utils {
      * Formats unix time number as a string.
      */
     fun formatDate(unixTime: Long): String {
-        if (unixTime == 0L) {
+        if (unixTime <= 0L) {
             return "unknown"
         }
         return dateFormat.format(Date(unixTime))
+        // Handle cases where unixTime is in the future? Like year 2333
     }
 
     /**

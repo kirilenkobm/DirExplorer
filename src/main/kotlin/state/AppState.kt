@@ -78,7 +78,7 @@ object AppState {
             // add zip files to back and forward stack instead of tempDirNames
             val zipEntity = newExplorerDirectory as ZipArchive
             val zipArchiveService = ZipArchiveService(zipEntity)
-            val zipTempDir = zipPathToTempDir[zipEntity.path] ?: zipArchiveService.extractTo()
+            val zipTempDir = zipPathToTempDir[zipEntity.path] ?: zipArchiveService.startExtraction()
 
             // Update current explorer directory if possible
             zipTempDir?.let {

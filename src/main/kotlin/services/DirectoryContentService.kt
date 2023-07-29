@@ -14,7 +14,7 @@ class DirectoryContentService {
     private var sortOrder: SortOrder = SortOrder.TYPE
     private var sortInverse: Boolean = false
 
-    private fun filterContents(contents: List<FileSystemEntity>): List<FileSystemEntity> {
+    internal fun filterContents(contents: List<FileSystemEntity>): List<FileSystemEntity> {
         // First, filter the contents by extension (if filter applied)
         var filteredContents = if (AppState.getFilter().isNotEmpty()) {
             contents.filter { entity ->
@@ -38,7 +38,7 @@ class DirectoryContentService {
         return filteredContents
     }
 
-    private fun sortContents(contents: List<FileSystemEntity>) : List<FileSystemEntity> {
+    internal fun sortContents(contents: List<FileSystemEntity>) : List<FileSystemEntity> {
         // Sort according to sorting function selected
         var sortedContents = when (sortOrder) {
             SortOrder.NAME -> contents.sortedBy { it.name }

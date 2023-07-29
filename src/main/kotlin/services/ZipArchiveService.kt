@@ -47,7 +47,7 @@ class ZipArchiveService(private val zipEntity: ZipArchive): CoroutineScope {
         AppState.addZipArchive(this)
     }
 
-    fun extractTo(): Path? {
+    fun startExtraction(): Path? {
         val parentDir = Paths.get(zipEntity.path).parent
         // create hidden temp directory
         tempDirName = ".${Paths.get(zipEntity.path).fileName}_${UUID.randomUUID().toString().take(6)}"
