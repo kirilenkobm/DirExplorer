@@ -1,6 +1,6 @@
 # Mandatory TODO List
 
-* BUG: quit zip directory which is not yet unpacked
+* ~~BUG: quit zip directory which is not yet unpacked~~
 * ~~Table view: sorting -> only after I fix view updates~~
 * ~~BUG: fix heap issues~~
 * ~~BUG: filter crashes if I insert "?"~~
