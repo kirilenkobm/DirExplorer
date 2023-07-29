@@ -1,6 +1,8 @@
 package views.popupwindows
 
+import state.Settings
 import java.awt.BorderLayout
+import java.util.*
 import javax.swing.JDialog
 import javax.swing.JLabel
 import javax.swing.JProgressBar
@@ -11,12 +13,17 @@ import javax.swing.border.EmptyBorder
  * Object that controls whether a zip unpacking bar is shown or not.
  */
 object ZipUnpackSpinner {
+    private var bundle = ResourceBundle.getBundle(
+        Constants.LANGUAGE_BUNDLE_PATH,
+        Settings.language.getLocale()
+    )
+
     private val progressBar = JProgressBar().apply {
         isIndeterminate = true
         border = EmptyBorder(20, 20, 20, 20)
     }
 
-    private val label = JLabel("Unpacking zip...").apply {
+    private val label = JLabel(bundle.getString("UnpackingZip")).apply {
         border = EmptyBorder(10, 10, 10, 10)
         horizontalAlignment = SwingConstants.CENTER
     }
