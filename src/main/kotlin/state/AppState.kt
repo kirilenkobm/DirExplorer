@@ -1,10 +1,10 @@
 // AppState - manages the whole Application state
 package state
 import Constants
-import dataModels.*
-import services.DirectoryWatcher
-import services.ZipArchiveService
-import views.popupwindows.showErrorDialog
+import model.*
+import service.CurrentDirectoryContentWatcher
+import service.ZipArchiveService
+import view.popupwindows.showErrorDialog
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -20,7 +20,7 @@ object AppState {
             field = value
             value.invalidateCache()
             notifyDirectoryObservers(value)
-            DirectoryWatcher.startWatching(value)
+            CurrentDirectoryContentWatcher.startWatching(value)
         }
 
     private var currentExtensionFilter: String = ""

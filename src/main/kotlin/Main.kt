@@ -1,9 +1,9 @@
 // App's entry point
 import state.AppState
-import dataModels.ExplorerDirectory
+import model.ExplorerDirectory
 import state.Settings
 import javax.swing.SwingUtilities
-import views.MainView
+import view.MainView
 
 
 fun main(args: Array<String>) {

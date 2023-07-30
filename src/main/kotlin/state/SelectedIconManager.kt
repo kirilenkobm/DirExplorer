@@ -1,6 +1,6 @@
 package state
 
-import views.iconviews.AbstractIconEntityView
+import view.iconviews.AbstractIconEntityView
 
 object SelectedIconManager {
     private var selectedIcon: AbstractIconEntityView? = null
