@@ -6,18 +6,26 @@ import view.popupwindows.showErrorDialog
 import java.awt.Desktop
 import java.io.File
 import java.io.IOException
+import java.nio.file.Paths
 
 /**
-For each entity, defines the action on mouse click.
-@param entity: clicked FileSystemEntity, such as
-Directory, Regular File, Archive, etc.
-
- Hopefully singleton pattern applies here.
+ * Singleton object that handles actions performed on different types of FileSystemEntity instances.
+ *
+ * This object defines the behavior for mouse click actions on various types of FileSystemEntity instances,
+ * such as directories, files, symbolic links, zip archives, and unknown entities.
+ * The action performed depends on the type of the FileSystemEntity instance.
+ *
+ * The Singleton pattern is used here to ensure that there is only one instance of
+ * EntityActionsHandler in the application, maintaining a single point of access.
+ *
+ * visitedSymlinks: A mutable set used to keep track of the symbolic links that have been visited
+ * during the execution of the application. This is used to detect and prevent circular links.
  */
 object EntityActionsHandler {
     private var visitedSymlinks: MutableSet<String> = mutableSetOf()
 
     fun performEntityAction(entity: FileSystemEntity) {
+        print("Perform entiry action")
         when(entity) {
             is ExplorerDirectory -> handleDirectory(entity)
             is ExplorerFile -> openFile(entity)
@@ -47,16 +55,18 @@ object EntityActionsHandler {
 
     private fun handleSymLink(link: ExplorerSymLink) {
         try {
-            val targetPath = link.target
+            // Sometimes links have relative paths instead of absolute
+            val targetPath = Paths.get(link.path)
+                .parent.resolve(link.target)
+                .toAbsolutePath()
+                .normalize()
+                .toString()
             val targetEntity = FileSystemEntityFactory.createEntity(targetPath)
-            visitedSymlinks.add(link.path)
-
-            if (targetPath in visitedSymlinks) {
+            if (link.path in visitedSymlinks) {
                 showErrorDialog("Circular link detected: $targetPath")
                 return
             }
-
-            visitedSymlinks.add(targetPath)
+            visitedSymlinks.add(link.path)
             performEntityAction(targetEntity)
         } catch (e: IOException) {
             showErrorDialog("Error following symlink: ${e.message}")
