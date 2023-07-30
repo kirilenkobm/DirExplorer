@@ -1,5 +1,5 @@
-// Class that manages directory class
 package model
+
 import java.nio.file.Files
 import java.nio.file.Paths
 import kotlin.streams.asSequence
@@ -8,7 +8,15 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import state.Settings
 
-// Open to allow inheritance in ZipArchive
+
+/**
+ * Data model for a Directory.
+ * Implements functions that are applicable to directories only.
+ * Such as get contents (and keeps cache of the contents)
+ * and to check whether there is access to the directory
+ * or whether it's empty or not.
+ * Also, methods to calculate total size of the content and number of items.
+ */
 open class ExplorerDirectory(override val path: String): ExplorableEntity {
     private var contentsCache: List<FileSystemEntity>? = null
     private val mutex = Mutex()

@@ -1,11 +1,23 @@
 // Interface to make working with groups of directory contents more convenient
 package model
+
 import Constants
 import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.Paths
 
-
+/**
+ * Interface for all file system entities.
+ * Implements values applicable (more or less) to all kinds of entities, such as:
+ * - Directory
+ * - File
+ * - Symlink
+ * - ZipArchive (which behaves as class and directory in this app)
+ * - Unknown entity that covers all other cases such as named pipes.
+ *
+ * File system entities are generated from filesystem paths (in Strings)
+ * using FileSystemEntityFactory class.
+ */
 interface FileSystemEntity {
     val path: String
     val name: String

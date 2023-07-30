@@ -1,10 +1,11 @@
 package model
+
 import Constants
 import java.nio.file.Files
 import java.nio.file.Paths
 
 /**
- * Class that manages operations related to Files (text, binary, etc)
+ * Data model class to implement methods relevant to Files (text, binary, etc).
  * Named ExplorerFile to avoid collision with java.io.File
  */
 class ExplorerFile(override val path: String): FileSystemEntity {
@@ -16,6 +17,6 @@ class ExplorerFile(override val path: String): FileSystemEntity {
         get() = Paths.get(path).fileName.toString().substringAfter(".", "")
 
     val fileType: String
-        // Java built in method to determine file type
+        // Java built in method to determine MIME file type
         get() = Files.probeContentType(Paths.get(path)) ?: Constants.UNKNOWN_FILE_TYPE
 }
