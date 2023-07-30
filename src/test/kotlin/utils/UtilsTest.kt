@@ -1,5 +1,6 @@
 package utils
 
+import Constants
 import org.junit.jupiter.api.Test
 
 import org.junit.jupiter.api.Assertions.*
@@ -46,11 +47,28 @@ class UtilsTest {
 
     @Test
     fun getFilenameForIcon() {
-        assertEquals("<html>txt</html>", Utils.getFilenameForIcon("txt"))
-        assertEquals("<html>short.txt</html>", Utils.getFilenameForIcon("short.txt"))
-        assertEquals("<html>verylongfi<br>lename.txt</html>", Utils.getFilenameForIcon("verylongfilename.txt"))
-        assertEquals("<html>verylongfi<br>lena...txt</html>", Utils.getFilenameForIcon("verylongfilenamethatdoesnotfit.anywhere.txt"))
-        assertEquals("<html></html>", Utils.getFilenameForIcon(""))
+
+        fun trimHtmlTags(input: String): String {
+            return input.removePrefix(Constants.SHOWN_NAME_OPEN_TAG)
+                .removeSuffix(Constants.SHOWN_NAME_CLOSE_TAG)
+        }
+
+
+        val result1 = trimHtmlTags(Utils.getFilenameForIcon("Myreport2023V2.pdf"))
+        val result2 = trimHtmlTags(
+            Utils.getFilenameForIcon("a.andverylongextensionthatdoesnotfitanywhereonthisplanet")
+        )
+        val result3 = Utils.getFilenameForIcon("short.txt")
+        val result4 = trimHtmlTags(Utils.getFilenameForIcon("line.with.many.dots"))
+        val result5 = Utils.getFilenameForIcon("")
+        val result6 = trimHtmlTags(Utils.getFilenameForIcon("JustAVeryLongDocumentNameVersion3.docx"))
+
+        assertEquals("Myreport<br>2023V2.pdf", result1)
+        assertEquals("a.andveryl<br>o...hisplanet", result2)
+        assertEquals("short.txt", result3)
+        assertEquals("line.with<br>.many.dots", result4)  // ??? Still room for improvement
+        assertEquals(Constants.NONAME_FILE, result5)  // not sure if it's possible
+        assertEquals("JustAVeryL<br>o...ion3.docx", result6)
     }
 
     @Test

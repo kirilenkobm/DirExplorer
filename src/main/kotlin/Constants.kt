@@ -38,11 +38,16 @@ object Constants {
     // Grid view
     const val GRID_COLUMN_WIDTH = 90
     // const val GRID_COLUMN_MAX_WIDTH = 100
+
     const val GRID_TEXT_FRAME_HEIGHT = 35
     const val GRID_IMAGE_FRAME_HEIGHT = 85
     const val GRID_ROW_HEIGHT = 120
 
     const val MAX_SHOWN_NAME_LENGTH = 20
+    const val SHOWN_NAME_OPEN_TAG = "<html><div style='text-align: center;'>"
+    const val SHOWN_NAME_CLOSE_TAG = "</div></html>"
+    const val NONAME_FILE =
+        "<html><div style='text-align: center; color: gray; font-style: italic;'>unnamed</div></html>"
 
     const val LANGUAGE_BUNDLE_PATH = "languages/Messages"
 

@@ -1,5 +1,6 @@
 package utils
 
+import Constants
 import state.Settings
 import java.awt.Image
 import java.text.SimpleDateFormat
@@ -91,30 +92,64 @@ object Utils {
      * with ellipsis.
     */
     fun getFilenameForIcon(filename: String): String {
-        val extension = filename.substringAfterLast(".", "")
-        val nameWithoutExtension = filename.substringBeforeLast(".")
+        if (filename.length == 0) {
+            return Constants.NONAME_FILE
+        }
+        val maxOneLine = Constants.MAX_SHOWN_NAME_LENGTH / 2
 
-        val finalName = if (filename.length > Constants.MAX_SHOWN_NAME_LENGTH) {
-            val trimLength = maxOf(0, Constants.MAX_SHOWN_NAME_LENGTH - extension.length - 3)
-            val trimmedName = nameWithoutExtension.take(trimLength)
-            "$trimmedName...$extension"
-        } else {
-            filename
+        fun findBestSplitIndex(filename: String, nameInLimits: Boolean): Int {
+            // find the best place to split the filename between the lines
+            // from minFirst index to maximal one line length -> such that
+            // first and second half do not exceed the limit for one line
+
+            // nameInLimits -> is filename <= MAX NAME LIMIT OR NOT
+            val minFirstIndex = if (!nameInLimits) {
+                filename.length - maxOneLine
+            } else {
+                // if not -> we will shrink the 2nd half anyway using ...
+                maxOneLine / 2
+            }
+            // prefer to split before special characters, capital letters and numbers
+            val splitIndex = (minFirstIndex..maxOneLine).find { i ->
+                (filename[i].isUpperCase() && filename[i - 1].isLowerCase())
+                        || filename[i].isWhitespace()
+                        || filename[i] == '.'
+                        || filename[i] == '_'
+                        || filename[i] == '-'
+                        || filename[i].isDigit()
+            } ?: maxOneLine  // just split 50:50 if we cannot find the best place
+            return splitIndex
         }
 
-        val splitName = if (finalName.length > Constants.MAX_SHOWN_NAME_LENGTH / 2) {
-            val firstHalf = finalName.take(finalName.length / 2)
-            val secondHalf = finalName.substring(finalName.length / 2)
-            "$firstHalf<br>$secondHalf"
-        } else {
-            finalName
+        fun shortenSecondHalfLongFilename(secondLineRaw: String): String {
+            // first, check how many characters to replace with ...
+            val firstChar = secondLineRaw[0]
+            val lastPart = secondLineRaw.substring(secondLineRaw.length - maxOneLine + 1)
+            // TODO: ideally, we could select a place for ... better
+            return "$firstChar...$lastPart"
         }
 
-        // TODO: maybe implement a more complex algorithm that
-        // would prefer to break like at dot, or other special
-        // character over just splitting after a specified N of
-        // characters.
-        return "<html>$splitName</html>"
+        // If filename fits on one line: just return it
+        if (filename.length <= maxOneLine) {
+            return filename
+        }
+
+        // Filename fits two lines, without need to introduce ...
+        if (filename.length <= Constants.MAX_SHOWN_NAME_LENGTH) {
+            // here, need to find a better place to split it
+            val splitIndex = findBestSplitIndex(filename, true)
+            val firstLine = filename.substring(0, splitIndex)
+            val secondLine = filename.substring(splitIndex)
+            return "${Constants.SHOWN_NAME_OPEN_TAG}$firstLine<br>$secondLine${Constants.SHOWN_NAME_CLOSE_TAG}"
+        }
+
+        // this branch -> filename is very long
+        val splitIndex = findBestSplitIndex(filename, false)
+        val firstLine = filename.substring(0, splitIndex)
+        val secondLineRaw = filename.substring(splitIndex)
+        val secondLine = shortenSecondHalfLongFilename(secondLineRaw)
+        return "${Constants.SHOWN_NAME_OPEN_TAG}$firstLine<br>$secondLine${Constants.SHOWN_NAME_CLOSE_TAG}"
+        // I had to apply HTML tags so that swing renders multiline text correctly
     }
 
     fun resizeIcon(icon: ImageIcon): ImageIcon {
