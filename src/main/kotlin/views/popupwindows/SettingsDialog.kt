@@ -3,6 +3,7 @@ package views.popupwindows
 import state.ColorTheme
 import state.Language
 import state.Settings
+import java.awt.Color
 import java.awt.Component
 import java.awt.Dimension
 import java.awt.GridLayout
@@ -10,7 +11,7 @@ import java.awt.event.ItemEvent
 import java.util.ResourceBundle
 import javax.swing.*
 
-class SettingsDialog: JDialog() {
+class SettingsDialog: JDialog()  {
     init {
         val bundle = ResourceBundle.getBundle("languages/Messages", Settings.language.getLocale())
         title = bundle.getString("Settings")
@@ -28,6 +29,7 @@ class SettingsDialog: JDialog() {
             Settings.colorTheme
         ) {
             Settings.changeColorTheme(it)
+            // SwingUtilities.updateComponentTreeUI(this)
         }
 
         val languageDropdown = createDropdown(
@@ -35,6 +37,7 @@ class SettingsDialog: JDialog() {
             Settings.language
         ) {
             Settings.updateLanguage(it)
+            // SwingUtilities.updateComponentTreeUI(this)
         }
 
         val panel = JPanel().apply {
@@ -63,6 +66,16 @@ class SettingsDialog: JDialog() {
     private fun <T> createDropdown(items: Array<T>, selectedItem: T, onItemSelected: (T) -> Unit): JComboBox<T> {
         return JComboBox(items).apply {
             this.selectedItem = selectedItem
+            this.renderer = object : DefaultListCellRenderer() {
+                override fun getListCellRendererComponent(list: JList<*>?, value: Any?, index: Int, isSelected: Boolean, cellHasFocus: Boolean): Component {
+                    super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus)
+                    if (index == -1) {
+                        background = if (Settings.colorTheme == ColorTheme.DARK) Color.DARK_GRAY else Color.WHITE
+                        foreground = if (Settings.colorTheme == ColorTheme.DARK) Color.WHITE else Color.BLACK
+                    }
+                    return this
+                }
+            }
             addItemListener { e ->
                 if (e.stateChange == ItemEvent.SELECTED) {
                     @Suppress("UNCHECKED_CAST")
@@ -71,6 +84,7 @@ class SettingsDialog: JDialog() {
             }
         }
     }
+
 
     private fun addLabelAndDropdownToPanel(panel: JPanel, labelText: String, dropdown: JComboBox<*>) {
         val label = JLabel(labelText).apply { alignmentX = Component.LEFT_ALIGNMENT }

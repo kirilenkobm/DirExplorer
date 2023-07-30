@@ -47,7 +47,6 @@ object Utils {
             return "unknown"
         }
         return dateFormat.format(Date(unixTime))
-        // Handle cases where unixTime is in the future? Like year 2333
     }
 
     /**
@@ -86,9 +85,11 @@ object Utils {
         }
     }
 
-    // In case filename is too long, I'd like to shorten
-    // it in the icon view, replacing part of the name
-    // with ellipsis
+    /**
+     * In case filename is too long, I'd like to shorten
+     * it in the icon view, replacing part of the name
+     * with ellipsis.
+    */
     fun getFilenameForIcon(filename: String): String {
         val extension = filename.substringAfterLast(".", "")
         val nameWithoutExtension = filename.substringBeforeLast(".")
@@ -109,6 +110,10 @@ object Utils {
             finalName
         }
 
+        // TODO: maybe implement a more complex algorithm that
+        // would prefer to break like at dot, or other special
+        // character over just splitting after a specified N of
+        // characters.
         return "<html>$splitName</html>"
     }
 

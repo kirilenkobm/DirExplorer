@@ -2,6 +2,7 @@ package utils
 
 import state.*
 import java.awt.Color
+import javax.swing.SwingUtilities
 import javax.swing.UIManager
 
 
@@ -20,6 +21,10 @@ object PopupViewThemeManager : SettingsObserver {
         UIManager.put("OptionPane.messageForeground", Color.WHITE)
         UIManager.put("Button.background", Color.GRAY)
         UIManager.put("Button.foreground", Color.WHITE)
+        UIManager.put("ComboBox.background", Color.DARK_GRAY)
+        UIManager.put("ComboBox.foreground", Color.WHITE)
+        UIManager.put("ComboBox.selectionBackground", Color.GRAY)
+        UIManager.put("ComboBox.selectionForeground", Color.WHITE)
     }
 
     private fun setDefaultTheme() {
@@ -28,6 +33,10 @@ object PopupViewThemeManager : SettingsObserver {
         UIManager.put("OptionPane.messageForeground", null)
         UIManager.put("Button.background", null)
         UIManager.put("Button.foreground", null)
+        UIManager.put("ComboBox.background", null)
+        UIManager.put("ComboBox.foreground", null)
+        UIManager.put("ComboBox.selectionBackground", null)
+        UIManager.put("ComboBox.selectionForeground", null)
     }
 
     override fun onColorThemeChanged(newColorTheme: ColorTheme) {
