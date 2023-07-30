@@ -47,6 +47,10 @@ object Constants {
     const val LANGUAGE_BUNDLE_PATH = "languages/Messages"
 
     // Thumbnail related
+
+    // Cache related
+    const val THUMBNAIL_CACHE_SIZE = 10000
+
     //// Text previews
     const val TEXT_PREVIEW_INIT_XY_OFFSET = 4
     const val TEXT_PREVIEW_TEXT_SIZE = 6f
