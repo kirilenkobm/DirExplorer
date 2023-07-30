@@ -7,15 +7,29 @@ import state.SortOrder
 import util.Utils
 
 /**
- * Layer between UI and Model to handle what directory content
- * to show.
+ * Class responsible for managing the directory content displayed in the user interface.
+ *
+ * This class acts as a mediator between the UI and the underlying model,
+ * handling tasks such as filtering and sorting the directory contents based on various criteria.
+ * It uses the AppState to get the current directory and its contents,
+ * and applies the necessary transformations before passing the data to the UI.
+ *
+ * The class provides functionality to filter contents by file extension and visibility (hidden or not),
+ * according to the current application settings. It also provides sorting functionality,
+ * allowing contents to be sorted by name, type, size, or last modification date.
+ *
+ * The transformed directory contents are generated asynchronously.
  */
 class DirectoryContentService {
     private var sortOrder: SortOrder = SortOrder.TYPE
     private var sortInverse: Boolean = false
 
+    /**
+     * Filter contents of a directory according to filters applied.
+     * Such as - showing hidden files or not, and
+     * showing files of the specified extension or not.
+     */
     private fun filterContents(contents: List<FileSystemEntity>): List<FileSystemEntity> {
-        // First, filter the contents by extension (if filter applied)
         var filteredContents = if (AppState.getFilter().isNotEmpty()) {
             contents.filter { entity ->
                 val filters = AppState.getFilterList()

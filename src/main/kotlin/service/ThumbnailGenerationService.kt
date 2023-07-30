@@ -23,14 +23,20 @@ import kotlin.coroutines.CoroutineContext
 import kotlin.math.max
 
 /**
- * Generate thumbnail image for a file if applicable.
- * - if this is an image file:
- *   - try to extract the image from cache
- *   - try to extract thumbnail from a file if it's already included
- *   - if not - open the image, rescale it
- *   - save to cache afterward
- * - if text file: read first N lines and generate an image
- * - if pdf - generate thumbnail from the 1st page
+ * Service class responsible for generating thumbnail images for file entities.
+ *
+ * This class uses coroutines to generate thumbnails asynchronously.
+ * It supports generating thumbnails for image files, text files, and PDF files.
+ * For image and pdf files, it first checks if a thumbnail is available in the cache.
+ * If not, it  opens the image or the first page of pdf, rescales it, and saves it to the cache.
+ * Then, it applies the thumbnail to the respective fileIcon (not sure whether it's the best idea).
+ *
+ * Planned for JPEG and TIFF images: first, try to extract the embedded thumbnail, it is present.
+ *
+ *  For text files, it reads the first N lines and generates an image from them.
+ *
+ * fileEntity: The file entity for which a thumbnail is to be generated.
+ * fileIcon: The view where the generated thumbnail will be displayed.
  */
 class ThumbnailGenerationService(
     private val fileEntity: ExplorerFile,
@@ -40,7 +46,7 @@ class ThumbnailGenerationService(
     private val iconCache = ThumbnailsCache
 
     override val coroutineContext: CoroutineContext
-        get() = Dispatchers.Main + job
+        get() = Dispatchers.IO + job
 
     fun startThumbnailGeneration() {
         val imagePreviewsSemaphore = SemaphoreManager.imagePreviewsSemaphore

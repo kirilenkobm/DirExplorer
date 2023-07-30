@@ -5,8 +5,18 @@ import view.iconviews.*
 import javax.swing.JPanel
 
 /**
- * Factory to create views for different
- * kinds of file system entities.
+ * Singleton factory for creating JPanel views for different types of file system entities.
+ *
+ * This factory provides a method to create a JPanel view for a given FileSystemEntity.
+ * The type of view created depends on the type of the FileSystemEntity:
+ * - ExplorerFile entities are represented with a FileIconView.
+ * - ExplorerDirectory entities are represented with a DirectoryIconView.
+ * - ExplorerSymLink entities are represented with a SymlinkIconView.
+ * - ZipArchive entities are represented with a ZipArchiveIconView.
+ * - Any other type of FileSystemEntity is represented with an UnknownIconView.
+ *
+ * For ExplorerFile entities, the factory also adds the created FileIconView to the ThumbnailsJobsManager,
+ * which manages the cancellation of thumbnail generation tasks.
  */
 object EntityIconViewFactory {
     fun createEntityView(entity: FileSystemEntity): JPanel {
@@ -21,7 +31,7 @@ object EntityIconViewFactory {
 
     private fun createFileIconView(entity: ExplorerFile): JPanel {
         val view = FileIconView(entity)
-        ThumbnailsJobsManager.addFileIconView(view)
+        ThumbnailJobController.addFileIconView(view)
         return view.createView()
     }
 

@@ -11,8 +11,11 @@ import java.nio.file.WatchKey
 import kotlin.coroutines.CoroutineContext
 
 /**
- * Object responsible for tracking changes in the watched directory, such as
- * deletion, adding and renaming the included items.
+ * Singleton object responsible for monitoring changes in the currently watched directory.
+ *
+ * This object uses the Java NIO WatchService API to track changes in the current directory,
+ * such as file creation, deletion, and modification. It operates in a separate coroutine context.
+ * When a change is detected, it triggers a refresh of the current directory state in the AppState class.
  */
 object CurrentDirectoryContentWatcher: CoroutineScope {
     private var directory: ExplorerDirectory? = null

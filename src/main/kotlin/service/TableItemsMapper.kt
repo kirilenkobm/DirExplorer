@@ -7,11 +7,19 @@ import util.Utils
 import javax.swing.ImageIcon
 
 /**
- * Class that handles content for table.
- * Extracts entities from current content Service and maps
- * them to table model.
+ * Class responsible for mapping file system entities to a format suitable for table display mode.
+ *
+ * This class takes a DirectoryContentService as input, which it uses to generate a list of FileSystemEntity objects.
+ * These entities are then mapped to an array of objects, each representing a row in the table.
+ * The mapping process varies depending on the type of the entity.
+ * Each entity is mapped to an array containing its icon (resized to fit the table),
+ * name, size and last modified date, if applicable.
+ *
+ * The resulting pair of lists (one of the original entities and one of the corresponding table rows)
+ * is then returned by the getContentForView method.
  */
 class TableItemsMapper(private val contentService: DirectoryContentService) {
+    // Has to be run in the coroutine scope because of the generateContentForView()
     suspend fun getContentForView(): Pair<List<FileSystemEntity>, List<Array<Any>>> {
         val contents = contentService.generateContentForView()
         return Pair(contents, contents.map { mapEntityToData(it) }.toList())

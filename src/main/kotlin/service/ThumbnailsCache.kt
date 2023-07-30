@@ -4,7 +4,20 @@ import Constants
 import javax.swing.Icon
 import java.util.concurrent.ConcurrentHashMap
 
-// Save on device or destroy after each session?
+/**
+ * Singleton object that manages a thread-safe cache for storing generated thumbnails.
+ *
+ * This cache uses the Least Recently Used (LRU) policy: when the cache reaches its maximum size,
+ * the least recently accessed thumbnails are removed to make room for new ones.
+ *
+ * The cache is implemented using a ConcurrentHashMap for storing the thumbnails and a
+ * MutableList for tracking the access order of the thumbnails.
+ * Synchronization is used to ensure that the cache operations are thread-safe.
+ *
+ * Note: not sure whether the cache should persist on the device or to be
+ * destroyed after each session.
+ */
+
 object ThumbnailsCache {
     private const val maxSize: Int = Constants.THUMBNAIL_CACHE_SIZE
     private val cache: ConcurrentHashMap<String, Icon> = ConcurrentHashMap()
@@ -29,6 +42,14 @@ object ThumbnailsCache {
         }
     }
 
+    private fun trimToSize() {
+        while (accessOrder.size > maxSize) {
+            val leastRecentlyUsed = accessOrder.removeAt(0)
+            cache.remove(leastRecentlyUsed)
+        }
+    }
+
+    // The methods below are to be used only in tests!
     fun size(): Int {
         synchronized(lock) {
             return cache.size
@@ -38,12 +59,5 @@ object ThumbnailsCache {
     fun invalidate() {
         cache.clear()
         accessOrder.clear()
-    }
-
-    private fun trimToSize() {
-        while (accessOrder.size > maxSize) {
-            val leastRecentlyUsed = accessOrder.removeAt(0)
-            cache.remove(leastRecentlyUsed)
-        }
     }
 }

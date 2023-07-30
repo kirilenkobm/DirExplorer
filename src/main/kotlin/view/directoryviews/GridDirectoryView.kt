@@ -5,7 +5,7 @@ import model.*
 import kotlinx.coroutines.launch
 import service.DirectoryContentService
 import service.EntityIconViewFactory
-import service.ThumbnailsJobsManager
+import service.ThumbnailJobController
 import state.*
 import view.customcomponents.WrapLayout
 import java.awt.*
@@ -47,7 +47,7 @@ class GridDirectoryView : AbstractDirectoryView() {
     }
 
     override fun updateView() {
-        ThumbnailsJobsManager.cancelThumbnailGenerationTasks()
+        ThumbnailJobController.cancelThumbnailGenerationTasks()
 
         launch {
             filteredAndSortedContents = contentService.generateContentForView()

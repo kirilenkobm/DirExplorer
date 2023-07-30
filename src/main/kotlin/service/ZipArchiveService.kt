@@ -13,11 +13,23 @@ import java.util.*
 import java.util.zip.ZipFile
 import kotlin.coroutines.CoroutineContext
 
-
+/**
+ * Service class for managing zip archives in the application.
+ *
+ * This class is responsible for extracting the contents of a zip archive into a temporary directory
+ * and cleaning up the temporary directory when it's no longer needed.
+ * The directory considered to be no longer needed if it is not present in any path in the
+ * back or forward history stack of the AppState, and is not present in the current path.
+ *
+ * The extraction process is performed asynchronously.
+ *
+ * All ZipArchiveService instances are tracked in the AppState's zipServices
+ * mutable list to remove all temporary directories when the session is complete.
+ */
 class ZipArchiveService(private val zipEntity: ZipArchive): CoroutineScope {
     private val job = Job()
     override val coroutineContext: CoroutineContext
-        get() = Dispatchers.Main + job
+        get() = Dispatchers.IO + job
     private var tempDirName: String? = null
 
     /**
