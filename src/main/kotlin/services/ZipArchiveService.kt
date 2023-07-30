@@ -15,7 +15,7 @@ import kotlin.coroutines.CoroutineContext
 
 
 class ZipArchiveService(private val zipEntity: ZipArchive): CoroutineScope {
-    val job = Job()
+    private val job = Job()
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.Main + job
     private var tempDirName: String? = null

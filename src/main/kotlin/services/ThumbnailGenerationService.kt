@@ -62,7 +62,6 @@ class ThumbnailGenerationService(
                 try {
                     getFromCacheOrGenerateThumbnail("image")
                 } finally {
-                    delay(250)  // rude way to decrease the priority
                     imagePreviewsSemaphore.release()
                 }
             }
@@ -73,7 +72,6 @@ class ThumbnailGenerationService(
                 try {
                     getFromCacheOrGenerateThumbnail("PDF")
                 } finally {
-                    delay(250)  // rude way to decrease the priority of the task
                     imagePreviewsSemaphore.release()
                 }
             }
@@ -112,6 +110,7 @@ class ThumbnailGenerationService(
                 iconCache[fileEntity.path] = newThumbnail
                 fileIcon.iconLabel.icon = newThumbnail
             }
+            delay(250)  // rude way to decrease the priority of the task
         } else if (thumbnail != null) {
             fileIcon.iconLabel.icon = thumbnail
         }
@@ -148,17 +147,15 @@ class ThumbnailGenerationService(
         return ImageIcon(image)
     }
 
-    private suspend fun getTextForPreview(path: String): String? {
-        return withContext(Dispatchers.IO) {
-            try {
-                File(path).bufferedReader().useLines { lines ->
-                    lines.take(Constants.TEXT_PREVIEW_NUM_LINES_TO_TAKE).joinToString("\n")
-                }
-            } catch (e: Exception) {
-                // TODO: if could not read a text file: must be something wrong with it
-                // show some alert icon instead?
-                null
+    private fun getTextForPreview(path: String): String? {
+        try {
+            return File(path).bufferedReader().useLines { lines ->
+                lines.take(Constants.TEXT_PREVIEW_NUM_LINES_TO_TAKE).joinToString("\n")
             }
+        } catch (e: Exception) {
+            // TODO: if could not read a text file: must be something wrong with it
+            // show some alert icon instead?
+            return null
         }
     }
 
@@ -172,65 +169,61 @@ class ThumbnailGenerationService(
         }
     }
 
-    internal suspend fun createImageThumbnail(): Icon? {
-        return withContext(Dispatchers.IO) {
-            try {
-                val file = File(fileEntity.path)
-                // TODO: probably, this idea did not work out
-                // but worth trying to implement for overall improvement
-                // For metadata extractor, it's easier to provide file
+    internal fun createImageThumbnail(): Icon? {
+        try {
+            val file = File(fileEntity.path)
+            // TODO: probably, this idea did not work out
+            // but worth trying to implement for overall improvement
+            // For metadata extractor, it's easier to provide file
 //                val includedThumbnail = extractImageThumbnailIfExists(file)
 //                if (includedThumbnail != null) {
 //                    println("")
-//                    return@withContext resizeThumbnail(includedThumbnail)
+//                    return resizeThumbnail(includedThumbnail)
 //                }
 
-                // This way of extracting data from image suppose to be quicker
-                val imageInputStream = ImageIO.createImageInputStream(file)
-                val readers = ImageIO.getImageReaders(imageInputStream)
+            // This way of extracting data from image suppose to be quicker
+            val imageInputStream = ImageIO.createImageInputStream(file)
+            val readers = ImageIO.getImageReaders(imageInputStream)
 
-                if (readers.hasNext()) {
-                    val reader = readers.next()
+            if (readers.hasNext()) {
+                val reader = readers.next()
 
-                    try {
-                        reader.input = imageInputStream
-                        // First, try to acquire thumbnail if it's already
-                        // included in the image file (can work for jpeg and tiff)
+                try {
+                    reader.input = imageInputStream
+                    // First, try to acquire thumbnail if it's already
+                    // included in the image file (can work for jpeg and tiff)
 
 
-                        // No thumbnail found -> just read the whole image
-                        val width = reader.getWidth(reader.minIndex)
-                        val height = reader.getHeight(reader.minIndex)
-                        val maxDimension = max(width, height)
-                        // Skip huge images
-                        if (maxDimension > Settings.maxImageSizeToShowThumbnail)
-                        {
-                            return@withContext null
-                        }
-
-                        // Read the image
-                        val param = reader.defaultReadParam
-                        // apply subsampling to load smaller image into RAM
-                        // and increase processing speed
-                        val subsamplingVal = getSubsamplingValue(maxDimension)
-                        param.setSourceSubsampling(subsamplingVal, subsamplingVal, 0, 0)
-                        val fullImage = reader.read(reader.minIndex, param)
-                        val thumbnailImage = resizeThumbnail(fullImage)
-                        thumbnailImage
-                    } finally {
-                        reader.dispose()
-                        imageInputStream.close()
+                    // No thumbnail found -> just read the whole image
+                    val width = reader.getWidth(reader.minIndex)
+                    val height = reader.getHeight(reader.minIndex)
+                    val maxDimension = max(width, height)
+                    // Skip huge images
+                    if (maxDimension > Settings.maxImageSizeToShowThumbnail) {
+                        return null
                     }
-                } else {
-                    null
+
+                    // Read the image
+                    val param = reader.defaultReadParam
+                    // apply subsampling to load smaller image into RAM
+                    // and increase processing speed
+                    val subsamplingVal = getSubsamplingValue(maxDimension)
+                    param.setSourceSubsampling(subsamplingVal, subsamplingVal, 0, 0)
+                    val fullImage = reader.read(reader.minIndex, param)
+                    return resizeThumbnail(fullImage)
+                } finally {
+                    reader.dispose()
+                    imageInputStream.close()
                 }
-            } catch (e: IOException) {
-                // Handle IO errors
-                null
-            } catch (e: IllegalArgumentException) {
-                // Handle invalid arguments
-                null
+            } else {
+                return null
             }
+        } catch (e: IOException) {
+            // Handle IO errors
+            return null
+        } catch (e: IllegalArgumentException) {
+            // Handle invalid arguments
+            return null
         }
     }
 

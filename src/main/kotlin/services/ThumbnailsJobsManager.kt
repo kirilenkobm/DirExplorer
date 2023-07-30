@@ -2,6 +2,10 @@ package services
 
 import views.iconviews.FileIconView
 
+/**
+ * Object keeps track of all present file icon views.
+ * Has a function to cancel all thumbnail generation coroutines.
+ */
 object ThumbnailsJobsManager {
     private val fileIconViews = mutableListOf<FileIconView>()
 

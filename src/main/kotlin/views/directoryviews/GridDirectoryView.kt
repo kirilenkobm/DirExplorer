@@ -19,7 +19,6 @@ import javax.swing.SwingUtilities
 class GridDirectoryView : AbstractDirectoryView() {
     private val gridPanel = JPanel(WrapLayout(FlowLayout.LEFT, 10, 10))
     private var filteredAndSortedContents: List<FileSystemEntity> = emptyList()
-    // keep track of all launched thumbnail generation jobs
     private val contentService = DirectoryContentService()
 
     init {
@@ -42,6 +41,7 @@ class GridDirectoryView : AbstractDirectoryView() {
      * Update number of columns according to the view width
      */
     private fun updateLayout() {
+        gridPanel.removeAll()
         gridPanel.revalidate()
         gridPanel.repaint()
     }
@@ -51,6 +51,7 @@ class GridDirectoryView : AbstractDirectoryView() {
 
         launch {
             filteredAndSortedContents = contentService.generateContentForView()
+
             SwingUtilities.invokeLater {
                 setBackgroundColor()
                 clearAndRedrawGridPanel()
@@ -60,7 +61,6 @@ class GridDirectoryView : AbstractDirectoryView() {
     }
 
     private fun clearAndRedrawGridPanel() {
-        gridPanel.removeAll()
         updateLayout()
 
         for (entity in filteredAndSortedContents) {
