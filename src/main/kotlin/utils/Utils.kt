@@ -92,7 +92,7 @@ object Utils {
      * with ellipsis.
     */
     fun getFilenameForIcon(filename: String): String {
-        if (filename.length == 0) {
+        if (filename.isEmpty()) {
             return Constants.NONAME_FILE
         }
         val maxOneLine = Constants.MAX_SHOWN_NAME_LENGTH / 2

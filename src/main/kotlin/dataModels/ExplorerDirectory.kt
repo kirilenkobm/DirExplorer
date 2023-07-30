@@ -15,6 +15,9 @@ open class ExplorerDirectory(override val path: String): ExplorableEntity {
     private val mutex = Mutex()
 
     open suspend fun getContents(): List<FileSystemEntity> = withContext(Dispatchers.IO) {
+        // Idea is that if many processes need to acquire the content of the directory,
+        // one the very first process collects the contents, and saves the results to cache
+        // and following processes get data from cache when the mutex is released
         mutex.withLock {
             try {
                 contentsCache?.let {
@@ -44,7 +47,6 @@ open class ExplorerDirectory(override val path: String): ExplorableEntity {
         // findAny() will stop once it meets a single document
         // so, even if directory contains 10000s of files, it will not hurt the
         // performance to check whether it's present or not.
-        // TODO: test this idea
         get() = if (hasAccess) {
             Files.list(Paths.get(path)).use { it.findAny().isPresent.not() }
         } else {
@@ -58,7 +60,7 @@ open class ExplorerDirectory(override val path: String): ExplorableEntity {
         } catch (e: Exception) {
             println("Exception in getItemsCount: ${e.message}")
             e.printStackTrace()
-            0
+            -1
         }
     }
 
@@ -68,7 +70,7 @@ open class ExplorerDirectory(override val path: String): ExplorableEntity {
         } catch (e: Exception) {
             println("Exception in getTotalSize: ${e.message}")
             e.printStackTrace()
-            0L
+            -1L
         }
     }
 

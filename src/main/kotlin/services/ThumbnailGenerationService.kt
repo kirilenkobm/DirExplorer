@@ -42,16 +42,15 @@ class ThumbnailGenerationService(
         get() = Dispatchers.Main + job
 
     fun startThumbnailGeneration() {
-        // println("Started generation of thumbnail for ${fileEntity.name}")
         val imagePreviewsSemaphore = SemaphoreManager.imagePreviewsSemaphore
         val textPreviewsSemaphore = SemaphoreManager.textPreviewsSemaphore
 
-        // if name contains many dots, the ImageIO.getReaderFileSuffixes() can be confused
-        // so correctedExtension contains the last possible extension
-        val correctedExtension = fileEntity.extension.split(".").last().lowercase()
         val fileTypeStartsWithImage = fileEntity.fileType.startsWith("image/")
         val fileTypeStartsWithText = fileEntity.fileType.startsWith("text/")
         val fileTypeIsPFD = fileEntity.fileType == "application/pdf"
+        // if name contains many dots, the ImageIO.getReaderFileSuffixes() can be confused
+        // so correctedExtension contains the last possible extension
+        val correctedExtension = fileEntity.extension.split(".").last().lowercase()
         val fileHasSupportedImageIOExtension = ImageIO.getReaderFileSuffixes().contains(correctedExtension)
         val fileExtensionIsText = Constants.textFileExtensionsNotInMime.contains(correctedExtension)
 
@@ -262,27 +261,6 @@ class ThumbnailGenerationService(
         }
     }
 
-    // TODO: check whether another implementation provides indeed better quality
-//    private fun resizeThumbnail(image: BufferedImage): Icon {
-//        val width = image.width
-//        val height = image.height
-//        // Do not rescale what is already scaled
-//        if (width == Settings.iconSize || height == Settings.iconSize) {
-//            return ImageIcon(image)
-//        }
-//        val scaleFactor = Settings.iconSize.toDouble() / max(width, height)
-//        val newWidth = (width * scaleFactor).toInt()
-//        val newHeight = (height * scaleFactor).toInt()
-//
-//        val resizedImage = image.getScaledInstance(
-//            newWidth,
-//            newHeight,
-//            Image.SCALE_DEFAULT
-//        )
-//
-//        return ImageIcon(resizedImage)
-//    }
-
     private fun resizeThumbnail(image: BufferedImage): Icon {
         val width = image.width
         val height = image.height
@@ -310,8 +288,6 @@ class ThumbnailGenerationService(
 
         return ImageIcon(resizedImage)
     }
-
-
 
     fun dispose() {
         job.cancel()
