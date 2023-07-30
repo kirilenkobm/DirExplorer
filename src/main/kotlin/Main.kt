@@ -5,6 +5,7 @@ import state.Settings
 import javax.swing.SwingUtilities
 import views.MainView
 
+
 fun main(args: Array<String>) {
     // Load settings if possible when the app starts
     Settings.loadSettings()

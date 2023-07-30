@@ -1,6 +1,9 @@
 package services
 
 import Constants
+import com.drew.imaging.ImageMetadataReader
+import com.drew.imaging.ImageProcessingException
+import com.drew.metadata.exif.ExifThumbnailDirectory
 import dataModels.ExplorerFile
 import kotlinx.coroutines.*
 import org.apache.pdfbox.pdmodel.PDDocument
@@ -12,10 +15,8 @@ import java.awt.RenderingHints
 import java.awt.image.BufferedImage
 import java.io.File
 import java.io.IOException
+import java.io.RandomAccessFile
 import javax.imageio.ImageIO
-import javax.imageio.ImageReader
-import javax.imageio.metadata.IIOMetadataFormatImpl
-import javax.imageio.metadata.IIOMetadataNode
 import javax.swing.Icon
 import javax.swing.ImageIcon
 import kotlin.coroutines.CoroutineContext
@@ -61,6 +62,7 @@ class ThumbnailGenerationService(
                 try {
                     getFromCacheOrGenerateThumbnail("image")
                 } finally {
+                    delay(250)  // rude way to decrease the priority
                     imagePreviewsSemaphore.release()
                 }
             }
@@ -71,6 +73,7 @@ class ThumbnailGenerationService(
                 try {
                     getFromCacheOrGenerateThumbnail("PDF")
                 } finally {
+                    delay(250)  // rude way to decrease the priority of the task
                     imagePreviewsSemaphore.release()
                 }
             }
@@ -169,10 +172,19 @@ class ThumbnailGenerationService(
         }
     }
 
-    private suspend fun createImageThumbnail(): Icon? {
+    internal suspend fun createImageThumbnail(): Icon? {
         return withContext(Dispatchers.IO) {
             try {
                 val file = File(fileEntity.path)
+                // TODO: probably, this idea did not work out
+                // but worth trying to implement for overall improvement
+                // For metadata extractor, it's easier to provide file
+//                val includedThumbnail = extractImageThumbnailIfExists(file)
+//                if (includedThumbnail != null) {
+//                    println("")
+//                    return@withContext resizeThumbnail(includedThumbnail)
+//                }
+
                 // This way of extracting data from image suppose to be quicker
                 val imageInputStream = ImageIO.createImageInputStream(file)
                 val readers = ImageIO.getImageReaders(imageInputStream)
@@ -184,11 +196,7 @@ class ThumbnailGenerationService(
                         reader.input = imageInputStream
                         // First, try to acquire thumbnail if it's already
                         // included in the image file (can work for jpeg and tiff)
-                        val includedThumbnail = extractImageThumbnailIfExists(reader)
-                        if (includedThumbnail != null) {
-                            println("")
-                            return@withContext resizeThumbnail(includedThumbnail)
-                        }
+
 
                         // No thumbnail found -> just read the whole image
                         val width = reader.getWidth(reader.minIndex)
@@ -227,20 +235,36 @@ class ThumbnailGenerationService(
     }
 
     /**
-     * Check if metadata tree contains a thumbnail.
-     * If yes -> just return it.
+     * Check if metadata tree contains a thumbnail. If yes -> just return it.
+     * The function does not work as expected with JPEG images created
+     * using Lightroom from Fuji and Canon camera RAWs.
      */
-    private fun extractImageThumbnailIfExists(reader: ImageReader): BufferedImage? {
-        // try to extract the already existing thumbnail
-        val metadata = reader.getImageMetadata(0)
-        val standardTree = metadata.getAsTree(
-            IIOMetadataFormatImpl.standardMetadataFormatName
-        ) as IIOMetadataNode
-        val childNodes = standardTree.getElementsByTagName("Thumbnail")
+    internal fun extractImageThumbnailIfExists(imageFile: File): BufferedImage? {
+        try {
+            val metadata = ImageMetadataReader.readMetadata(imageFile)
+            val directory = metadata.getFirstDirectoryOfType(ExifThumbnailDirectory::class.java)
 
-        if (childNodes.length > 0) {
-            // Theoretically, several thumbnails can be included in the image
-            return reader.readThumbnail(0, 0)
+            if (directory != null && directory.containsTag(ExifThumbnailDirectory.TAG_THUMBNAIL_OFFSET)) {
+                val offset = directory.getInteger(ExifThumbnailDirectory.TAG_THUMBNAIL_OFFSET)
+                val length = directory.getInteger(ExifThumbnailDirectory.TAG_THUMBNAIL_LENGTH)
+
+                if (length > 0) {
+                    RandomAccessFile(imageFile, "r").use { raf ->
+                        raf.seek(offset.toLong())
+                        val thumbnailData = ByteArray(length)
+                        raf.read(thumbnailData)
+                        return ImageIO.read(thumbnailData.inputStream())
+                    }
+                } else {
+                    println("Length is 0")
+                    return null
+                }
+            }
+            println("Cannot find directory")
+        } catch (e: ImageProcessingException) {
+            e.printStackTrace()
+        } catch (e: IOException) {
+            e.printStackTrace()
         }
         return null
     }
@@ -261,7 +285,7 @@ class ThumbnailGenerationService(
         }
     }
 
-    private fun resizeThumbnail(image: BufferedImage): Icon {
+    internal fun resizeThumbnail(image: BufferedImage): Icon {
         val width = image.width
         val height = image.height
         // Do not rescale what is already scaled
