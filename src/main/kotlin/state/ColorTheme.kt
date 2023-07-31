@@ -19,7 +19,7 @@ enum class ColorTheme(private val key: String) {
 
     val displayName: String
         get() = ResourceBundle.getBundle(
-            "languages/Messages",
+            Constants.LANGUAGE_BUNDLE_PATH,
             Settings.language.getLocale())
             .getString(key)
 }

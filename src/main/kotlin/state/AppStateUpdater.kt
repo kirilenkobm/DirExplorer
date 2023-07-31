@@ -7,6 +7,7 @@ import service.ZipArchiveService
 import view.popupwindows.showErrorDialog
 import java.nio.file.Files
 import java.nio.file.Paths
+import java.util.*
 
 /**
  * Singleton object responsible for updating the application state.
@@ -16,6 +17,7 @@ import java.nio.file.Paths
  * It also manages the navigation history (back and forward stacks) based on the updates.
  */
 object AppStateUpdater {
+    private var bundle = ResourceBundle.getBundle(Constants.LANGUAGE_BUNDLE_PATH, Settings.language.getLocale())
     //New explorer directory -> where to go
     // if we are going from goBack operation: do not clean up the forward stack
     fun updateDirectory(newExplorerDirectory: ExplorableEntity,
@@ -94,7 +96,7 @@ object AppStateUpdater {
             AppState.currentExplorerDirectory = ExplorerDirectory(it.toString())
         } ?: run {
             // handle error otherwise, if zipTempDir is null
-            val errorMessage = "Could not enter the ${entity.path}"
+            val errorMessage = "${bundle.getString("Error")} ${bundle.getString("CouldNotEnterThe")} ${entity.path}"
             showErrorDialog(errorMessage)
             AppState.currentExplorerDirectory = ExplorerDirectory(oldDirectoryInCaseOfError.path)
         }
@@ -103,9 +105,11 @@ object AppStateUpdater {
     private fun handleInvalidPath(entity: ExplorableEntity, oldDirectoryInCaseOfError: ExplorerDirectory) {
         val errorMessage = when {
             !isValidDirectory(entity) ->
-                "Error! Target directory ${entity.path} is either unavailable or does not exist"
-            !isValidZipArchive(entity) -> "Error! Could not process ${entity.path}"
-            else -> "Error! Unable to access directory ${entity.path}"
+                bundle.getString("ErrorTargetDirectory") +
+                        " ${entity.path} " +
+                        bundle.getString("UnavailableNonexistent")
+            !isValidZipArchive(entity) -> "${bundle.getString("CannotProcessZip")} ${entity.path}"
+            else -> "${bundle.getString("Error")} ${bundle.getString("CouldNotEnterThe")} ${entity.path}"
         }
         showErrorDialog(errorMessage)
         AppState.currentExplorerDirectory = ExplorerDirectory(oldDirectoryInCaseOfError.path)
