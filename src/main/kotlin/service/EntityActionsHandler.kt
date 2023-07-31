@@ -2,11 +2,13 @@ package service
 
 import model.*
 import state.AppStateUpdater
+import state.Settings
 import view.popupwindows.showErrorDialog
 import java.awt.Desktop
 import java.io.File
 import java.io.IOException
 import java.nio.file.Paths
+import java.util.*
 
 /**
  * Singleton object that handles actions performed on different types of FileSystemEntity instances.
@@ -22,6 +24,7 @@ import java.nio.file.Paths
  * during the execution of the application. This is used to detect and prevent circular links.
  */
 object EntityActionsHandler {
+    private var bundle = ResourceBundle.getBundle(Constants.LANGUAGE_BUNDLE_PATH, Settings.language.getLocale())
     private var visitedSymlinks: MutableSet<String> = mutableSetOf()
 
     fun performEntityAction(entity: FileSystemEntity) {
@@ -45,10 +48,10 @@ object EntityActionsHandler {
                 Desktop.getDesktop().open(File(fileEntity.path))
             } catch (ex: IOException) {
                 ex.printStackTrace()
-                showErrorDialog("Error: Unable to open the file at ${fileEntity.path}.")
+                showErrorDialog("${bundle.getString("UnableToOpen")} ${fileEntity.path}.")
             }
         } else {
-            showErrorDialog("Error: Desktop operations are not supported on this system.")
+            showErrorDialog(bundle.getString("DesktopNotSupported"))
         }
     }
 
@@ -62,13 +65,13 @@ object EntityActionsHandler {
                 .toString()
             val targetEntity = FileSystemEntityFactory.createEntity(targetPath)
             if (link.path in visitedSymlinks) {
-                showErrorDialog("Circular link detected: $targetPath")
+                showErrorDialog("${bundle.getString("CircularLink")} $targetPath")
                 return
             }
             visitedSymlinks.add(link.path)
             performEntityAction(targetEntity)
         } catch (e: IOException) {
-            showErrorDialog("Error following symlink: ${e.message}")
+            showErrorDialog("${bundle.getString("ErrorFollowingLink")} ${e.message}")
         }
     }
 
@@ -77,6 +80,6 @@ object EntityActionsHandler {
     }
 
     private fun handleUnknownEntity(unknownEntity: UnknownEntity) {
-        showErrorDialog("Not supported file system entity ${unknownEntity.path}")
+        showErrorDialog("${bundle.getString("NotSupportedEntity")} ${unknownEntity.path}")
     }
 }
