@@ -2,7 +2,9 @@ package view.popupwindows
 
 import javax.swing.*
 
-// Standalone function to show a popup error view
+/**
+ * Standalone function responsible for showing error messages.
+ */
 fun showErrorDialog(errorMessage: String) {
     JOptionPane.showMessageDialog(
         null,

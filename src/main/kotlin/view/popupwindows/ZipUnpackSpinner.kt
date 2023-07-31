@@ -10,7 +10,7 @@ import javax.swing.SwingConstants
 import javax.swing.border.EmptyBorder
 
 /**
- * Object that controls whether a zip unpacking bar is shown or not.
+ * Controls the visibility of a zip unpacking progress spinner.
  */
 object ZipUnpackSpinner {
     private var bundle = ResourceBundle.getBundle(

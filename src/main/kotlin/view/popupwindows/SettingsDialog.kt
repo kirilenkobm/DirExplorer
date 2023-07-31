@@ -11,6 +11,12 @@ import java.awt.event.ItemEvent
 import java.util.ResourceBundle
 import javax.swing.*
 
+/**
+ * A Swing dialog for managing application settings.
+ *
+ * This dialog provides a user interface for changing various application settings,
+ * including whether to show hidden files, the color theme, and the language.
+ */
 class SettingsDialog: JDialog()  {
     init {
         val bundle = ResourceBundle.getBundle("languages/Messages", Settings.language.getLocale())

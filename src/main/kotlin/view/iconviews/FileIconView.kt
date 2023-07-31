@@ -5,7 +5,12 @@ import service.ThumbnailGenerationService
 import util.Utils
 import util.IconManager
 
-
+/**
+ * Icon view for displaying a file icon in the DirExplorer in the grid view mode.
+ *
+ * Additionally, a thumbnail image for the file (if applicable) is generated using the ThumbnailGenerationService
+ * and displayed as the icon. The thumbnail generation process can be started asynchronously.
+ */
 class FileIconView(
     entity: ExplorerFile,
 ): AbstractIconEntityView(entity) {

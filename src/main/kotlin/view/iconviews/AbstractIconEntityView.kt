@@ -14,7 +14,16 @@ import javax.swing.JLabel
 import javax.swing.JPanel
 import javax.swing.SwingConstants
 
-
+/**
+ * Abstract base class for creating icon views for file system entities.
+ *
+ * This class provides a template for creating icon views that represent
+ * file system entities in a vertical stack layout.
+ *
+ * The icon view consists of an icon image centered within a frame, and a text label below the icon.
+ *
+ * The icon view supports selection behavior, where the background color changes when the view is selected.
+ */
 abstract class AbstractIconEntityView(
     private val entity: FileSystemEntity,
 ) {

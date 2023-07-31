@@ -4,6 +4,9 @@ import model.ExplorerDirectory
 import util.Utils
 import util.IconManager
 
+/**
+ * Icon view for displaying a directory icon in the DirExplorer.
+ */
 class DirectoryIconView(
     entity: ExplorerDirectory,
 ): AbstractIconEntityView(entity) {
