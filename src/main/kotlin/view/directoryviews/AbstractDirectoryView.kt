@@ -5,8 +5,12 @@ import kotlinx.coroutines.*
 import state.*
 import kotlin.coroutines.CoroutineContext
 
-/** Abstract class that implements all the methods needed to show
- * a directory's content.
+/**
+ * Abstract class for displaying the content of a directory.
+ *
+ * This abstract class provides common functionality and implements necessary methods
+ * to display the content of a directory. It serves as the base class for table and grid views
+ * and handles directory changes, settings updates, and coroutine management.
  */
 abstract class AbstractDirectoryView:
     CoroutineScope,
@@ -37,7 +41,6 @@ abstract class AbstractDirectoryView:
         updateView()
     }
 
-    // TODO: do not forget
     fun dispose() {
         job.cancel()
     }

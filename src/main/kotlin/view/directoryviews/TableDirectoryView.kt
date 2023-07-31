@@ -20,7 +20,7 @@ import javax.swing.table.TableCellRenderer
 
 
 /**
- * View that controls directory view in the table mode
+ * Class to display the directory's content in the grid mode.
  */
 class TableDirectoryView : AbstractDirectoryView() {
     private var table = JTable()

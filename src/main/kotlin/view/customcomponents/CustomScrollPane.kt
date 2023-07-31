@@ -9,14 +9,14 @@ import kotlin.math.ceil
 import kotlin.math.max
 
 /**
- * Default scroll pane was incompatible with any adaptive grid,
- * because it provided the child view the maximal width that
- * was ever reach, instead of the viewport width.
- * As the result, when user decreased the DirExplorer window,
- * the columns did not adapt. The grid adapted only to
- * window increasing instead.
- * This custom scroll pane provides the child view the
- * actual viewport size.
+ * The default scroll pane was incompatible with any adaptive grid because it provided the child view
+ * with the maximal width that was ever reached, instead of the viewport width. As a result, when the
+ * user decreased the DirExplorer window, the columns did not adapt.
+ * The grid only adapted to window increasing.
+ *
+ * This custom scroll pane addresses the issue by providing the child view with the actual viewport size.
+ * It adjusts the preferred size of the component within the scroll pane based on the viewport
+ * width and the number of columns needed for the adaptive grid layout.
  */
 class CustomScrollPane(component: JPanel) : JScrollPane(component) {
     init {

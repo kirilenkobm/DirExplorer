@@ -15,7 +15,9 @@ import javax.swing.JPanel
 import javax.swing.JScrollPane
 import javax.swing.SwingUtilities
 
-
+/**
+ * Class to display the directory's content in the grid mode.
+ */
 class GridDirectoryView : AbstractDirectoryView() {
     private val gridPanel = JPanel(WrapLayout(FlowLayout.LEFT, 10, 10))
     private var filteredAndSortedContents: List<FileSystemEntity> = emptyList()
