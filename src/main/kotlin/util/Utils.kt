@@ -9,10 +9,17 @@ import java.util.regex.PatternSyntaxException
 import javax.swing.ImageIcon
 
 /**
- * Utility object that provides helper functions.
+ * Singleton object providing utility functions for the application.
  *
- * E.g. provide functions to generate human-readable representations
- * for time and sizes.
+ * Provides helper methods that facilitate operations within the application.
+ *
+ * These operations include:
+ *
+ * 1. Converting file sizes from bytes to a human-readable format.
+ * 2. Formatting Unix time to a human-readable date string.
+ * 3. Checking whether a file extension matches a given filter, supporting both exact and regex matches.
+ * 4. Shortening long filenames for display in the icon view, if needed.
+ * 5. Resizing icons to a standard size for uniform display.
  */
 object Utils {
     /**
@@ -143,7 +150,7 @@ object Utils {
             return "${Constants.SHOWN_NAME_OPEN_TAG}$firstLine<br>$secondLine${Constants.SHOWN_NAME_CLOSE_TAG}"
         }
 
-        // this branch -> filename is very long
+        // this branch -> filename is very long, does not fit two lines
         val splitIndex = findBestSplitIndex(filename, false)
         val firstLine = filename.substring(0, splitIndex)
         val secondLineRaw = filename.substring(splitIndex)

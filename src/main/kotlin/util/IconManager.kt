@@ -8,7 +8,15 @@ import java.awt.Image
 import java.awt.image.BufferedImage
 import javax.swing.ImageIcon
 
-//  that handles all the icons downloaded and provides easy access to them
+/**
+ * Singleton object responsible for managing and providing access to all icons used in the application.
+ *
+ * This object loads all icons at initialization and provides methods to access them.
+ * It also provides methods to get an appropriate icon based on a file type or directory state.
+ *
+ * The icons are loaded with a certain level of transparency and color inversion depending on the current color theme.
+ * It also observes changes in the color theme. When the color theme changes, it reloads all icons to match the new theme.
+ */
 object IconManager: SettingsObserver {
 
     init {

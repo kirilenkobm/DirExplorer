@@ -7,9 +7,11 @@ import javax.swing.UIManager
 
 
 /**
- * Implements workaround to change color scheme in
- * popup views like settings, error, loading bar, etc.
- */
+ * Singleton object responsible for managing the color scheme of popup views in the application.
+ *
+ * This object observes changes in the application settings and updates the color scheme of popup views accordingly.
+ * It implements the SettingsObserver interface to respond to these changes.
+ **/
 object PopupViewThemeManager : SettingsObserver {
     init {
         Settings.addObserver(this)
