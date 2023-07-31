@@ -2,7 +2,10 @@ package state
 
 import java.util.Locale
 
-enum class Language(val code: String) {
+/**
+ * Enum representing the languages available in the application.
+ */
+enum class Language(private val code: String) {
     ENGLISH("en") {
         override fun toString(): String {
             return "English"

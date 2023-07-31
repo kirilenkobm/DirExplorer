@@ -4,6 +4,20 @@ import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.util.Properties
 
+/**
+ * Singleton object representing the application settings.
+ *
+ * This object maintains the state of various user preferences and settings,
+ * such as whether to show hidden files, the view mode, the color theme, the button and icon sizes,
+ * the language, and the maximum image size for which to show thumbnails.
+ *
+ * The settings are stored in a properties file, and can be loaded from and saved to this file
+ * using the `loadSettings` and `saveSettings` methods respectively.
+ *
+ * The `Settings` object also implements the observer pattern, allowing other parts of the
+ * application to be notified when certain settings change. Observers are notified of
+ * changes to the settings via the SettingsObserver interface.
+ */
 object Settings {
     private const val SETTINGS_FILE = "settings.properties"
     private val observers: MutableList<SettingsObserver> = mutableListOf()
@@ -61,7 +75,7 @@ object Settings {
             viewMode = ViewMode.valueOf(properties.getProperty("viewMode", "TABLE"))
             language = Language.valueOf(properties.getProperty("language", "ENGLISH"))
         } catch (e: Exception) {
-            // TODO: handle exception, just pass?
+            // Just pass?
             println("Error! Could not load settings")
         }
     }

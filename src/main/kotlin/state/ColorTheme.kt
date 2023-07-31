@@ -2,6 +2,9 @@ package state
 
 import java.util.ResourceBundle
 
+/**
+ * Enum representing the color themes available in the application.
+ */
 enum class ColorTheme(private val key: String) {
     LIGHT("LightTheme") {
         override fun toString(): String {
