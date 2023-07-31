@@ -1,6 +1,7 @@
 // App's entry point
 import state.AppState
 import model.ExplorerDirectory
+import state.AppStateUpdater
 import state.Settings
 import javax.swing.SwingUtilities
 import view.MainView
@@ -15,7 +16,7 @@ fun main(args: Array<String>) {
         // If a command-line argument is provided, use it as the initial directory
         if (args.isNotEmpty()) {
             // TODO: check whether it's a path, otherwise show err message
-            AppState.updateDirectory(ExplorerDirectory(args[0]))
+            AppStateUpdater.updateDirectory(ExplorerDirectory(args[0]))
         } else {
             // Otherwise, use the home directory as the initial directory
             AppState.goHome()

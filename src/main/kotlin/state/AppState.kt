@@ -1,17 +1,27 @@
 // AppState - manages the whole Application state
 package state
-import Constants
+
 import model.*
 import service.CurrentDirectoryContentWatcher
 import service.ZipArchiveService
-import view.popupwindows.showErrorDialog
-import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 
 /**
- * Application state.
- * Suppose to be the single source of truth for the rest of the components.
+ * Singleton object representing the application state.
+ *
+ * This object serves as the single source of truth for the rest of the components in the application.
+ * It maintains the state of the current directory being explored, the navigation history (back and forward stacks),
+ * the current file extension filter, and the observers of directory changes.
+ *
+ * It also manages the handling of zip archives, including the mapping of temporary directories to zip file names,
+ * and the cleanup of temporary directories when the application closes.
+ *
+ * The AppState object also implements LRU thread-safe cache for storing generated thumbnails,
+ * improving the performance of the application by avoiding unnecessary regeneration of thumbnails.
+ *
+ * The navigation logic has been moved to a separate class, AppStateUpdater.
+ *
  */
 object AppState {
 
@@ -39,81 +49,16 @@ object AppState {
     val tempZipDirToNameMapping = HashMap<String, String>()
     val zipPathToTempDir = HashMap<String, Path>()
 
-    /**
-    / * New explorer directory -> where to go
-    / * if called from goBack - do not clear forward stack
-    */
-    fun updateDirectory(newExplorerDirectory: ExplorableEntity,
-                        clearForwardStack: Boolean = true,
-                        addToBackStack: Boolean = true) {
-        // Preserve previous path in case Error occurs
-        // to recover the previous state
-        println("AppState.updateDirectory triggered with ${newExplorerDirectory.path}")
-        val oldDirectoryInCaseOfError = currentExplorerDirectory
-
-        // Check whether the new path points to an existing and readable directory
-        val newPath = Paths.get(newExplorerDirectory.path)
-        val oldPath = Paths.get(currentExplorerDirectory.path)
-        val pathExists = Files.exists(newPath)
-        val isDirectory = Files.isDirectory(newPath)
-        val isReadable = Files.isReadable(newPath)
-        val isZipArchive = newExplorerDirectory is ZipArchive
-
-        if (pathExists && isDirectory && isReadable) {
-            if (newPath != oldPath) {
-                // This check should not throw an error -> just do nothing
-                if (addToBackStack) {
-                    if (backStack.size >= Constants.HISTORY_SIZE) {
-                        backStack.removeAt(0)
-                    }
-                    backStack.add(currentExplorerDirectory)
-                }
-                if (clearForwardStack) forwardStack.clear()
-                currentExplorerDirectory = newExplorerDirectory as ExplorerDirectory
-            }
-        } else if (pathExists && isReadable && isZipArchive) {
-            // I selected the following strategy: unpack and create a temp directory
-            // and destroy it at some point later.
-            // Creating a separate filesystem for zip files could be a bit too much
-            // add zip files to back and forward stack instead of tempDirNames
-            val zipEntity = newExplorerDirectory as ZipArchive
-            val zipArchiveService = ZipArchiveService(zipEntity)
-            val zipTempDir = zipPathToTempDir[zipEntity.path] ?: zipArchiveService.startExtraction()
-
-            // Update current explorer directory if possible
-            zipTempDir?.let {
-                zipPathToTempDir[zipEntity.path] = it
-                currentExplorerDirectory = ExplorerDirectory(it.toString())
-            } ?: run {
-                val errorMessage = "Could not enter the ${newExplorerDirectory.path}"
-                showErrorDialog(errorMessage)
-                currentExplorerDirectory = ExplorerDirectory(oldDirectoryInCaseOfError.path)
-            }
-        } else {
-            // Error occurred: show a message and recover the original state
-            val errorMessage = when {
-                !pathExists -> "Error! Target directory ${newExplorerDirectory.path} does not exist"
-                !isDirectory -> "Error! ${newExplorerDirectory.path} is not a directory"
-                else -> "Error! Unable to access directory ${newExplorerDirectory.path}"
-            }
-            showErrorDialog(errorMessage)  // Using showErrorDialog function defined in ErrorView.kt
-            currentExplorerDirectory = ExplorerDirectory(oldDirectoryInCaseOfError.path)
-        }
-        backStack.forEach { explorableEntity ->
-            println(explorableEntity.path)
-        }
-    }
-
     fun goHome() {
-        updateDirectory(ExplorerDirectory(System.getProperty("user.home")))
+        AppStateUpdater.updateDirectory(ExplorerDirectory(System.getProperty("user.home")))
     }
 
     fun goUp() {
         val parentPath = Paths.get(currentExplorerDirectory.path).parent
         if (parentPath != null) {
-            updateDirectory(ExplorerDirectory(parentPath.toString()))
+            AppStateUpdater.updateDirectory(ExplorerDirectory(parentPath.toString()))
         } else {
-            // TODO: handle in the UI
+            // just do nothing I guess
             println("Already at root")
         }
     }
@@ -121,18 +66,27 @@ object AppState {
     fun goBack() {
         if (backStack.isNotEmpty()) {
             val newExplorerDirectory = backStack.removeAt(backStack.size - 1)
-            forwardStack.add(currentExplorerDirectory)
-            updateDirectory(
+            // the only function from which the forward stack can be populated
+            addToForwardStack(currentExplorerDirectory)
+            // Update current state accordingly
+            AppStateUpdater.updateDirectory(
                 newExplorerDirectory,
                 clearForwardStack = false,
-                addToBackStack = false)
+                addingToBackStack = false)
         }
+    }
+
+    private fun addToForwardStack(entity: ExplorableEntity) {
+        if (forwardStack.size >= Constants.HISTORY_SIZE) {
+            forwardStack.removeAt(0)
+        }
+        forwardStack.add(entity)
     }
 
     fun goForward() {
         if (forwardStack.isNotEmpty()) {
             val newExplorerDirectory = forwardStack.removeAt(forwardStack.size - 1)
-            updateDirectory(newExplorerDirectory, clearForwardStack = false)
+            AppStateUpdater.updateDirectory(newExplorerDirectory, clearForwardStack = false)
         }
     }
 

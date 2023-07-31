@@ -2,6 +2,7 @@ package service
 
 import model.*
 import state.AppState
+import state.AppStateUpdater
 import view.popupwindows.showErrorDialog
 import java.awt.Desktop
 import java.io.File
@@ -37,7 +38,7 @@ object EntityActionsHandler {
     }
 
     private fun handleDirectory(directory: ExplorerDirectory) {
-        AppState.updateDirectory(directory)
+        AppStateUpdater.updateDirectory(directory)
     }
 
     private fun openFile(fileEntity: ExplorerFile) {
@@ -74,7 +75,7 @@ object EntityActionsHandler {
     }
 
     private fun handleZipArchive(zipfile: ZipArchive) {
-        AppState.updateDirectory(zipfile)
+        AppStateUpdater.updateDirectory(zipfile)
     }
 
     private fun handleUnknownEntity(unknownEntity: UnknownEntity) {

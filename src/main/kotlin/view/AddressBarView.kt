@@ -3,6 +3,7 @@ package view
 import model.DirectoryObserver
 import model.ExplorerDirectory
 import state.AppState
+import state.AppStateUpdater
 import state.ColorTheme
 import state.Settings
 import util.IconManager
@@ -46,7 +47,7 @@ class AddressBarView: DirectoryObserver {
             font = Font("Arial", Font.PLAIN, 14)
             cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)  // hover cursor
             addActionListener {
-                AppState.updateDirectory(ExplorerDirectory(newPath.toString()))
+                AppStateUpdater.updateDirectory(ExplorerDirectory(newPath.toString()))
             }
         }
     }
