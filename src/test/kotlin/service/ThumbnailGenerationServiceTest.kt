@@ -55,7 +55,7 @@ class ThumbnailGenerationServiceTest {
 
     @Test
     fun createImageThumbnailSkipsHugeImages() {
-        // Image with longsize > 6000 must be skipped, expected null
+        // Image with long-side > 6000 must be skipped, expected null
         val pathToVeryBigImage = "src/test/resources/tooWideImage.jpg"
         val dummyFileEntity = ExplorerFile(pathToVeryBigImage)
         val dummyIcon = FileIconView(dummyFileEntity)

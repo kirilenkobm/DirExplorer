@@ -17,44 +17,30 @@ class ExplorerDirectoryTest {
     private lateinit var explorerDirectory: ExplorerDirectory
     private lateinit var emptyDirectory: ExplorerDirectory
 
-    @BeforeEach
-    fun setup() {
+    @Test
+    fun getContents() = runBlocking {
         tempDir = DirExplorerTestUtil.setupTestDirectory()
         explorerDirectory = ExplorerDirectory(tempDir.toString())
         emptyDirectory = ExplorerDirectory(tempDir.resolve("emptydir").toString())
-    }
-
-    @AfterEach
-    fun teardown() {
-        DirExplorerTestUtil.teardownTestDirectory()
-    }
-
-    @Test
-    fun getContents() = runBlocking {
         val contents = explorerDirectory.getContents()
         assertEquals(11, contents.size)
-        // TODO
-    }
-
-    @Test
-    fun isEmpty() {
         assertFalse(explorerDirectory.isEmpty)
         assertTrue(emptyDirectory.isEmpty)
+        DirExplorerTestUtil.teardownTestDirectory()
     }
-
-    @Test
-    fun getItemsCount() {
-    }
-
-    @Test
-    fun getTotalSize() {
-    }
-
-    @Test
-    fun invalidateCache() {
-    }
-
-    @Test
-    fun getPath() {
-    }
+//    @Test
+//    fun getItemsCount() {
+//    }
+//
+//    @Test
+//    fun getTotalSize() {
+//    }
+//
+//    @Test
+//    fun invalidateCache() {
+//    }
+//
+//    @Test
+//    fun getPath() {
+//    }
 }

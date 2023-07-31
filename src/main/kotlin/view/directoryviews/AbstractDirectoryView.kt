@@ -19,7 +19,7 @@ abstract class AbstractDirectoryView:
 {
     private val job = Job()
     override val coroutineContext: CoroutineContext
-        get() = Dispatchers.Main + job
+        get() = Dispatchers.IO + job
 
     abstract fun updateView()
 

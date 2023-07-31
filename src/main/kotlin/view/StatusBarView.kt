@@ -31,7 +31,7 @@ class StatusBarView : JPanel(), CoroutineScope, DirectoryObserver, SettingsObser
     private var job = Job()
 
     override val coroutineContext: CoroutineContext
-        get() = Dispatchers.Main + job
+        get() = Dispatchers.IO + job
 
     init {
         setupView()

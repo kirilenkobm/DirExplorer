@@ -62,8 +62,7 @@ object DirExplorerTestUtil {
         }
 
         // Create a symlink
-        // Note: this might not work on all file systems
-        Files.createSymbolicLink(tempDir.resolve("symlink"), tempDir.resolve("file1.txt"))
+        Files.createSymbolicLink(tempDir.resolve("root_to_subfile1"), subdir1.resolve("subfile1.txt"))
 
         return tempDir
     }
