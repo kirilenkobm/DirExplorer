@@ -68,6 +68,7 @@ object CurrentDirectoryContentWatcher: CoroutineScope {
         }
     }
 
+    // Probably is never needed?
     fun stopWatching() {
         job.cancel()
     }

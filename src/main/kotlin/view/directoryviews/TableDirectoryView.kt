@@ -33,6 +33,8 @@ class TableDirectoryView : AbstractDirectoryView() {
     private var bundle = ResourceBundle.getBundle(Constants.LANGUAGE_BUNDLE_PATH, Settings.language.getLocale())
 
     init {
+        AppState.addDirectoryObserver(this)
+        Settings.addObserver(this)
         // Override prepareRenderer to make even and odd rows colored differently
         table = object : JTable() {
             override fun prepareRenderer(renderer: TableCellRenderer, row: Int, column: Int): Component {

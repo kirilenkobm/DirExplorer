@@ -21,11 +21,6 @@ abstract class AbstractDirectoryView:
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.Main + job
 
-    init {
-        AppState.addDirectoryObserver(this)
-        Settings.addObserver(this)
-    }
-
     abstract fun updateView()
 
     override fun onDirectoryChanged(newDirectory: ExplorerDirectory) {

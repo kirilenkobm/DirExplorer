@@ -153,15 +153,18 @@ class ThumbnailGenerationService(
         return ImageIcon(image)
     }
 
+    /**
+     * Extract few lines from the text file to create the preview.
+     */
     private fun getTextForPreview(path: String): String? {
-        try {
-            return File(path).bufferedReader().useLines { lines ->
+        return try {
+            File(path).bufferedReader().useLines { lines ->
                 lines.take(Constants.TEXT_PREVIEW_NUM_LINES_TO_TAKE).joinToString("\n")
             }
         } catch (e: Exception) {
             // TODO: if could not read a text file: must be something wrong with it
             // show some alert icon instead?
-            return null
+            null
         }
     }
 

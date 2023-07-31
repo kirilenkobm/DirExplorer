@@ -6,6 +6,7 @@ import javax.swing.SwingUtilities
 
 /**
  * FlowLayout subclass that fully supports wrapping of components.
+ * Taken from:
  * http://www.camick.com/java/source/WrapLayout.java
  * Translated to Kotlin using IDEA.
  * Was used to make the view in the grid mode adaptive to the window size.

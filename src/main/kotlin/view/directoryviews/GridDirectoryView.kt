@@ -24,6 +24,8 @@ class GridDirectoryView : AbstractDirectoryView() {
     private val contentService = DirectoryContentService()
 
     init {
+        AppState.addDirectoryObserver(this)
+        Settings.addObserver(this)
         setBackgroundColor()
         updateView()
         setupMouseListener()  // simply to deselect selected icon if clicked outside any icon

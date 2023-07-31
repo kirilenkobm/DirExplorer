@@ -52,7 +52,11 @@ object AppStateUpdater {
         return Files.exists(newPath) && Files.isReadable(newPath) && entity is ZipArchive
     }
 
-    private fun handleDirectory(newExplorerDirectory: ExplorableEntity, clearForwardStack: Boolean, addToBackStack: Boolean) {
+    private fun handleDirectory(
+        newExplorerDirectory: ExplorableEntity,
+        clearForwardStack: Boolean,
+        addToBackStack: Boolean)
+    {
         val newPath = Paths.get(newExplorerDirectory.path)
         val oldPath = Paths.get(AppState.currentExplorerDirectory.path)
 
@@ -72,7 +76,11 @@ object AppStateUpdater {
      *  - save the respective ZipArchiveService instance to AppState
      *    so that it can be deleted later when the directory is no longer needed
      */
-    private fun handleZipArchive(entity: ExplorableEntity, oldDirectoryInCaseOfError: ExplorerDirectory, addingToBackStack: Boolean) {
+    private fun handleZipArchive(
+        entity: ExplorableEntity,
+        oldDirectoryInCaseOfError: ExplorerDirectory,
+        addingToBackStack: Boolean)
+    {
         val zipEntity = entity as ZipArchive
         val zipArchiveService = ZipArchiveService(zipEntity)
         val zipTempDir = AppState.zipPathToTempDir[zipEntity.path] ?: zipArchiveService.startExtraction()

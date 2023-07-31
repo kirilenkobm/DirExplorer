@@ -61,7 +61,10 @@ class TopBarView(private val frame: JFrame) : SettingsObserver {
 
     private fun setupAddressBarPanel(): JPanel {
         val addressBarPanel = addressBarView.getPanel()
-        addressBarPanel.maximumSize = Dimension(addressBarPanel.maximumSize.width, addressBarPanel.preferredSize.height)
+        addressBarPanel.maximumSize = Dimension(
+            addressBarPanel.maximumSize.width,
+            addressBarPanel.preferredSize.height
+        )
         addressBarPanel.preferredSize = Dimension(400, addressBarPanel.preferredSize.height)
         addressBarPanel.minimumSize = Dimension(400, addressBarPanel.preferredSize.height)
         return addressBarPanel

@@ -1,7 +1,6 @@
 package service
 
 import model.*
-import state.AppState
 import state.AppStateUpdater
 import view.popupwindows.showErrorDialog
 import java.awt.Desktop
@@ -26,7 +25,6 @@ object EntityActionsHandler {
     private var visitedSymlinks: MutableSet<String> = mutableSetOf()
 
     fun performEntityAction(entity: FileSystemEntity) {
-        print("Perform entiry action")
         when(entity) {
             is ExplorerDirectory -> handleDirectory(entity)
             is ExplorerFile -> openFile(entity)

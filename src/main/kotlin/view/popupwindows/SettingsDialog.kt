@@ -73,7 +73,13 @@ class SettingsDialog: JDialog()  {
         return JComboBox(items).apply {
             this.selectedItem = selectedItem
             this.renderer = object : DefaultListCellRenderer() {
-                override fun getListCellRendererComponent(list: JList<*>?, value: Any?, index: Int, isSelected: Boolean, cellHasFocus: Boolean): Component {
+                override fun getListCellRendererComponent(
+                    list: JList<*>?,
+                    value: Any?,
+                    index: Int,
+                    isSelected: Boolean,
+                    cellHasFocus: Boolean
+                ): Component {
                     super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus)
                     if (index == -1) {
                         background = if (Settings.colorTheme == ColorTheme.DARK) Color.DARK_GRAY else Color.WHITE
@@ -90,7 +96,6 @@ class SettingsDialog: JDialog()  {
             }
         }
     }
-
 
     private fun addLabelAndDropdownToPanel(panel: JPanel, labelText: String, dropdown: JComboBox<*>) {
         val label = JLabel(labelText).apply { alignmentX = Component.LEFT_ALIGNMENT }
