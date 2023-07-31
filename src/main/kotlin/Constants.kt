@@ -2,7 +2,11 @@ import java.awt.Color
 import javax.swing.UIManager
 
 /**
- * All project related constants.
+ * Singleton object holding all the constants used across the project.
+ *
+ * This object includes constants related to application behavior such as history size,
+ * file type and size defaults, and semaphore limits. It also contains constants for UI elements
+ * such as color schemes, view constraints, and table and grid view settings.
  */
 object Constants {
     // TODO: move all more or less meaningful constants here

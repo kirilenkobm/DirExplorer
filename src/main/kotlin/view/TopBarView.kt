@@ -7,7 +7,17 @@ import view.popupwindows.SettingsDialog
 import java.awt.*
 import javax.swing.*
 
-
+/**
+ * Class representing the top bar view of the application.
+ *
+ * This class is responsible for creating and managing the top bar of the application,
+ * which includes navigation buttons, the address bar, the file filter, and settings button.
+ *
+ * The left panel contains the navigation buttons, the address bar, and the file filter.
+ * The right panel contains the view mode buttons and the settings button.
+ *
+ * The class implements the `SettingsObserver` interface.
+ */
 class TopBarView(private val frame: JFrame) : SettingsObserver {
     private val topBar = JSplitPane()
     private val leftPanel = JPanel()

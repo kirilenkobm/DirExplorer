@@ -13,7 +13,12 @@ import javax.swing.JFrame
 import javax.swing.JPanel
 import javax.swing.JScrollPane
 
-
+/**
+ * Primary user interface class for the DirExplorer application.
+ *
+ * The MainView class is initialized with the AppState and Settings objects,
+ * and it registers itself as an observer of these objects in its init function.
+ */
 class MainView: DirectoryObserver, SettingsObserver {
     private val frame = JFrame("DirExplorer")
     private val topBarView = TopBarView(frame)
@@ -84,7 +89,7 @@ class MainView: DirectoryObserver, SettingsObserver {
     override fun onDirectoryChanged(newDirectory: ExplorerDirectory) { }
 
     // not applicable
-    override fun onShowHiddenFilesChanged(newShowHiddenFiles: Boolean) { }
+    override fun onShowHiddenFilesChanged(newShowHiddenFiles: Boolean) {}
 
     override fun onViewModeChanged(newViewMode: ViewMode) {
         updateViewMode()
@@ -94,5 +99,6 @@ class MainView: DirectoryObserver, SettingsObserver {
         updateViewMode()
     }
 
+    // there is nothing requiring localization
     override fun onLanguageChanged(newLanguage: Language) { }
 }

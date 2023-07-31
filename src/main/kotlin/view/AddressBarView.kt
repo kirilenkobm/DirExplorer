@@ -19,7 +19,19 @@ import javax.swing.SwingConstants
 import kotlin.math.max
 import kotlin.math.min
 
-
+/**
+ * Class representing the address bar view in the application.
+ *
+ * This class is responsible for creating and updating the address bar, which displays the current directory path.
+ * The path is represented as a series of buttons, each corresponding to a part of the path.
+ * Clicking on a button updates the application state to navigate to that part of the path.
+ *
+ * The class implements the DirectoryObserver interface, allowing it to respond to changes
+ * in the current directory by updating the address bar view.
+ *
+ * The address bar view also handles cases where the path is too long to fit in the available space,
+ * in which case it displays the start and end of the path with an ellipsis in the middle.
+ */
 class AddressBarView: DirectoryObserver {
     private val addressBar = JPanel()
     private val addressBarPanel = JPanel(BorderLayout())

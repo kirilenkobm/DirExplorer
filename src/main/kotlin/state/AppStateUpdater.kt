@@ -94,8 +94,9 @@ object AppStateUpdater {
 
     private fun handleInvalidPath(entity: ExplorableEntity, oldDirectoryInCaseOfError: ExplorerDirectory) {
         val errorMessage = when {
-            !isValidDirectory(entity) -> "Error! Target directory ${entity.path} does not exist"
-            !isValidZipArchive(entity) -> "Error! ${entity.path} is not a directory"
+            !isValidDirectory(entity) ->
+                "Error! Target directory ${entity.path} is either unavailable or does not exist"
+            !isValidZipArchive(entity) -> "Error! Could not process ${entity.path}"
             else -> "Error! Unable to access directory ${entity.path}"
         }
         showErrorDialog(errorMessage)

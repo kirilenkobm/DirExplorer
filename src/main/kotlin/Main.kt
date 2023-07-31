@@ -6,7 +6,12 @@ import state.Settings
 import javax.swing.SwingUtilities
 import view.MainView
 
-
+/**
+ * The main entry point of the application.
+ *
+ * It initializes the application settings, sets up the initial directory
+ * based on command-line arguments or defaults to the home directory, and launches the UI.
+ */
 fun main(args: Array<String>) {
     // Load settings if possible when the app starts
     Settings.loadSettings()

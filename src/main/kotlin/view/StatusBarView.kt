@@ -15,6 +15,14 @@ import javax.swing.JLabel
 import javax.swing.JPanel
 import kotlin.coroutines.CoroutineContext
 
+/**
+ * Class representing the status bar view at the bottom of the window.
+ *
+ * It displays the status of the current directory, including the number of items and total size,
+ * and updates this information whenever the directory changes.
+ * It also displays additional information such as whether hidden files are being shown
+ * and whether the user is inside a zip archive.
+ */
 class StatusBarView : JPanel(), CoroutineScope, DirectoryObserver, SettingsObserver
 {
     private var bundle = ResourceBundle.getBundle(Constants.LANGUAGE_BUNDLE_PATH, Settings.language.getLocale())

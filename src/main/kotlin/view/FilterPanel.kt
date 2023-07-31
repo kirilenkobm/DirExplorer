@@ -14,7 +14,14 @@ import javax.swing.JTextField
 import javax.swing.event.DocumentEvent
 import javax.swing.event.DocumentListener
 
-
+/**
+ * Class representing the file extension filter panel in the user interface.
+ *
+ * It consists of a text field where users can enter the desired file extension, and a button to clear the filter.
+ *
+ * The filter panel is updated in real-time as the user types into the text field.
+ * The current filter is stored in the AppState singleton object.
+ */
 class FilterPanel {
     private val filterPanel = JPanel(BorderLayout())
     private val filterField = JTextField()
