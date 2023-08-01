@@ -5,6 +5,11 @@ plugins {
     application
 }
 
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
 group = "org.example"
 version = "1.0-SNAPSHOT"
 
@@ -20,7 +25,6 @@ dependencies {
     implementation("com.github.jai-imageio:jai-imageio-jpeg2000:1.3.0")
     implementation("org.apache.pdfbox:pdfbox:2.0.24")
     implementation("org.apache.pdfbox:jbig2-imageio:3.0.4")
-    testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
     testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
 }
 

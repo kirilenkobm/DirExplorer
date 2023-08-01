@@ -1,6 +1,7 @@
 package service
 
 import view.iconviews.FileIconView
+import java.util.concurrent.CopyOnWriteArrayList
 
 /**
  * Singleton object that manages FileIconView instances and their associated thumbnail generation tasks.
@@ -10,12 +11,17 @@ import view.iconviews.FileIconView
  * a directory where a large number of thumbnails are being generated.
  */
 object ThumbnailJobController {
-    private val fileIconViews = mutableListOf<FileIconView>()
+    // TODO: check this one specifically
+    // ConcurrentModificationException on Linux
+    // Looks like race condition
+    private val fileIconViews = CopyOnWriteArrayList<FileIconView>()
 
+    @Synchronized
     fun addFileIconView(view: FileIconView) {
         fileIconViews.add(view)
     }
 
+    @Synchronized
     fun cancelThumbnailGenerationTasks() {
         fileIconViews.forEach { it.dispose() }
         fileIconViews.clear()
