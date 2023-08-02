@@ -70,17 +70,10 @@ class GridDirectoryView : AbstractDirectoryView() {
 
         // if inside zip: check whether the respective service (if exists)
         // has the unpack status IN_PROGRESS -> then show spinner
-        // otherwise no
-        if (AppState.insideZip()) {
-            val respectiveService = AppState.getZipServiceForDirectory()
-            val respectiveServiceStatus =
-                respectiveService?.extractionStatus?.value
-                    ?: ZipExtractionStatus.UNDEFINED
-            if (respectiveServiceStatus == ZipExtractionStatus.IN_PROGRESS) {
-                val spinner = EntityIconViewFactory.makeZipLoadingSpinner()
-                spinner.isOpaque = false
-                gridPanel.add(spinner)
-            }
+        if (AppState.isZipSpinnerNeeded()) {
+            val spinner = EntityIconViewFactory.makeZipLoadingSpinner()
+            spinner.isOpaque = false
+            gridPanel.add(spinner)
         }
 
         gridPanel.revalidate()

@@ -2,8 +2,10 @@ package state
 
 import model.*
 import service.ZipArchiveService
+import service.ZipExtractionStatus
 import java.nio.file.Path
 import java.nio.file.Paths
+import java.util.concurrent.ConcurrentHashMap
 
 /**
  * Singleton object representing the application state.
@@ -45,11 +47,11 @@ object AppState {
     // Mappings needed to replace zipTempDir names to zip Filenames in the address bar
     // Or to get the respective zipService instance if need be
     // TODO: might be better to add something like "shown name" for ExplorableEntity
-    // for better incapsulation, and add something like actualPath value so that app can enter
+    // for better encapsulation, and add something like actualPath value so that app can enter
     // ZipEntity directly, without need to create a temporary ExplorerDirectory instance.
-    val tempZipDirToNameMapping = HashMap<String, String>()
-    val tempZipDirToServiceMapping = HashMap<String, ZipArchiveService>()
-    val zipPathToTempDir = HashMap<String, Path>()
+    val tempZipDirToNameMapping = ConcurrentHashMap<String, String>()
+    val tempZipDirToServiceMapping = ConcurrentHashMap<String, ZipArchiveService>()
+    val zipPathToTempDir = ConcurrentHashMap<String, Path>()
 
     fun goHome() {
         AppStateUpdater.updateDirectory(ExplorerDirectory(System.getProperty("user.home")))
@@ -108,12 +110,25 @@ object AppState {
         return path.any { tempZipDirToNameMapping[it.toString()] != null }
     }
 
-    fun getZipServiceForDirectory(): ZipArchiveService? {
+    /**
+     * Return the respective ZipArchiveService for the current directory if exists.
+     */
+    private fun getZipServiceForDirectory(): ZipArchiveService? {
         val path = Paths.get(currentExplorerDirectory.path)
         // Find the temp directory name in the path
         val tempDirName = path.firstOrNull { tempZipDirToNameMapping.containsKey(it.toString()) }
         // Return the corresponding ZipArchiveService, or null if not found
         return tempDirName?.let { tempZipDirToServiceMapping[it.toString()] }
+    }
+
+    /**
+     * Function to check whether adding zip unpacking
+     * spinner is needed or not.
+     * Show if the ZipExtractionStatus of the current (or child) directory
+     * of an unpacking zip archive is IN_PROGRESS
+     */
+    fun isZipSpinnerNeeded(): Boolean {
+        return getZipServiceForDirectory()?.extractionStatus?.value == ZipExtractionStatus.IN_PROGRESS
     }
 
     fun updateFilter(newFilter: String) {
