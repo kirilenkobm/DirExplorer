@@ -7,7 +7,9 @@ import service.DirectoryContentService
 import service.EntityIconViewFactory
 import service.ThumbnailJobController
 import state.*
+import view.customcomponents.CustomScrollPane
 import view.customcomponents.WrapLayout
+import view.iconviews.SpinningCircle
 import java.awt.*
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
@@ -41,9 +43,6 @@ class GridDirectoryView : AbstractDirectoryView() {
         })
     }
 
-    /**
-     * Update number of columns according to the view width
-     */
     private fun updateLayout() {
         gridPanel.removeAll()
         gridPanel.revalidate()
@@ -73,8 +72,7 @@ class GridDirectoryView : AbstractDirectoryView() {
             gridPanel.add(entityIcon)
         }
 
-        val dummySpinner = EntityIconViewFactory.createZipSpinner()
-        gridPanel.add(dummySpinner)
+        gridPanel.add(SpinningCircle())
 
         gridPanel.revalidate()
         gridPanel.repaint()
@@ -86,10 +84,11 @@ class GridDirectoryView : AbstractDirectoryView() {
      * at rare occasion. ? to avoid NullPointerException
      */
     private fun revalidateAndRepaintScrollPane() {
-        if (gridPanel.parent?.parent is JScrollPane) {
-            (gridPanel.parent?.parent as JScrollPane?)?.apply {
+        if (gridPanel.parent?.parent is CustomScrollPane) {
+            (gridPanel.parent?.parent as CustomScrollPane?)?.apply {
                 revalidate()
                 repaint()
+                updatePreferredSize()
             }
         }
     }

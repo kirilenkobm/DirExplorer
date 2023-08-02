@@ -36,4 +36,21 @@ class CustomScrollPane(component: JPanel) : JScrollPane(component) {
             }
         })
     }
+
+    fun updatePreferredSize() {
+        val componentInScrollPane = viewport.view as? JPanel
+        componentInScrollPane?.let { comp ->
+            if (comp.componentCount > 0) {
+                val width = viewport.width
+                val layout = comp.layout as WrapLayout
+                val hgap = layout.hgap
+                val vgap = layout.vgap
+                val componentWidth = comp.getComponent(0).preferredSize.width
+                val columns = max(1, (width - hgap) / (componentWidth + hgap))
+                val rows = ceil(comp.componentCount.toDouble() / columns).toInt()
+                val height = rows * (comp.getComponent(0).preferredSize.height + vgap) + hgap
+                comp.preferredSize = Dimension(width, height)
+            }
+        }
+    }
 }
