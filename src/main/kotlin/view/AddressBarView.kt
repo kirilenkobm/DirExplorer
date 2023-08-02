@@ -48,7 +48,7 @@ class AddressBarView: DirectoryObserver {
         return JButton(partName).apply {
             isContentAreaFilled = false  // transparent button
             isBorderPainted = false // remove stroke
-            isFocusPainted = false // remove focus highlight TODO: check whether needed
+            isFocusPainted = false // remove focus highlight
             horizontalTextPosition = SwingConstants.CENTER
             verticalTextPosition = SwingConstants.CENTER
             foreground = if (Settings.colorTheme == ColorTheme.LIGHT) {

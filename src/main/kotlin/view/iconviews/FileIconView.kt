@@ -20,8 +20,8 @@ class FileIconView(
     override fun setIcon() {
         // default base image
         iconLabel.icon = Utils.resizeIcon(IconManager.getIconForFileType(fileEntity.fileType))
-        // TODO: choose one of them
         thumbnailGenerationService.startThumbnailGeneration()
+        // TODO: choose which version is better and safer
         // Start thumbnail generation without waiting for it to finish
 
 //        val thumbnailDeferred = fileEntity.startThumbnailGeneration()

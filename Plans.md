@@ -63,3 +63,12 @@
 * Hotkeys ??
 * Mouseover hints
 * If open in external app - warn about it?
+
+# First round of revision
+
+* Zip archives showing content only after re-entry
+* ~~java.util.ConcurrentModificationException in ThumbnailJobController~~
+* The scroll position does not change when switching directories
+* Keeping tests in order
+* ~~Fix build.gradle~~
+* 
