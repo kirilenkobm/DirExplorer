@@ -2,7 +2,6 @@ package view.directoryviews
 
 import model.*
 import kotlinx.coroutines.*
-import service.ZipExtractionStatusObserver
 import state.*
 import kotlin.coroutines.CoroutineContext
 
@@ -16,8 +15,7 @@ import kotlin.coroutines.CoroutineContext
 abstract class AbstractDirectoryView:
     CoroutineScope,
     DirectoryObserver,
-    SettingsObserver,
-    ZipExtractionStatusObserver
+    SettingsObserver
 {
     private val job = Job()
     override val coroutineContext: CoroutineContext
@@ -26,9 +24,6 @@ abstract class AbstractDirectoryView:
     abstract fun updateView()
 
     override fun onDirectoryChanged(newDirectory: ExplorerDirectory) {
-        // if it's zip-associated directory -> add appropriate observer
-        val zipService = AppState.getZipServiceForDirectory()
-        zipService?.addStatusObserver(this)
         updateView()
     }
 

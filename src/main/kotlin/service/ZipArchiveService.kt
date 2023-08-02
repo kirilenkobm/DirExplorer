@@ -32,7 +32,6 @@ class ZipArchiveService(private val zipEntity: ZipArchive): CoroutineScope {
         get() = Dispatchers.IO + job
     private var tempDirName: String? = null
     val extractionStatus = MutableStateFlow(ZipExtractionStatus.NOT_YET_STARTED)
-    private val statusObservers = mutableListOf<ZipExtractionStatusObserver>()
 
     /**
      * Remove temp dir if it's no longer needed.
@@ -54,18 +53,6 @@ class ZipArchiveService(private val zipEntity: ZipArchive): CoroutineScope {
                 AppState.tempZipDirToServiceMapping.remove(tempDirName)
             }
         }
-    }
-
-    private fun notifyStatusChanged() {
-        statusObservers.forEach { it.onExtractionStatusChanged(extractionStatus.value) }
-    }
-
-    fun addStatusObserver(observer: ZipExtractionStatusObserver) {
-        statusObservers.add(observer)
-    }
-
-    fun removeStatusObserver(observer: ZipExtractionStatusObserver) {
-        statusObservers.remove(observer)
     }
 
     init {
@@ -94,7 +81,6 @@ class ZipArchiveService(private val zipEntity: ZipArchive): CoroutineScope {
         launch(Dispatchers.IO) {
             zipUnpackSemaphore.acquire()
             extractionStatus.value = ZipExtractionStatus.IN_PROGRESS
-            notifyStatusChanged()
             var lastRefreshTime = System.currentTimeMillis()
             var refreshDelay = 750L  // initial delay
 
@@ -127,7 +113,6 @@ class ZipArchiveService(private val zipEntity: ZipArchive): CoroutineScope {
                 }
             } finally {
                 extractionStatus.value = ZipExtractionStatus.DONE
-                notifyStatusChanged()
                 AppState.refreshCurrentDirectory()
                 zipUnpackSemaphore.release()
             }

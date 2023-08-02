@@ -180,8 +180,4 @@ class TableDirectoryView : AbstractDirectoryView() {
             updateView()
         }
     }
-
-    override fun onExtractionStatusChanged(newStatus: ZipExtractionStatus) {
-        // println("Status changed to $newStatus")
-    }
 }

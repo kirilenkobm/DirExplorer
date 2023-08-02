@@ -20,7 +20,6 @@ class GridDirectoryView : AbstractDirectoryView() {
     private val gridPanel = JPanel(WrapLayout(FlowLayout.LEFT, 10, 10))
     private var filteredAndSortedContents: List<FileSystemEntity> = emptyList()
     private val contentService = DirectoryContentService()
-    private var addingSpinner = false
 
     init {
         AppState.addDirectoryObserver(this)
@@ -69,9 +68,14 @@ class GridDirectoryView : AbstractDirectoryView() {
             gridPanel.add(entityIcon)
         }
 
+        // if inside zip: check whether the respective service (if exists)
+        // has the unpack status IN_PROGRESS -> then show spinner
+        // otherwise no
         if (AppState.insideZip()) {
             val respectiveService = AppState.getZipServiceForDirectory()
-            val respectiveServiceStatus = respectiveService?.extractionStatus?.value ?: ZipExtractionStatus.UNDEFINED
+            val respectiveServiceStatus =
+                respectiveService?.extractionStatus?.value
+                    ?: ZipExtractionStatus.UNDEFINED
             if (respectiveServiceStatus == ZipExtractionStatus.IN_PROGRESS) {
                 val spinner = EntityIconViewFactory.makeZipLoadingSpinner()
                 spinner.isOpaque = false
@@ -115,21 +119,4 @@ class GridDirectoryView : AbstractDirectoryView() {
     }
 
     override fun onLanguageChanged(newLanguage: Language) { }
-
-    override fun onExtractionStatusChanged(status: ZipExtractionStatus) {
-        println("Status changed to $status")
-        when (status) {
-            ZipExtractionStatus.IN_PROGRESS -> {
-
-                addingSpinner = true
-            }
-            ZipExtractionStatus.DONE -> {
-                addingSpinner = false
-            }
-            else -> {
-                addingSpinner = false
-            }
-        }
-        updateView()
-    }
 }
