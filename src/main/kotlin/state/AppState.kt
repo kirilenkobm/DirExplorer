@@ -2,7 +2,6 @@
 package state
 
 import model.*
-import service.CurrentDirectoryContentWatcher
 import service.ZipArchiveService
 import java.nio.file.Path
 import java.nio.file.Paths

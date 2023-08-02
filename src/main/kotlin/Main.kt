@@ -39,6 +39,7 @@ fun main(args: Array<String>) {
     }
     // Operations to be performed after closing the app
     Runtime.getRuntime().addShutdownHook(Thread {
+        // TODO: popup window about deleting temp zip dirs
         Settings.saveSettings()  // dump settings for the next session
         AppState.cleanupAllZipArchives()  // to make sure all temp dirs are deleted
     })
