@@ -22,17 +22,7 @@ class CustomScrollPane(component: JPanel) : JScrollPane(component) {
     init {
         viewport.addComponentListener(object : ComponentAdapter() {
             override fun componentResized(e: ComponentEvent?) {
-                if (component.componentCount > 0) {
-                    val width = viewport.width
-                    val layout = component.layout as WrapLayout
-                    val hgap = layout.hgap
-                    val vgap = layout.vgap
-                    val componentWidth = component.getComponent(0).preferredSize.width
-                    val columns = max(1, (width - hgap) / (componentWidth + hgap))
-                    val rows = ceil(component.componentCount.toDouble() / columns).toInt()
-                    val height = rows * (component.getComponent(0).preferredSize.height + vgap) + hgap
-                    component.preferredSize = Dimension(width, height)
-                }
+                updatePreferredSize()
             }
         })
     }
@@ -40,17 +30,21 @@ class CustomScrollPane(component: JPanel) : JScrollPane(component) {
     fun updatePreferredSize() {
         val componentInScrollPane = viewport.view as? JPanel
         componentInScrollPane?.let { comp ->
-            if (comp.componentCount > 0) {
-                val width = viewport.width
-                val layout = comp.layout as WrapLayout
-                val hgap = layout.hgap
-                val vgap = layout.vgap
-                val componentWidth = comp.getComponent(0).preferredSize.width
-                val columns = max(1, (width - hgap) / (componentWidth + hgap))
-                val rows = ceil(comp.componentCount.toDouble() / columns).toInt()
-                val height = rows * (comp.getComponent(0).preferredSize.height + vgap) + hgap
-                comp.preferredSize = Dimension(width, height)
-            }
+            setComponentPreferredSize(comp)
+        }
+    }
+
+    private fun setComponentPreferredSize(component: JPanel) {
+        if (component.componentCount > 0) {
+            val width = viewport.width
+            val layout = component.layout as WrapLayout
+            val hgap = layout.hgap
+            val vgap = layout.vgap
+            val componentWidth = component.getComponent(0).preferredSize.width
+            val columns = max(1, (width - hgap) / (componentWidth + hgap))
+            val rows = ceil(component.componentCount.toDouble() / columns).toInt()
+            val height = rows * (component.getComponent(0).preferredSize.height + vgap) + hgap
+            component.preferredSize = Dimension(width, height)
         }
     }
 }
