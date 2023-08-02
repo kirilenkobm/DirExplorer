@@ -6,6 +6,7 @@ import kotlinx.coroutines.launch
 import service.DirectoryContentService
 import service.EntityActionsHandler
 import service.TableItemsMapper
+import service.ZipExtractionStatus
 import state.*
 import java.awt.Color
 import java.awt.Component
@@ -178,5 +179,9 @@ class TableDirectoryView : AbstractDirectoryView() {
             // Update the view
             updateView()
         }
+    }
+
+    override fun onExtractionStatusChanged(newStatus: ZipExtractionStatus) {
+        // println("Status changed to $newStatus")
     }
 }

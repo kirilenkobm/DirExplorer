@@ -3,9 +3,7 @@ package view.directoryviews
 import Constants
 import model.*
 import kotlinx.coroutines.launch
-import service.DirectoryContentService
-import service.EntityIconViewFactory
-import service.ThumbnailJobController
+import service.*
 import state.*
 import view.customcomponents.CustomScrollPane
 import view.customcomponents.WrapLayout
@@ -22,6 +20,7 @@ class GridDirectoryView : AbstractDirectoryView() {
     private val gridPanel = JPanel(WrapLayout(FlowLayout.LEFT, 10, 10))
     private var filteredAndSortedContents: List<FileSystemEntity> = emptyList()
     private val contentService = DirectoryContentService()
+    private var addingSpinner = false
 
     init {
         AppState.addDirectoryObserver(this)
@@ -70,9 +69,15 @@ class GridDirectoryView : AbstractDirectoryView() {
             gridPanel.add(entityIcon)
         }
 
-        val spinner = EntityIconViewFactory.makeZipLoadingSpinner()
-        spinner.isOpaque = false
-        gridPanel.add(spinner)
+        if (AppState.insideZip()) {
+            val respectiveService = AppState.getZipServiceForDirectory()
+            val respectiveServiceStatus = respectiveService?.extractionStatus?.value ?: ZipExtractionStatus.UNDEFINED
+            if (respectiveServiceStatus == ZipExtractionStatus.IN_PROGRESS) {
+                val spinner = EntityIconViewFactory.makeZipLoadingSpinner()
+                spinner.isOpaque = false
+                gridPanel.add(spinner)
+            }
+        }
 
         gridPanel.revalidate()
         gridPanel.repaint()
@@ -110,4 +115,21 @@ class GridDirectoryView : AbstractDirectoryView() {
     }
 
     override fun onLanguageChanged(newLanguage: Language) { }
+
+    override fun onExtractionStatusChanged(status: ZipExtractionStatus) {
+        println("Status changed to $status")
+        when (status) {
+            ZipExtractionStatus.IN_PROGRESS -> {
+
+                addingSpinner = true
+            }
+            ZipExtractionStatus.DONE -> {
+                addingSpinner = false
+            }
+            else -> {
+                addingSpinner = false
+            }
+        }
+        updateView()
+    }
 }

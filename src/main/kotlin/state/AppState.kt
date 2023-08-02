@@ -1,4 +1,3 @@
-// AppState - manages the whole Application state
 package state
 
 import model.*
@@ -43,8 +42,13 @@ object AppState {
     // all temp directories which could be forgotten when the app closes
     // Or if the app was closed in a zip Archive
     val zipServices: MutableList<ZipArchiveService> = mutableListOf()
-    // Only to replace zipTempDir names to zip Filenames in the address bar
+    // Mappings needed to replace zipTempDir names to zip Filenames in the address bar
+    // Or to get the respective zipService instance if need be
+    // TODO: might be better to add something like "shown name" for ExplorableEntity
+    // for better incapsulation, and add something like actualPath value so that app can enter
+    // ZipEntity directly, without need to create a temporary ExplorerDirectory instance.
     val tempZipDirToNameMapping = HashMap<String, String>()
+    val tempZipDirToServiceMapping = HashMap<String, ZipArchiveService>()
     val zipPathToTempDir = HashMap<String, Path>()
 
     fun goHome() {
@@ -102,6 +106,14 @@ object AppState {
     fun insideZip(): Boolean {
         val path = Paths.get(currentExplorerDirectory.path)
         return path.any { tempZipDirToNameMapping[it.toString()] != null }
+    }
+
+    fun getZipServiceForDirectory(): ZipArchiveService? {
+        val path = Paths.get(currentExplorerDirectory.path)
+        // Find the temp directory name in the path
+        val tempDirName = path.firstOrNull { tempZipDirToNameMapping.containsKey(it.toString()) }
+        // Return the corresponding ZipArchiveService, or null if not found
+        return tempDirName?.let { tempZipDirToServiceMapping[it.toString()] }
     }
 
     fun updateFilter(newFilter: String) {

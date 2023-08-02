@@ -6,5 +6,6 @@ package service
 enum class ZipExtractionStatus {
     NOT_YET_STARTED,
     IN_PROGRESS,
-    DONE
+    DONE,
+    UNDEFINED
 }

@@ -32,6 +32,7 @@ class ZipArchiveService(private val zipEntity: ZipArchive): CoroutineScope {
         get() = Dispatchers.IO + job
     private var tempDirName: String? = null
     val extractionStatus = MutableStateFlow(ZipExtractionStatus.NOT_YET_STARTED)
+    private val statusObservers = mutableListOf<ZipExtractionStatusObserver>()
 
     /**
      * Remove temp dir if it's no longer needed.
@@ -50,8 +51,21 @@ class ZipArchiveService(private val zipEntity: ZipArchive): CoroutineScope {
                 cleanup()  // and do not forget to exclude them from caches:
                 AppState.zipPathToTempDir.remove(zipEntity.path)
                 AppState.tempZipDirToNameMapping.remove(tempDirName)
+                AppState.tempZipDirToServiceMapping.remove(tempDirName)
             }
         }
+    }
+
+    private fun notifyStatusChanged() {
+        statusObservers.forEach { it.onExtractionStatusChanged(extractionStatus.value) }
+    }
+
+    fun addStatusObserver(observer: ZipExtractionStatusObserver) {
+        statusObservers.add(observer)
+    }
+
+    fun removeStatusObserver(observer: ZipExtractionStatusObserver) {
+        statusObservers.remove(observer)
     }
 
     init {
@@ -66,6 +80,7 @@ class ZipArchiveService(private val zipEntity: ZipArchive): CoroutineScope {
         tempDirName = ".${Paths.get(zipEntity.path).fileName}_${UUID.randomUUID().toString().take(6)}"
         zipEntity.tempDir = Files.createDirectory(parentDir.resolve(tempDirName!!))
         AppState.tempZipDirToNameMapping[tempDirName!!] = Paths.get(zipEntity.path).fileName.toString()
+        AppState.tempZipDirToServiceMapping[tempDirName!!] = this
 
         if (System.getProperty("os.name").startsWith("Windows")) {
             // On Windows: .name is not enough, need to set the 'hidden' attribute
@@ -79,6 +94,7 @@ class ZipArchiveService(private val zipEntity: ZipArchive): CoroutineScope {
         launch(Dispatchers.IO) {
             zipUnpackSemaphore.acquire()
             extractionStatus.value = ZipExtractionStatus.IN_PROGRESS
+            notifyStatusChanged()
             var lastRefreshTime = System.currentTimeMillis()
             var refreshDelay = 750L  // initial delay
 
@@ -111,6 +127,7 @@ class ZipArchiveService(private val zipEntity: ZipArchive): CoroutineScope {
                 }
             } finally {
                 extractionStatus.value = ZipExtractionStatus.DONE
+                notifyStatusChanged()
                 AppState.refreshCurrentDirectory()
                 zipUnpackSemaphore.release()
             }
