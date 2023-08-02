@@ -52,7 +52,7 @@ abstract class AbstractIconEntityView(
         add(textLabel, BorderLayout.NORTH)
     }
 
-    private val entityPanel = JPanel(GridBagLayout()).apply {
+    val entityPanel = JPanel(GridBagLayout()).apply {
         val constraints = GridBagConstraints()
 
         // Constraints for iconLabel
@@ -108,7 +108,7 @@ abstract class AbstractIconEntityView(
 
     protected abstract fun setIcon()
 
-    fun createView(): JPanel {
+    internal open fun createView(): JPanel {
         textLabel.text = Utils.getFilenameForIcon(entity.name)
         textLabel.foreground = if (Settings.colorTheme == ColorTheme.LIGHT) Color.BLACK else Color.WHITE
         setIcon()

@@ -6,7 +6,6 @@ import model.ZipArchive
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import state.AppState
-import view.popupwindows.ZipUnpackSpinner
 import java.io.IOException
 import java.nio.file.*
 import java.nio.file.attribute.BasicFileAttributes
@@ -74,14 +73,15 @@ class ZipArchiveService(private val zipEntity: ZipArchive): CoroutineScope {
         }
 
         // Start coroutine: get semaphore + start spinner
-        ZipUnpackSpinner.showSpinner()
         val zipUnpackSemaphore = SemaphoreManager.zipUnpackSemaphore
+
 
         // Extract zip contents in a background thread
         launch(Dispatchers.IO) {
             zipUnpackSemaphore.acquire()
             isExtracting.value = true
             var lastRefreshTime = System.currentTimeMillis()
+            var refreshDelay = 750L  // initial delay
 
             try {
                 ZipFile(zipEntity.path).use { zip ->
@@ -100,15 +100,17 @@ class ZipArchiveService(private val zipEntity: ZipArchive): CoroutineScope {
                         }
                         // Refresh the directory if more than 500ms have passed since the last refresh
                         val currentTime = System.currentTimeMillis()
-                        if (currentTime - lastRefreshTime > 750) {
+                        if (currentTime - lastRefreshTime > refreshDelay) {
                             AppState.refreshCurrentDirectory()
                             lastRefreshTime = currentTime
+                            // increase delay by 20% after each refresh
+                            // so that I don't get system overloaded on big archives
+                            refreshDelay = (refreshDelay * 1.2).toLong()
                         }
                     }
                 }
             } finally {
                 isExtracting.value = false
-                ZipUnpackSpinner.hideSpinner()
                 AppState.refreshCurrentDirectory()
                 zipUnpackSemaphore.release()
             }
@@ -118,7 +120,6 @@ class ZipArchiveService(private val zipEntity: ZipArchive): CoroutineScope {
 
     fun cleanup() {
         job.cancel()  // cancel the coroutine
-        ZipUnpackSpinner.hideSpinner()
         AppState.markObserverForRemoval(observer)
         // Delete the temp directory -> to be called once I left a zip file
         zipEntity.tempDir?.let { dir ->

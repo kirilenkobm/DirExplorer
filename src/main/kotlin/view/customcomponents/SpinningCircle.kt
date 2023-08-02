@@ -1,4 +1,4 @@
-package view.iconviews
+package view.customcomponents
 
 import java.awt.BasicStroke
 import java.awt.Color

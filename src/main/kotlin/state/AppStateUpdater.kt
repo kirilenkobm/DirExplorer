@@ -70,6 +70,7 @@ object AppStateUpdater {
             }
             if (clearForwardStack) AppState.forwardStack.clear()
             AppState.currentExplorerDirectory = newExplorerDirectory as ExplorerDirectory
+            // Set watcher to new directory to notify the program is the content updates
             CurrentDirectoryContentWatcher.startWatching(newExplorerDirectory)
         }
     }

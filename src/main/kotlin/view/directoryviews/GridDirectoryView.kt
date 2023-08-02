@@ -9,12 +9,10 @@ import service.ThumbnailJobController
 import state.*
 import view.customcomponents.CustomScrollPane
 import view.customcomponents.WrapLayout
-import view.iconviews.SpinningCircle
 import java.awt.*
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
 import javax.swing.JPanel
-import javax.swing.JScrollPane
 import javax.swing.SwingUtilities
 
 /**
@@ -72,7 +70,9 @@ class GridDirectoryView : AbstractDirectoryView() {
             gridPanel.add(entityIcon)
         }
 
-        gridPanel.add(SpinningCircle())
+        val spinner = EntityIconViewFactory.makeZipLoadingSpinner()
+        spinner.isOpaque = false
+        gridPanel.add(spinner)
 
         gridPanel.revalidate()
         gridPanel.repaint()

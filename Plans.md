@@ -53,7 +53,6 @@
 
 # Nice to have
 
-
 * ~~Status bar: shows whether hidden files are shown and whether inside a zip~~
 * ~~Dark and light theme~~
 
@@ -67,8 +66,7 @@
 # First round of revision
 
 * Zip archives showing content only after re-entry
-* ~~java.util.ConcurrentModificationException in ThumbnailJobController~~
-* The scroll position does not change when switching directories
 * Keeping tests in order
+* ~~The scroll position does not change when switching directories~~
+* ~~java.util.ConcurrentModificationException in ThumbnailJobController~~
 * ~~Fix build.gradle~~
-* 

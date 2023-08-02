@@ -39,4 +39,10 @@ object EntityIconViewFactory {
         val unknownEntity = UnknownEntity(entity.path)
         return UnknownIconView(unknownEntity).createView()
     }
+
+    // TODO: It is a very dirty workaround
+    fun makeZipLoadingSpinner(): JPanel {
+        val mockEntity = UnknownEntity("Unpacking zip...")
+        return UnpackingZipIconView(mockEntity).createView()
+    }
 }
