@@ -73,6 +73,9 @@ class GridDirectoryView : AbstractDirectoryView() {
             gridPanel.add(entityIcon)
         }
 
+        val dummySpinner = EntityIconViewFactory.createZipSpinner()
+        gridPanel.add(dummySpinner)
+
         gridPanel.revalidate()
         gridPanel.repaint()
     }

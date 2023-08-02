@@ -30,7 +30,6 @@ object AppState {
             field = value
             value.invalidateCache()
             notifyDirectoryObservers(value)
-            CurrentDirectoryContentWatcher.startWatching(value)
         }
 
     private var currentExtensionFilter: String = ""

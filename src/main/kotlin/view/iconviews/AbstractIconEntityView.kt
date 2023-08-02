@@ -37,7 +37,7 @@ abstract class AbstractIconEntityView(
         alignmentX = Component.CENTER_ALIGNMENT
     }
 
-    private val textLabel = JLabel().apply {
+    val textLabel = JLabel().apply {
         horizontalAlignment = SwingConstants.CENTER
         alignmentX = Component.CENTER_ALIGNMENT
     }
@@ -109,9 +109,9 @@ abstract class AbstractIconEntityView(
     protected abstract fun setIcon()
 
     fun createView(): JPanel {
-        setIcon()
         textLabel.text = Utils.getFilenameForIcon(entity.name)
         textLabel.foreground = if (Settings.colorTheme == ColorTheme.LIGHT) Color.BLACK else Color.WHITE
+        setIcon()
         return wrapperPanel
     }
 

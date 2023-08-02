@@ -39,4 +39,9 @@ object EntityIconViewFactory {
         val unknownEntity = UnknownEntity(entity.path)
         return UnknownIconView(unknownEntity).createView()
     }
+
+    fun createZipSpinner(): JPanel {
+        val mockEntityView = UnknownEntity("")
+        return SpinnerIconView(mockEntityView).createView()
+    }
 }

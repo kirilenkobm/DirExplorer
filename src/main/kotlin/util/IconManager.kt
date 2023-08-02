@@ -47,6 +47,7 @@ object IconManager: SettingsObserver {
     lateinit var chevronRightIcon: ImageIcon
     lateinit var ellipsisIcon: ImageIcon
     lateinit var backSpaceIcon: ImageIcon
+    lateinit var loadingSpinner: ImageIcon
 
     private fun loadImageIcon(path: String): ImageIcon {
         val originalIcon = ImageIcon(javaClass.getResource(path))
@@ -104,6 +105,7 @@ object IconManager: SettingsObserver {
         chevronRightIcon = loadImageIcon("/images/baseline_chevron_right_black_18dp.png")
         ellipsisIcon = loadImageIcon("/images/baseline_more_horiz_black_24dp.png")
         backSpaceIcon = loadImageIcon("/images/baseline_backspace_black_18dp.png")
+        loadingSpinner = loadImageIcon("/images/loading.gif")
     }
 
     fun getIconForFileType(fileType: String): ImageIcon {

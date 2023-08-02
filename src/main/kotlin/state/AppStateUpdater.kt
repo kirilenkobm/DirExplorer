@@ -3,6 +3,7 @@ package state
 import model.ExplorableEntity
 import model.ExplorerDirectory
 import model.ZipArchive
+import service.CurrentDirectoryContentWatcher
 import service.ZipArchiveService
 import view.popupwindows.showErrorDialog
 import java.nio.file.Files
@@ -59,6 +60,7 @@ object AppStateUpdater {
         clearForwardStack: Boolean,
         addToBackStack: Boolean)
     {
+
         val newPath = Paths.get(newExplorerDirectory.path)
         val oldPath = Paths.get(AppState.currentExplorerDirectory.path)
 
@@ -68,6 +70,7 @@ object AppStateUpdater {
             }
             if (clearForwardStack) AppState.forwardStack.clear()
             AppState.currentExplorerDirectory = newExplorerDirectory as ExplorerDirectory
+            CurrentDirectoryContentWatcher.startWatching(newExplorerDirectory)
         }
     }
 

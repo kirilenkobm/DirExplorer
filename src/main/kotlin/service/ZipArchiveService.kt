@@ -4,6 +4,7 @@ import model.DirectoryObserver
 import model.ExplorerDirectory
 import model.ZipArchive
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.MutableStateFlow
 import state.AppState
 import view.popupwindows.ZipUnpackSpinner
 import java.io.IOException
@@ -31,6 +32,7 @@ class ZipArchiveService(private val zipEntity: ZipArchive): CoroutineScope {
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.IO + job
     private var tempDirName: String? = null
+    val isExtracting = MutableStateFlow(false)
 
     /**
      * Remove temp dir if it's no longer needed.
@@ -78,21 +80,36 @@ class ZipArchiveService(private val zipEntity: ZipArchive): CoroutineScope {
         // Extract zip contents in a background thread
         launch(Dispatchers.IO) {
             zipUnpackSemaphore.acquire()
+            isExtracting.value = true
+            var lastRefreshTime = System.currentTimeMillis()
+
             try {
                 ZipFile(zipEntity.path).use { zip ->
                     zip.entries().asSequence().forEach { entry ->
                         ensureActive()  // to force coroutine to check whether it's cancelled I guess
-                        if (!entry.isDirectory) {
+                        if (entry.isDirectory) {
+                            // Create the directory
+                            Files.createDirectories(zipEntity.tempDir!!.resolve(entry.name))
+                        } else {
+                            // Extract the file
                             val inputFileStream = zip.getInputStream(entry)
                             val outputFile = zipEntity.tempDir!!.resolve(entry.name)
                             Files.createDirectories(outputFile.parent)
                             Files.copy(inputFileStream, outputFile, StandardCopyOption.REPLACE_EXISTING)
                             inputFileStream.close()
                         }
+                        // Refresh the directory if more than 500ms have passed since the last refresh
+                        val currentTime = System.currentTimeMillis()
+                        if (currentTime - lastRefreshTime > 750) {
+                            AppState.refreshCurrentDirectory()
+                            lastRefreshTime = currentTime
+                        }
                     }
-                    ZipUnpackSpinner.hideSpinner()
                 }
             } finally {
+                isExtracting.value = false
+                ZipUnpackSpinner.hideSpinner()
+                AppState.refreshCurrentDirectory()
                 zipUnpackSemaphore.release()
             }
         }
@@ -105,6 +122,7 @@ class ZipArchiveService(private val zipEntity: ZipArchive): CoroutineScope {
         AppState.markObserverForRemoval(observer)
         // Delete the temp directory -> to be called once I left a zip file
         zipEntity.tempDir?.let { dir ->
+            println("Cleaning up zip directory $dir")
             Files.walkFileTree(dir, object : SimpleFileVisitor<Path>() {
                 // TODO: check safety of this solution
                 override fun visitFile(file: Path, attrs: BasicFileAttributes?): FileVisitResult {
