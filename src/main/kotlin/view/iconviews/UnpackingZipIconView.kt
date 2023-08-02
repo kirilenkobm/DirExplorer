@@ -36,6 +36,11 @@ class UnpackingZipIconView(
             spinningCircle.maximumSize = spinningCircle.preferredSize
             isOpaque = false
             add(spinningCircle, constraints)
+
+            // remove all mouse listeners -> not applicable here
+            for (listener in mouseListeners) {
+                removeMouseListener(listener)
+            }
         }
     }
 
