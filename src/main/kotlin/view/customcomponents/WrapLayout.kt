@@ -15,9 +15,6 @@ import javax.swing.SwingUtilities
  * Creates a new flow layout manager with the indicated alignment
  * and the indicated horizontal and vertical gaps.
  *
- * The value of the alignment argument must be one of
- * `WrapLayout`, `WrapLayout`,
- * or `WrapLayout`.
  * @param align the alignment value
  * @param hgap the horizontal gap between components
  * @param vgap the vertical gap between components
@@ -117,7 +114,7 @@ class WrapLayout(align: Int, hgap: Int, vgap: Int) : FlowLayout(align, hgap, vga
         }
     }
 
-    /*
+    /**
 	 *  A new row has been completed. Use the dimensions of this row
 	 *  to update the preferred size for the container.
 	 *

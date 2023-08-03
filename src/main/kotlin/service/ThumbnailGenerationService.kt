@@ -12,6 +12,8 @@ import java.awt.RenderingHints
 import java.awt.image.BufferedImage
 import java.io.File
 import java.io.IOException
+import java.util.logging.Level
+import java.util.logging.Logger
 import javax.imageio.ImageIO
 import javax.swing.Icon
 import javax.swing.ImageIcon
@@ -238,6 +240,8 @@ class ThumbnailGenerationService(
      */
     private fun generatePDFThumbnail(): Icon? {
         return try {
+            // Suppress PDFBox warnings, keeping only the most serious
+            Logger.getLogger("org.apache.pdfbox").level = Level.SEVERE
             val document = PDDocument.load(File(fileEntity.path))
             val pdfRenderer = PDFRenderer(document)
             val image: BufferedImage = pdfRenderer.renderImageWithDPI(0, 40f)
