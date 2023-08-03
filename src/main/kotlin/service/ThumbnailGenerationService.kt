@@ -1,9 +1,6 @@
 package service
 
 import Constants
-import com.drew.imaging.ImageMetadataReader
-import com.drew.imaging.ImageProcessingException
-import com.drew.metadata.exif.ExifThumbnailDirectory
 import model.ExplorerFile
 import kotlinx.coroutines.*
 import org.apache.pdfbox.pdmodel.PDDocument
@@ -15,7 +12,6 @@ import java.awt.RenderingHints
 import java.awt.image.BufferedImage
 import java.io.File
 import java.io.IOException
-import java.io.RandomAccessFile
 import javax.imageio.ImageIO
 import javax.swing.Icon
 import javax.swing.ImageIcon
@@ -182,13 +178,6 @@ class ThumbnailGenerationService(
     internal fun createImageThumbnail(): Icon? {
         try {
             val file = File(fileEntity.path)
-            // but worth trying to implement for overall improvement
-            // For metadata extractor, it's easier to provide file
-//                val includedThumbnail = extractImageThumbnailIfExists(file)
-//                if (includedThumbnail != null) {
-//                    println("")
-//                    return resizeThumbnail(includedThumbnail)
-//                }
 
             // This way of extracting data from image suppose to be quicker
             val imageInputStream = ImageIO.createImageInputStream(file)
@@ -234,41 +223,6 @@ class ThumbnailGenerationService(
             // Handle invalid arguments
             return null
         }
-    }
-
-    /**
-     * Check if metadata tree contains a thumbnail. If yes -> just return it.
-     * The function does not work as expected with JPEG images created
-     * using Lightroom from Fuji and Canon camera RAWs.
-     */
-    internal fun extractImageThumbnailIfExists(imageFile: File): BufferedImage? {
-        try {
-            val metadata = ImageMetadataReader.readMetadata(imageFile)
-            val directory = metadata.getFirstDirectoryOfType(ExifThumbnailDirectory::class.java)
-
-            if (directory != null && directory.containsTag(ExifThumbnailDirectory.TAG_THUMBNAIL_OFFSET)) {
-                val offset = directory.getInteger(ExifThumbnailDirectory.TAG_THUMBNAIL_OFFSET)
-                val length = directory.getInteger(ExifThumbnailDirectory.TAG_THUMBNAIL_LENGTH)
-
-                if (length > 0) {
-                    RandomAccessFile(imageFile, "r").use { raf ->
-                        raf.seek(offset.toLong())
-                        val thumbnailData = ByteArray(length)
-                        raf.read(thumbnailData)
-                        return ImageIO.read(thumbnailData.inputStream())
-                    }
-                } else {
-                    println("Length is 0")
-                    return null
-                }
-            }
-            println("Cannot find directory")
-        } catch (e: ImageProcessingException) {
-            e.printStackTrace()
-        } catch (e: IOException) {
-            e.printStackTrace()
-        }
-        return null
     }
 
     /**

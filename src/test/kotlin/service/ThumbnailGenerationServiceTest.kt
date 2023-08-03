@@ -8,29 +8,11 @@ import org.junit.jupiter.api.Assertions.*
 import state.Settings
 import view.iconviews.FileIconView
 import java.awt.image.BufferedImage
-import java.io.File
 import javax.swing.Icon
 import kotlin.math.max
 
 
 class ThumbnailGenerationServiceTest {
-
-    @Test
-    fun `extractImageThumbnailIfExists$DirExplorer`() {
-        // Create instance of the generator service
-        // exiftool extracts thumbnail from this image, so this function should do it
-        val pathToImageWithEmbeddedThumbnail = "src/test/resources/imageWithThumbnail.jpg"
-        val dummyFileEntity = ExplorerFile(pathToImageWithEmbeddedThumbnail)
-        val dummyIcon = FileIconView(dummyFileEntity)
-        val generatorInstance = ThumbnailGenerationService(dummyFileEntity, dummyIcon)
-
-        // Create an ImageInputStream
-        val file = File(pathToImageWithEmbeddedThumbnail)
-        // Check image with embedded thumbnail
-        val thumbnail = generatorInstance.extractImageThumbnailIfExists(file)
-        assertNotNull(thumbnail)
-    }
-
     @Test
     fun createImageThumbnailCreatesThumbnail() {
         val pathToImageWithEmbeddedThumbnail = "src/test/resources/imageWithThumbnail.jpg"

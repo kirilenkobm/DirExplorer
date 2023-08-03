@@ -21,7 +21,6 @@ dependencies {
     testImplementation(kotlin("test"))
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-swing:1.5.2")
-    implementation("com.drewnoakes:metadata-extractor:2.18.0")
     implementation("com.github.jai-imageio:jai-imageio-jpeg2000:1.3.0")
     implementation("org.apache.pdfbox:pdfbox:2.0.24")
     implementation("org.apache.pdfbox:jbig2-imageio:3.0.4")
