@@ -50,6 +50,10 @@ object IconManager: SettingsObserver {
     lateinit var windowsThisPCIcon: ImageIcon
     lateinit var binaryIcon: ImageIcon
 
+    /**
+     * The function loads the image icon and applies additional filters
+     * to match the current light theme settings.
+     */
     private fun loadImageIcon(path: String): ImageIcon {
         val originalIcon = ImageIcon(javaClass.getResource(path))
         val originalImage: Image = originalIcon.image
@@ -110,6 +114,9 @@ object IconManager: SettingsObserver {
         binaryIcon = loadImageIcon("/images/baseline_settings_applications_black_36dp.png")
     }
 
+    /**
+     * Based on the file's MIME type, return an appropriate icon.
+     */
     fun getIconForFileType(fileType: String): ImageIcon {
         val archiveTypes = setOf(
             "application/x-freearc",
@@ -143,6 +150,9 @@ object IconManager: SettingsObserver {
 
     override fun onViewModeChanged(newViewMode: ViewMode) { }
 
+    /**
+     * If color theme is changed, need to re-generate all icons.
+     */
     override fun onColorThemeChanged(newColorTheme: ColorTheme) {
         loadAllIcons()
     }

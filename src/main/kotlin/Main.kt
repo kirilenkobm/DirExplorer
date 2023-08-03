@@ -1,6 +1,5 @@
 import state.AppState
 import model.ExplorerDirectory
-import service.CurrentDirectoryContentWatcher
 import state.AppStateUpdater
 import state.Settings
 import javax.swing.SwingUtilities
@@ -37,11 +36,4 @@ fun main(args: Array<String>) {
         }
         MainView().createAndShowGUI()
     }
-    // Operations to be performed after closing the app
-    Runtime.getRuntime().addShutdownHook(Thread {
-        // TODO: popup window about deleting temp zip dirs
-        Settings.saveSettings()  // dump settings for the next session
-        CurrentDirectoryContentWatcher.stopWatching()
-        AppState.cleanupAllZipArchives()  // to make sure all temp dirs are deleted
-    })
 }

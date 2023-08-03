@@ -1,4 +1,3 @@
-import state.Settings
 import java.awt.Color
 import javax.swing.UIManager
 
@@ -41,6 +40,7 @@ object Constants {
 
     // View constraints
     const val PREFERRED_WIDTH = 1240
+    const val PREFFERED_HEIGTH = 960
 
     // Table view
     const val TABLE_VIEW_FIRST_COL_SIZE = 20
