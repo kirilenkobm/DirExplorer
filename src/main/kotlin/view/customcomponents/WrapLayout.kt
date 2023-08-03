@@ -11,39 +11,19 @@ import javax.swing.SwingUtilities
  * http://www.camick.com/java/source/WrapLayout.java
  * Translated to Kotlin using IDEA.
  * Was used to make the view in the grid mode adaptive to the window size.
+
+ * Creates a new flow layout manager with the indicated alignment
+ * and the indicated horizontal and vertical gaps.
+ *
+ * The value of the alignment argument must be one of
+ * `WrapLayout`, `WrapLayout`,
+ * or `WrapLayout`.
+ * @param align the alignment value
+ * @param hgap the horizontal gap between components
+ * @param vgap the vertical gap between components
  */
-class WrapLayout : FlowLayout {
-    private val preferredLayoutSize: Dimension? = null
+class WrapLayout(align: Int, hgap: Int, vgap: Int) : FlowLayout(align, hgap, vgap) {
 
-    /**
-     * Constructs a new `WrapLayout` with a left
-     * alignment and a default 5-unit horizontal and vertical gap.
-     */
-    constructor() : super()
-
-    /**
-     * Constructs a new `FlowLayout` with the specified
-     * alignment and a default 5-unit horizontal and vertical gap.
-     * The value of the alignment argument must be one of
-     * `WrapLayout`, `WrapLayout`,
-     * or `WrapLayout`.
-     * @param align the alignment value
-     */
-    constructor(align: Int) : super(align)
-
-    /**
-     * Creates a new flow layout manager with the indicated alignment
-     * and the indicated horizontal and vertical gaps.
-     *
-     *
-     * The value of the alignment argument must be one of
-     * `WrapLayout`, `WrapLayout`,
-     * or `WrapLayout`.
-     * @param align the alignment value
-     * @param hgap the horizontal gap between components
-     * @param vgap the vertical gap between components
-     */
-    constructor(align: Int, hgap: Int, vgap: Int) : super(align, hgap, vgap)
 
     /**
      * Returns the preferred dimensions for this layout given the
@@ -57,7 +37,7 @@ class WrapLayout : FlowLayout {
     }
 
     /**
-     * Returns the minimum dimensions needed to layout the *visible*
+     * Returns the minimum dimensions needed to lay out the *visible*
      * components contained in the specified target container.
      * @param target the component which needs to be laid out
      * @return the minimum dimensions to lay out the
@@ -70,29 +50,29 @@ class WrapLayout : FlowLayout {
     }
 
     /**
-     * Returns the minimum or preferred dimension needed to layout the target
+     * Returns the minimum or preferred dimension needed to lay out the target
      * container.
      *
      * @param target target to get layout size for
      * @param preferred should preferred size be calculated
-     * @return the dimension to layout the target container
+     * @return the dimension to lay out the target container
      */
     private fun layoutSize(target: Container, preferred: Boolean): Dimension {
-        synchronized(target.getTreeLock()) {
+        synchronized(target.treeLock) {
 
-            //  Each row must fit with the width allocated to the containter.
+            //  Each row must fit with the width allocated to the container.
             //  When the container width = 0, the preferred width of the container
             //  has not yet been calculated so lets ask for the maximum.
-            var targetWidth: Int = target.getSize().width
+            var targetWidth: Int
             var container: Container = target
-            while (container.size.width == 0 && container.getParent() != null) {
-                container = container.getParent()
+            while (container.size.width == 0 && container.parent != null) {
+                container = container.parent
             }
-            targetWidth = container.getSize().width
+            targetWidth = container.size.width
             if (targetWidth == 0) targetWidth = Int.MAX_VALUE
             val hgap = hgap
             val vgap = vgap
-            val insets: Insets = target.getInsets()
+            val insets: Insets = target.insets
             val horizontalInsetsAndGap = insets.left + insets.right + hgap * 2
             val maxWidth = targetWidth - horizontalInsetsAndGap
 
@@ -100,8 +80,8 @@ class WrapLayout : FlowLayout {
             val dim = Dimension(0, 0)
             var rowWidth = 0
             var rowHeight = 0
-            val nmembers: Int = target.getComponentCount()
-            for (i in 0 until nmembers) {
+            val nmembers: Int = target.componentCount
+            for (i in 0..<nmembers) {
                 val m: Component = target.getComponent(i)
                 if (m.isVisible) {
                     val d = if (preferred) m.preferredSize else m.minimumSize
@@ -146,7 +126,7 @@ class WrapLayout : FlowLayout {
 	 *  @param rowHeight the height of the row to add
 	 */
     private fun addRow(dim: Dimension, rowWidth: Int, rowHeight: Int) {
-        dim.width = Math.max(dim.width, rowWidth)
+        dim.width = dim.width.coerceAtLeast(rowWidth)
         if (dim.height > 0) {
             dim.height += vgap
         }
