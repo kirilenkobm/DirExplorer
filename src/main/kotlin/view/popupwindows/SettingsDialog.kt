@@ -1,5 +1,6 @@
 package view.popupwindows
 
+import Constants
 import state.ColorTheme
 import state.Language
 import state.Settings
@@ -19,7 +20,7 @@ import javax.swing.*
  */
 class SettingsDialog: JDialog()  {
     init {
-        val bundle = ResourceBundle.getBundle("languages/Messages", Settings.language.getLocale())
+        val bundle = ResourceBundle.getBundle(Constants.LANGUAGE_BUNDLE_PATH, Settings.language.getLocale())
         title = bundle.getString("Settings")
         layout = GridLayout(0, 1)
 

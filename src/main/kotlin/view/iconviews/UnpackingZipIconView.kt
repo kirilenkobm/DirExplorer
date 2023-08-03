@@ -10,7 +10,6 @@ import java.awt.Insets
 class UnpackingZipIconView(
     entity: UnknownEntity,
 ) : AbstractIconEntityView(entity) {
-
     private val spinningCircle = SpinningCircle()
 
     init {

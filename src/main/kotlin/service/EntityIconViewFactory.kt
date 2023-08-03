@@ -1,7 +1,10 @@
 package service
 
+import Constants
 import model.*
+import state.Settings
 import view.iconviews.*
+import java.util.*
 import javax.swing.JPanel
 
 /**
@@ -42,7 +45,9 @@ object EntityIconViewFactory {
 
     // TODO: It is a very dirty workaround
     fun makeZipLoadingSpinner(): JPanel {
-        val mockEntity = UnknownEntity("Unpacking zip...")
+        val bundle =
+            ResourceBundle.getBundle(Constants.LANGUAGE_BUNDLE_PATH, Settings.language.getLocale())
+        val mockEntity = UnknownEntity(bundle.getString("UnpackingZip"))
         return UnpackingZipIconView(mockEntity).createView()
     }
 }

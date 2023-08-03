@@ -1,5 +1,6 @@
 package view.customcomponents
 
+import state.Settings
 import java.awt.BasicStroke
 import java.awt.Color
 import java.awt.Dimension
@@ -10,7 +11,10 @@ import javax.swing.Timer
 import javax.swing.JPanel
 import kotlin.math.min
 
-
+/**
+ * The SpinningCircle class extends JPanel to create a loading spinner.
+ * This spinner is used to visually indicate that a zip archive is currently unpacking.
+ */
 class SpinningCircle : JPanel() {
     private var angle = 360.0
 
@@ -21,7 +25,7 @@ class SpinningCircle : JPanel() {
     }
 
     override fun getPreferredSize(): Dimension {
-        return Dimension(72, 72)
+        return Dimension(Settings.iconSize, Settings.iconSize)
     }
 
     override fun paintComponent(g: Graphics) {
