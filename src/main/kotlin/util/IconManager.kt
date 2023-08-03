@@ -48,6 +48,7 @@ object IconManager: SettingsObserver {
     lateinit var ellipsisIcon: ImageIcon
     lateinit var backSpaceIcon: ImageIcon
     lateinit var windowsThisPCIcon: ImageIcon
+    lateinit var binaryIcon: ImageIcon
 
     private fun loadImageIcon(path: String): ImageIcon {
         val originalIcon = ImageIcon(javaClass.getResource(path))
@@ -106,16 +107,27 @@ object IconManager: SettingsObserver {
         ellipsisIcon = loadImageIcon("/images/baseline_more_horiz_black_24dp.png")
         backSpaceIcon = loadImageIcon("/images/baseline_backspace_black_18dp.png")
         windowsThisPCIcon = loadImageIcon("/images/outline_laptop_windows_black_18dp.png")
+        binaryIcon = loadImageIcon("/images/baseline_settings_applications_black_36dp.png")
     }
 
     fun getIconForFileType(fileType: String): ImageIcon {
+        val archiveTypes = setOf(
+            "application/x-freearc",
+            "application/x-bzip",
+            "application/x-bzip2",
+            "application/x-tar",
+            "application/x-7z-compressed",
+            "application/gzip",
+            // "application/zip"  // in fact, zip is handled by ZipArchive entity
+        )
+
         return when {
             fileType.startsWith("image/") -> imageIcon
             fileType.startsWith("video/") -> movieIcon
             fileType == "application/pdf" -> pdfIcon
             fileType.startsWith("audio/") -> audioFileIcon
-            fileType.startsWith("application/x-") -> folderArchiveIcon
-            fileType == "application/gzip" -> folderArchiveIcon
+            archiveTypes.contains(fileType) -> folderArchiveIcon
+            fileType.startsWith("application/x-") -> binaryIcon
             else -> fileIcon
         }
     }
