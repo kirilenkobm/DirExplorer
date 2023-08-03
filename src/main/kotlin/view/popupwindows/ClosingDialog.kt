@@ -18,7 +18,7 @@ import javax.swing.SwingUtilities
  * too long.
  */
 fun showClosingDialog(parent: JFrame) {
-    var bundle = ResourceBundle.getBundle(Constants.LANGUAGE_BUNDLE_PATH, Settings.language.getLocale())
+    val bundle = ResourceBundle.getBundle(Constants.LANGUAGE_BUNDLE_PATH, Settings.language.getLocale())
 
     SwingUtilities.invokeLater {
         val dialog = JDialog(parent, "Application is closing", true)

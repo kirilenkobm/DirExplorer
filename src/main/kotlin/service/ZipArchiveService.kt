@@ -5,6 +5,8 @@ import model.ExplorerDirectory
 import model.ZipArchive
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import state.AppState
 import state.Settings
 import view.popupwindows.showErrorDialog
@@ -35,9 +37,10 @@ class ZipArchiveService(private val zipEntity: ZipArchive): CoroutineScope {
     private val job = Job()
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.IO + job
-    private var tempDirName: String? = null
+    var tempDirName: String? = null
     val extractionStatus = MutableStateFlow(ZipExtractionStatus.NOT_YET_STARTED)
-
+    private var wasCleanedUp = false
+    private val cleanupMutex = Mutex()
     /**
      * Remove temp dir if it's no longer needed.
      * If they are not in the back or forward stack.
@@ -51,7 +54,8 @@ class ZipArchiveService(private val zipEntity: ZipArchive): CoroutineScope {
             val isInForwardStack = AppState.forwardStack.any { it.path.startsWith(tempDir.toString()) }
 
             // if not in this dir, not in all stakes: cleanup
-            if (!isHereRightNow && !isInBackStack && !isInForwardStack) {
+            if (!isHereRightNow && !isInBackStack && !isInForwardStack && !wasCleanedUp) {
+                wasCleanedUp = true
                 cleanup()  // and do not forget to exclude them from caches:
                 AppState.zipPathToTempDir.remove(zipEntity.path)
                 AppState.tempZipDirToNameMapping.remove(tempDirName)
@@ -130,26 +134,42 @@ class ZipArchiveService(private val zipEntity: ZipArchive): CoroutineScope {
         return zipEntity.tempDir
     }
 
-    fun cleanup() {
-        job.cancel()  // cancel the coroutine
-        AppState.markObserverForRemoval(observer)
-        // Delete the temp directory -> to be called once I left a zip file
-        zipEntity.tempDir?.let { dir ->
-            println("Cleaning up zip directory $dir")
-            Files.walkFileTree(dir, object : SimpleFileVisitor<Path>() {
-                // TODO: check safety of this solution
-                override fun visitFile(file: Path, attrs: BasicFileAttributes?): FileVisitResult {
-                    Files.delete(file)
-                    return FileVisitResult.CONTINUE
-                }
+    fun cleanup(): Deferred<Unit> {
+        job.cancel()  // cancel the original coroutine
 
-                override fun postVisitDirectory(dir: Path, exc: IOException?): FileVisitResult {
-                    Files.delete(dir)
-                    return FileVisitResult.CONTINUE
+        val cleanupJob = Job()  // create a new job for the cleanup operation
+        AppState.markObserverForRemoval(observer)
+        println("Trying to cleanup $tempDirName")
+        // Launch a new coroutine on the IO dispatcher
+        // Delete the temp directory -> to be called once I left a zip file
+        return async(Dispatchers.IO + cleanupJob) {
+            print("Entered the coroutine")
+            zipEntity.tempDir?.let { dir ->
+                cleanupMutex.withLock {
+                    println("With lock")
+                    try {
+                        println("walking dir")
+                        Files.walkFileTree(dir, object : SimpleFileVisitor<Path>() {
+                            override fun visitFile(file: Path, attrs: BasicFileAttributes?): FileVisitResult {
+                                Files.deleteIfExists(file)
+                                return FileVisitResult.CONTINUE
+                            }
+
+                            override fun postVisitDirectory(dir: Path, exc: IOException?): FileVisitResult {
+                                Files.deleteIfExists(dir)
+                                return FileVisitResult.CONTINUE
+                            }
+                        })
+                    } catch (e: IOException) {
+                        println("Failed to delete file: ${e.message}")
+                    } finally {
+                        // Once the file deletion is done, update the UI on the main thread
+                        zipEntity.tempDir = null
+                        AppState.zipServices.remove(this@ZipArchiveService)
+                        println("Cleanup finished for $tempDirName")
+                    }
                 }
-            })
+            }
         }
-        zipEntity.tempDir = null
-        AppState.zipServices.remove(this)
     }
 }

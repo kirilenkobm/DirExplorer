@@ -1,5 +1,6 @@
 package service
 
+import Constants
 import kotlinx.coroutines.sync.Semaphore
 
 /**
@@ -17,4 +18,5 @@ object SemaphoreManager {
     val imagePreviewsSemaphore = Semaphore(Constants.MAX_IMAGE_PREVIEWS)  // 2
     val textPreviewsSemaphore = Semaphore(Constants.MAX_TEXT_PREVIEWS)  // 10 - lightweight jobs
     val zipUnpackSemaphore = Semaphore(Constants.MAX_UNZIPPED_DIRS)  // 1
+    // val zipCleanupSemaphore = Semaphore(Constants.MAX_UNZIPPED_DIRS) // 1
 }

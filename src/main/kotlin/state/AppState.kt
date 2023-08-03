@@ -1,11 +1,13 @@
 package state
 
+import kotlinx.coroutines.runBlocking
 import model.*
 import service.ZipArchiveService
 import service.ZipExtractionStatus
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.CopyOnWriteArrayList
 
 /**
  * Singleton object representing the application state.
@@ -37,13 +39,13 @@ object AppState {
     var backStack: MutableList<ExplorableEntity> = mutableListOf()
     var forwardStack: MutableList<ExplorableEntity> = mutableListOf()
 
-    private val directoryObservers: MutableList<DirectoryObserver> = mutableListOf()
-    private val observersToRemove: MutableList<DirectoryObserver> = mutableListOf()
+    private val directoryObservers: CopyOnWriteArrayList<DirectoryObserver> = CopyOnWriteArrayList<DirectoryObserver>()
+    private val observersToRemove: CopyOnWriteArrayList<DirectoryObserver> = CopyOnWriteArrayList<DirectoryObserver>()
 
     // Track all zipArchives that were present during the session to remove
     // all temp directories which could be forgotten when the app closes
     // Or if the app was closed in a zip Archive
-    val zipServices: MutableList<ZipArchiveService> = mutableListOf()
+    val zipServices: MutableSet<ZipArchiveService> = mutableSetOf()
     // Mappings needed to replace zipTempDir names to zip Filenames in the address bar
     // Or to get the respective zipService instance if need be
     // TODO: might be better to add something like "shown name" for ExplorableEntity
@@ -105,10 +107,10 @@ object AppState {
     /**
      * Go through the current path and check whether it includes zip files or not.
      */
-    fun insideZip(): Boolean {
-        val path = Paths.get(currentExplorerDirectory.path)
-        return path.any { tempZipDirToNameMapping[it.toString()] != null }
-    }
+//    fun insideZip(): Boolean {
+//        val path = Paths.get(currentExplorerDirectory.path)
+//        return path.any { tempZipDirToNameMapping[it.toString()] != null }
+//    }
 
     /**
      * Return the respective ZipArchiveService for the current directory if exists.
@@ -161,8 +163,16 @@ object AppState {
     fun cleanupAllZipArchives() {
         // to avoid ConcurrentModificationException
         val zipArchivesCopy = ArrayList(zipServices)
-        zipArchivesCopy.forEach { it.cleanup() }
+        runBlocking {
+            println("Run blocking")
+            zipArchivesCopy.forEach {
+                println("Called cleanup for object: ${it.tempDirName}")
+                val cleanupDeferred = it.cleanup()
+                cleanupDeferred.await()
+            }
+        }
     }
+
 
     fun refreshCurrentDirectory() {
         currentExplorerDirectory.invalidateCache()

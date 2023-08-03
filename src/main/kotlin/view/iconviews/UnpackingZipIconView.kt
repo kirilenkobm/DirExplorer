@@ -1,6 +1,6 @@
 package view.iconviews
 
-import model.UnknownEntity
+import model.ServiceEntity
 import view.customcomponents.SpinningCircle
 import java.awt.Dimension
 import java.awt.GridBagConstraints
@@ -8,7 +8,7 @@ import java.awt.Insets
 
 
 class UnpackingZipIconView(
-    entity: UnknownEntity,
+    entity: ServiceEntity,
 ) : AbstractIconEntityView(entity) {
     private val spinningCircle = SpinningCircle()
 

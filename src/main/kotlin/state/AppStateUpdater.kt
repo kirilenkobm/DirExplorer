@@ -40,9 +40,6 @@ object AppStateUpdater {
             // Error occurred: show a message and recover the original state
             handleInvalidPath(newExplorerDirectory, oldDirectoryInCaseOfError)
         }
-        AppState.backStack.forEach { explorableEntity ->
-            println(explorableEntity.path)
-        }
     }
 
     private fun isValidDirectory(entity: ExplorableEntity): Boolean {

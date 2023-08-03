@@ -28,11 +28,11 @@ open class ExplorerDirectory(override val path: String): ExplorableEntity {
         mutex.withLock {
             try {
                 contentsCache?.let {
-                    println("Using cached contents for directory $path")
+                    // println("Using cached contents for directory $path")
                     return@withContext it
                 }
 
-                println("Fetching new contents for directory $path")
+                // println("Fetching new contents for directory $path")
                 contentsCache = Files.list(Paths.get(path)).asSequence().mapNotNull { path ->
                     FileSystemEntityFactory.createEntity(path.toString())
                 }.toList()
