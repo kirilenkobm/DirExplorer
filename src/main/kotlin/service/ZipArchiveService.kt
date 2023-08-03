@@ -139,16 +139,15 @@ class ZipArchiveService(private val zipEntity: ZipArchive): CoroutineScope {
 
         val cleanupJob = Job()  // create a new job for the cleanup operation
         AppState.markObserverForRemoval(observer)
-        println("Trying to cleanup $tempDirName")
+        println("Cleaning up cleanup $tempDirName")
         // Launch a new coroutine on the IO dispatcher
         // Delete the temp directory -> to be called once I left a zip file
         return async(Dispatchers.IO + cleanupJob) {
-            print("Entered the coroutine")
             zipEntity.tempDir?.let { dir ->
+                // in case cleanup was called twice
+                // then two processes get almost the same set of files
                 cleanupMutex.withLock {
-                    println("With lock")
                     try {
-                        println("walking dir")
                         Files.walkFileTree(dir, object : SimpleFileVisitor<Path>() {
                             override fun visitFile(file: Path, attrs: BasicFileAttributes?): FileVisitResult {
                                 Files.deleteIfExists(file)
