@@ -9,6 +9,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import state.AppState
 import state.Settings
+import util.SystemRelatedValues
 import view.popupwindows.showErrorDialog
 import java.io.IOException
 import java.nio.file.*
@@ -78,7 +79,7 @@ class ZipArchiveService(private val zipEntity: ZipArchive): CoroutineScope {
         AppState.tempZipDirToNameMapping[tempDirName!!] = Paths.get(zipEntity.path).fileName.toString()
         AppState.tempZipDirToServiceMapping[tempDirName!!] = this
 
-        if (Settings.isWindows) {
+        if (SystemRelatedValues.isWindows) {
             // On Windows: .name is not enough, need to set the 'hidden' attribute
             Files.setAttribute(zipEntity.tempDir!!, "dos:hidden", true, LinkOption.NOFOLLOW_LINKS)
         }
@@ -111,11 +112,17 @@ class ZipArchiveService(private val zipEntity: ZipArchive): CoroutineScope {
                         // Refresh the directory if more than 500ms have passed since the last refresh
                         val currentTime = System.currentTimeMillis()
                         if (currentTime - lastRefreshTime > refreshDelay) {
-                            AppState.refreshCurrentDirectory()
-                            lastRefreshTime = currentTime
-                            // increase delay by 20% after each refresh
-                            // so that I don't get system overloaded on big archives
-                            refreshDelay = (refreshDelay * 1.2).toLong()
+                            val currentService = AppState.getZipServiceForDirectory()
+                            if (currentService == this@ZipArchiveService) {
+                                println("Depends on this service")
+                                // However, refresh iff the current directory depends on this
+                                // particular zipArchiveService
+                                AppState.refreshCurrentDirectory()
+                                lastRefreshTime = currentTime
+                                // increase delay by 20% after each refresh
+                                // so that I don't get system overloaded on big archives
+                                refreshDelay = (refreshDelay * 1.2).toLong()
+                            }
                         }
                     }
                 }

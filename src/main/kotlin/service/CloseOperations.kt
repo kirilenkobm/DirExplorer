@@ -1,5 +1,6 @@
 package service
 
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import state.AppState
@@ -10,7 +11,9 @@ import kotlin.system.exitProcess
 /**
  * Operations that are performed at the very end of the app's lifecycle.
  */
+@OptIn(DelicateCoroutinesApi::class)
 fun performClosingOperations() {
+    AppState.sendToVoid()
     // Stop current directory watcher so that UI is not triggered by next step
     CurrentDirectoryContentWatcher.stopWatching()
     // dump settings for the next session

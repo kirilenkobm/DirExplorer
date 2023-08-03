@@ -4,6 +4,7 @@ import kotlinx.coroutines.runBlocking
 import model.*
 import service.ZipArchiveService
 import service.ZipExtractionStatus
+import util.SystemRelatedValues
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.concurrent.ConcurrentHashMap
@@ -173,6 +174,14 @@ object AppState {
         }
     }
 
+    /**
+     * Function to send the app into an empty service dir.
+     * Can be helpful to handle situations like closing the app.
+     * The service dir always returns empty list on the getContents()
+     */
+    fun sendToVoid() {
+        currentExplorerDirectory = ServiceDir(SystemRelatedValues.rootDir.toString())
+    }
 
     fun refreshCurrentDirectory() {
         currentExplorerDirectory.invalidateCache()

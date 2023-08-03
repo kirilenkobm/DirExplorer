@@ -8,6 +8,7 @@ import state.AppStateUpdater
 import state.ColorTheme
 import state.Settings
 import util.IconManager
+import util.SystemRelatedValues
 import java.awt.*
 import java.awt.event.ActionListener
 import java.awt.event.MouseAdapter
@@ -106,7 +107,7 @@ class AddressBarView: DirectoryObserver {
         val components = ArrayList<Component>()
 
         // On Windows, add a computer icon button that shows a dropdown menu of drives
-        if (Settings.isWindows) {
+        if (SystemRelatedValues.isWindows) {
             val computerButton = createWindowsThisPCButton()
             val separatorLabel = JLabel(IconManager.chevronRightIcon)
             createDriveMenuForWindows(computerButton)
@@ -115,7 +116,7 @@ class AddressBarView: DirectoryObserver {
         }
 
         val path = Paths.get(AppState.currentExplorerDirectory.path)
-        val rootPath = path.root
+        val rootPath = SystemRelatedValues.rootDir
         var currentPath = rootPath // start with the root of the path
         val rootButton = createAddressBarButton(rootPath.toString(), rootPath)
 
@@ -146,7 +147,7 @@ class AddressBarView: DirectoryObserver {
         if (addressBarWidth in 1..<totalWidth) {
 
             var prefferedStartComponentsNum = Constants.ADDRESS_BAR_PREFERRED_NUM_START_ELEMS
-            if (Settings.isWindows) {
+            if (SystemRelatedValues.isWindows) {
                 prefferedStartComponentsNum += 2
             }
 
