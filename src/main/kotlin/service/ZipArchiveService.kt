@@ -74,7 +74,7 @@ class ZipArchiveService(private val zipEntity: ZipArchive): CoroutineScope {
     fun startExtraction(): Path? {
         val parentDir = Paths.get(zipEntity.path).parent
         // create hidden temp directory
-        tempDirName = ".${Paths.get(zipEntity.path).fileName}_${UUID.randomUUID().toString().take(6)}"
+        tempDirName = ".${Paths.get(zipEntity.path).fileName}_${UUID.randomUUID().toString().take(8)}"
         zipEntity.tempDir = Files.createDirectory(parentDir.resolve(tempDirName!!))
         AppState.tempZipDirToNameMapping[tempDirName!!] = Paths.get(zipEntity.path).fileName.toString()
         AppState.tempZipDirToServiceMapping[tempDirName!!] = this
@@ -114,7 +114,6 @@ class ZipArchiveService(private val zipEntity: ZipArchive): CoroutineScope {
                         if (currentTime - lastRefreshTime > refreshDelay) {
                             val currentService = AppState.getZipServiceForDirectory()
                             if (currentService == this@ZipArchiveService) {
-                                println("Depends on this service")
                                 // However, refresh iff the current directory depends on this
                                 // particular zipArchiveService
                                 AppState.refreshCurrentDirectory()
