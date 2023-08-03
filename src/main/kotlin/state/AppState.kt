@@ -113,7 +113,7 @@ object AppState {
     /**
      * Return the respective ZipArchiveService for the current directory if exists.
      */
-    private fun getZipServiceForDirectory(): ZipArchiveService? {
+    fun getZipServiceForDirectory(): ZipArchiveService? {
         val path = Paths.get(currentExplorerDirectory.path)
         // Find the temp directory name in the path
         val tempDirName = path.firstOrNull { tempZipDirToNameMapping.containsKey(it.toString()) }

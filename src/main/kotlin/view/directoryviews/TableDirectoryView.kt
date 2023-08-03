@@ -6,7 +6,6 @@ import kotlinx.coroutines.launch
 import service.DirectoryContentService
 import service.EntityActionsHandler
 import service.TableItemsMapper
-import service.ZipExtractionStatus
 import state.*
 import java.awt.Color
 import java.awt.Component

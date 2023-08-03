@@ -6,11 +6,14 @@ import model.ZipArchive
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import state.AppState
+import view.popupwindows.showErrorDialog
 import java.io.IOException
 import java.nio.file.*
 import java.nio.file.attribute.BasicFileAttributes
 import java.util.*
+import java.util.zip.ZipException
 import java.util.zip.ZipFile
+import javax.swing.SwingUtilities
 import kotlin.coroutines.CoroutineContext
 
 /**
@@ -111,8 +114,14 @@ class ZipArchiveService(private val zipEntity: ZipArchive): CoroutineScope {
                         }
                     }
                 }
-            } finally {
                 extractionStatus.value = ZipExtractionStatus.DONE
+            } catch (e: ZipException) {
+                println("Failed to extract zip file due to: ${e.message}")
+                extractionStatus.value = ZipExtractionStatus.FAILED
+                SwingUtilities.invokeLater {
+                    showErrorDialog("Failed to extract zip file due to: ${e.message}")
+                }
+            } finally {
                 AppState.refreshCurrentDirectory()
                 zipUnpackSemaphore.release()
             }

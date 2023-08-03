@@ -4,6 +4,7 @@ import Constants
 import model.DirectoryObserver
 import model.ExplorerDirectory
 import kotlinx.coroutines.*
+import service.ZipExtractionStatus
 import state.*
 import util.Utils
 import java.awt.BorderLayout
@@ -56,12 +57,27 @@ class StatusBarView : JPanel(), CoroutineScope, DirectoryObserver, SettingsObser
     }
 
     private fun updateAdditionalData() {
-        additionalLabel.text = "${getHiddenFilesLabel()} ${getZipLabel()}"
+        val zipLabel = getZipLabel()
+        val hiddenFilesLabel = getHiddenFilesLabel()
+
+        // Add a | separator if both labels are defined
+        val labels = listOf(zipLabel, hiddenFilesLabel).filter { it.isNotBlank() }
+        additionalLabel.text = labels.joinToString(" | ")
     }
 
     private fun getHiddenFilesLabel() = if (Settings.showHiddenFiles) bundle.getString("ShowHidden") else ""
 
-    private fun getZipLabel() = if (AppState.insideZip()) bundle.getString("InsideZip") else ""
+    private fun getZipLabel(): String {
+        // Check whether inside a zip archive
+        val currentZipService = AppState.getZipServiceForDirectory() ?: return ""
+        return when (currentZipService.extractionStatus.value) {
+            ZipExtractionStatus.IN_PROGRESS -> bundle.getString("UnpackingZip")
+            ZipExtractionStatus.DONE -> bundle.getString("InsideZip")
+            ZipExtractionStatus.FAILED -> bundle.getString("ErrorUnpacking")
+            ZipExtractionStatus.UNDEFINED -> bundle.getString("UnknownUnpacking")
+            ZipExtractionStatus.NOT_YET_STARTED -> bundle.getString("UnpackingNotStarted")
+        }
+    }
 
     private fun updateStatus(itemsCount: Int?, totalSize: Long?) {
         if (itemsCount == null || totalSize == null) {
