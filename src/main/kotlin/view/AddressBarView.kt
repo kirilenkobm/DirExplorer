@@ -8,13 +8,18 @@ import state.ColorTheme
 import state.Settings
 import util.IconManager
 import java.awt.*
+import java.awt.event.MouseAdapter
+import java.awt.event.MouseEvent
+import java.io.File
 import java.nio.file.Path
 import java.nio.file.Paths
 import javax.swing.BorderFactory
 import javax.swing.Box
 import javax.swing.JButton
 import javax.swing.JLabel
+import javax.swing.JMenuItem
 import javax.swing.JPanel
+import javax.swing.JPopupMenu
 import javax.swing.SwingConstants
 import kotlin.math.max
 import kotlin.math.min
@@ -64,6 +69,10 @@ class AddressBarView: DirectoryObserver {
         }
     }
 
+    private fun createDropDownForWindows() {
+
+    }
+
     fun updateView() {
         addressBar.removeAll()
         addressBar.layout = GridBagLayout()
@@ -77,6 +86,24 @@ class AddressBarView: DirectoryObserver {
         var currentPath = rootPath // start with the root of the path
         val rootButton = createAddressBarButton(rootPath.toString(), rootPath)
         components.add(rootButton)
+
+        // On Windows, add a dropdown menu to the root button that lists all drives
+        // TODO: refactor if works
+        if (System.getProperty("os.name").startsWith("Windows")) {
+            val driveMenu = JPopupMenu()
+            File.listRoots().forEach { drive ->
+                val driveItem = JMenuItem(drive.absolutePath)
+                driveItem.addActionListener {
+                    AppStateUpdater.updateDirectory(ExplorerDirectory(drive.absolutePath))
+                }
+                driveMenu.add(driveItem)
+            }
+            rootButton.addMouseListener(object : MouseAdapter() {
+                override fun mousePressed(e: MouseEvent) {
+                    driveMenu.show(e.component, e.x, e.y)
+                }
+            })
+        }
 
         constraints.weightx = 0.0 // set weightx to 0 for buttons
         constraints.fill = GridBagConstraints.NONE // do not resize buttons
