@@ -37,7 +37,7 @@ abstract class AbstractIconEntityView(
         alignmentX = Component.CENTER_ALIGNMENT
     }
 
-    private val textLabel = JLabel().apply {
+    val textLabel = JLabel().apply {
         horizontalAlignment = SwingConstants.CENTER
         alignmentX = Component.CENTER_ALIGNMENT
     }
@@ -52,7 +52,7 @@ abstract class AbstractIconEntityView(
         add(textLabel, BorderLayout.NORTH)
     }
 
-    private val entityPanel = JPanel(GridBagLayout()).apply {
+    val entityPanel = JPanel(GridBagLayout()).apply {
         val constraints = GridBagConstraints()
 
         // Constraints for iconLabel
@@ -108,10 +108,10 @@ abstract class AbstractIconEntityView(
 
     protected abstract fun setIcon()
 
-    fun createView(): JPanel {
-        setIcon()
+    internal open fun createView(): JPanel {
         textLabel.text = Utils.getFilenameForIcon(entity.name)
         textLabel.foreground = if (Settings.colorTheme == ColorTheme.LIGHT) Color.BLACK else Color.WHITE
+        setIcon()
         return wrapperPanel
     }
 

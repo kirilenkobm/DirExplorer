@@ -3,16 +3,14 @@ package view.directoryviews
 import Constants
 import model.*
 import kotlinx.coroutines.launch
-import service.DirectoryContentService
-import service.EntityIconViewFactory
-import service.ThumbnailJobController
+import service.*
 import state.*
+import view.customcomponents.CustomScrollPane
 import view.customcomponents.WrapLayout
 import java.awt.*
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
 import javax.swing.JPanel
-import javax.swing.JScrollPane
 import javax.swing.SwingUtilities
 
 /**
@@ -41,9 +39,6 @@ class GridDirectoryView : AbstractDirectoryView() {
         })
     }
 
-    /**
-     * Update number of columns according to the view width
-     */
     private fun updateLayout() {
         gridPanel.removeAll()
         gridPanel.revalidate()
@@ -73,6 +68,14 @@ class GridDirectoryView : AbstractDirectoryView() {
             gridPanel.add(entityIcon)
         }
 
+        // if inside zip: check whether the respective service (if exists)
+        // has the unpack status IN_PROGRESS -> then show spinner
+        if (AppState.isZipSpinnerNeeded()) {
+            val spinner = EntityIconViewFactory.makeZipLoadingSpinner()
+            spinner.isOpaque = false
+            gridPanel.add(spinner)
+        }
+
         gridPanel.revalidate()
         gridPanel.repaint()
     }
@@ -83,10 +86,11 @@ class GridDirectoryView : AbstractDirectoryView() {
      * at rare occasion. ? to avoid NullPointerException
      */
     private fun revalidateAndRepaintScrollPane() {
-        if (gridPanel.parent?.parent is JScrollPane) {
-            (gridPanel.parent?.parent as JScrollPane?)?.apply {
+        if (gridPanel.parent?.parent is CustomScrollPane) {
+            (gridPanel.parent?.parent as CustomScrollPane?)?.apply {
                 revalidate()
                 repaint()
+                updatePreferredSize()
             }
         }
     }

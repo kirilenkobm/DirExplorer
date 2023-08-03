@@ -86,8 +86,10 @@ class MainView: DirectoryObserver, SettingsObserver {
      * No need to do anything here if the child views will update
      * themselves independently because they also implement the DirectoryObserver interface
      */
-    override fun onDirectoryChanged(newDirectory: ExplorerDirectory) { }
-
+    override fun onDirectoryChanged(newDirectory: ExplorerDirectory) {
+        // Reset scroll position
+        (mainPanel.getComponent(0) as JScrollPane).viewport.viewPosition = Point(0, 0)
+    }
     // not applicable
     override fun onShowHiddenFilesChanged(newShowHiddenFiles: Boolean) {}
 

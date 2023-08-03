@@ -30,7 +30,6 @@ class UtilsTest {
         assertEquals(dateFormat.format(Date(currentUnixTime)), Utils.formatDate(currentUnixTime))
         println(Utils.formatDate(2690677720954L))
         println(Utils.formatDate(2000000000000000L))
-
     }
 
     @Test
