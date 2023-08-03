@@ -55,6 +55,8 @@
 
 * ~~Status bar: shows whether hidden files are shown and whether inside a zip~~
 * ~~Dark and light theme~~
+* On Windows - another service entity for dir containing disks, etc
+* addShutdownHook - if deleting huge archives, show some popup or delete in the background
 
 # Won't do at first iter
 
@@ -65,8 +67,8 @@
 
 # First round of revision
 
-* Zip archives showing content only after re-entry
-* Keeping tests in order
+* ~~Zip archives showing content only after re-entry~~ ?
+* ~~Keeping tests in order~~
 * ~~The scroll position does not change when switching directories~~
 * ~~java.util.ConcurrentModificationException in ThumbnailJobController~~
 * ~~Fix build.gradle~~
