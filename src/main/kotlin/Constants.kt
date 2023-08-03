@@ -1,3 +1,4 @@
+import state.Settings
 import java.awt.Color
 import javax.swing.UIManager
 
@@ -9,13 +10,19 @@ import javax.swing.UIManager
  * such as color schemes, view constraints, and table and grid view settings.
  */
 object Constants {
-    // TODO: move all more or less meaningful constants here
+
     const val HISTORY_SIZE: Int = 10  // back and forth stack sizes
-    const val ELLIPSIS_LABEL = "  ...  "
+
 
     const val UNKNOWN_FILE_TYPE = "unknown"
     const val UNKNOWN_FILE_SIZE = 0L
     const val UNKNOWN_TIME = 0L
+
+    // Address bar related
+    const val ELLIPSIS_LABEL = "  ...  "
+    const val ADDRESS_BAR_PREFERRED_NUM_START_ELEMS = 6
+    const val ADDRESS_BAR_PREFERRED_NUM_END_ELEMS = 6
+
 
     // Color-related constants
     val BACKGROUND_COLOR_LIGHT = Color(255, 255, 255, 255)

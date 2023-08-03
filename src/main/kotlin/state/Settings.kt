@@ -21,6 +21,8 @@ import java.util.Properties
 object Settings {
     private const val SETTINGS_FILE = "settings.properties"
     private val observers: MutableList<SettingsObserver> = mutableListOf()
+    // Not sure whether belongs to settings
+    val isWindows = (System.getProperty("os.name").startsWith("Windows"))
 
     var showHiddenFiles: Boolean = false
         set(value) {

@@ -74,7 +74,7 @@ class ZipArchiveService(private val zipEntity: ZipArchive): CoroutineScope {
         AppState.tempZipDirToNameMapping[tempDirName!!] = Paths.get(zipEntity.path).fileName.toString()
         AppState.tempZipDirToServiceMapping[tempDirName!!] = this
 
-        if (System.getProperty("os.name").startsWith("Windows")) {
+        if (Settings.isWindows) {
             // On Windows: .name is not enough, need to set the 'hidden' attribute
             Files.setAttribute(zipEntity.tempDir!!, "dos:hidden", true, LinkOption.NOFOLLOW_LINKS)
         }
