@@ -85,7 +85,6 @@ class AddressBarView: DirectoryObserver {
         val rootPath = path.root
         var currentPath = rootPath // start with the root of the path
         val rootButton = createAddressBarButton(rootPath.toString(), rootPath)
-        components.add(rootButton)
 
         // On Windows, add a dropdown menu to the root button that lists all drives
         // TODO: refactor if works
@@ -105,6 +104,7 @@ class AddressBarView: DirectoryObserver {
             })
         }
 
+        components.add(rootButton)
         constraints.weightx = 0.0 // set weightx to 0 for buttons
         constraints.fill = GridBagConstraints.NONE // do not resize buttons
         // adjust the right inset to reduce the space after the button
