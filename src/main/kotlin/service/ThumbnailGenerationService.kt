@@ -135,11 +135,14 @@ class ThumbnailGenerationService(
         g.fillRect(0, 0, Settings.iconSize, Settings.iconSize)
         g.color = Color.BLACK
         g.font = g.font.deriveFont(Constants.TEXT_PREVIEW_TEXT_SIZE)
+        // Enable anti-aliasing and subpixel rendering
+        g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON)
+        g.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON)
 
         val lines = previewText.split("\n")
-        for ((index, line) in lines.withIndex()) {
+        for ((index, textLine) in lines.withIndex()) {
             g.drawString(
-                line,
+                textLine,
                 Constants.TEXT_PREVIEW_INIT_XY_OFFSET,
                 Constants.TEXT_PREVIEW_INIT_XY_OFFSET + index * Constants.TEXT_PREVIEW_LINES_INTERVAL)
         }
@@ -174,7 +177,11 @@ class ThumbnailGenerationService(
         }
     }
 
-    // TODO: either fix or wipe out
+    /**
+     * Generates thumbnail for an image file.
+     * Creates a reader, (if needed) down-samples the image, and then
+     * loads it and resizes appropriately.
+     */
     internal fun createImageThumbnail(): Icon? {
         try {
             val file = File(fileEntity.path)
@@ -262,6 +269,7 @@ class ThumbnailGenerationService(
         g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC)
         g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY)
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
+        g.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY)
 
         g.drawImage(image, 0, 0, newWidth, newHeight, null)
         g.dispose()

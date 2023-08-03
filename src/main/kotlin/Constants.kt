@@ -65,7 +65,7 @@ object Constants {
 
     //// Text previews
     const val TEXT_PREVIEW_INIT_XY_OFFSET = 4
-    const val TEXT_PREVIEW_TEXT_SIZE = 6f
+    const val TEXT_PREVIEW_TEXT_SIZE = 7f
     const val TEXT_PREVIEW_LINES_INTERVAL = 7
     const val TEXT_PREVIEW_NUM_LINES_TO_TAKE = 10
 

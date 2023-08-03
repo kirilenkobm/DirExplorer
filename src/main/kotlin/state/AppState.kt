@@ -49,7 +49,7 @@ object AppState {
     val zipServices: MutableSet<ZipArchiveService> = mutableSetOf()
     // Mappings needed to replace zipTempDir names to zip Filenames in the address bar
     // Or to get the respective zipService instance if need be
-    // TODO: might be better to add something like "shown name" for ExplorableEntity
+    // IDEA: might be better to add something like "shown name" for ExplorableEntity
     // for better encapsulation, and add something like actualPath value so that app can enter
     // ZipEntity directly, without need to create a temporary ExplorerDirectory instance.
     val tempZipDirToNameMapping = ConcurrentHashMap<String, String>()
