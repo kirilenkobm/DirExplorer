@@ -36,7 +36,7 @@ object Settings {
             observers.forEach { it.onViewModeChanged(value) }
         }
 
-    var colorTheme: ColorTheme = ColorTheme.DARK
+    var colorTheme: ColorTheme = ColorTheme.LIGHT
         set(value) {
             field = value
             observers.forEach { it.onColorThemeChanged(value) }

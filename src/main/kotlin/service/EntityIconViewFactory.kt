@@ -43,11 +43,11 @@ object EntityIconViewFactory {
         return UnknownIconView(unknownEntity).createView()
     }
 
-    // TODO: It is a very dirty workaround
     fun makeZipLoadingSpinner(): JPanel {
         val bundle =
             ResourceBundle.getBundle(Constants.LANGUAGE_BUNDLE_PATH, Settings.language.getLocale())
-        val mockEntity = UnknownEntity(bundle.getString("UnpackingZip"))
+        // using mock entity to reuse the abstract icon view class
+        val mockEntity = ServiceEntity(bundle.getString("UnpackingZip"))
         return UnpackingZipIconView(mockEntity).createView()
     }
 }

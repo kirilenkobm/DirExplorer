@@ -3,12 +3,16 @@ package view
 import Constants
 import model.DirectoryObserver
 import model.ExplorerDirectory
+import service.performClosingOperations
 import state.*
 import util.PopupViewThemeManager
 import view.customcomponents.CustomScrollPane
 import view.directoryviews.GridDirectoryView
 import view.directoryviews.TableDirectoryView
+import view.popupwindows.showClosingDialog
 import java.awt.*
+import java.awt.event.WindowAdapter
+import java.awt.event.WindowEvent
 import javax.swing.JFrame
 import javax.swing.JPanel
 import javax.swing.JScrollPane
@@ -41,8 +45,17 @@ class MainView: DirectoryObserver, SettingsObserver {
     }
 
     private fun setupFrame() {
-        frame.defaultCloseOperation = JFrame.EXIT_ON_CLOSE
-        mainPanel.preferredSize = Dimension(Constants.PREFERRED_WIDTH, 960)
+        frame.defaultCloseOperation = JFrame.DO_NOTHING_ON_CLOSE
+        // I override the standard app closing behaviour such that user is notified if
+        // deleting temporary archives takes some time. Otherwise, it feels like the UI
+        // freezes after click on the x button, if temporary directories are big.
+        frame.addWindowListener(object : WindowAdapter() {
+            override fun windowClosing(e: WindowEvent?) {
+                showClosingDialog(frame)
+                performClosingOperations()
+            }
+        })
+        mainPanel.preferredSize = Dimension(Constants.PREFERRED_WIDTH, Constants.PREFFERED_HEIGTH)
         updateViewMode()
     }
 
