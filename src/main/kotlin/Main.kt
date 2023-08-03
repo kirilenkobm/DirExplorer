@@ -1,4 +1,3 @@
-// App's entry point
 import state.AppState
 import model.ExplorerDirectory
 import state.AppStateUpdater

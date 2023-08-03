@@ -119,12 +119,16 @@ class TableDirectoryView : AbstractDirectoryView() {
         )
     }
 
+    /**
+     * Override column class for the first column and cancel edit operations in the table.
+     */
     private fun createTableModel(data: List<Array<Any>>): DefaultTableModel {
         return object : DefaultTableModel(data.toTypedArray(), getColumnNames()) {
+            // To change the type of the first column to icon
             override fun getColumnClass(column: Int): Class<*> {
                 return if (column == 0) ImageIcon::class.java else super.getColumnClass(column)
             }
-
+            // To disable edit mode -> readonly content of the directory
             override fun isCellEditable(row: Int, column: Int): Boolean {
                 return false
             }
@@ -140,6 +144,10 @@ class TableDirectoryView : AbstractDirectoryView() {
                 model?.dataVector?.clear()
                 for (row in data) {
                     model?.addRow(row)
+                }
+
+                if (AppState.isZipSpinnerNeeded()) {
+                    model?.addRow(arrayOf(null, bundle.getString("UnpackingZip"), null, null))
                 }
                 model?.fireTableDataChanged()
 
