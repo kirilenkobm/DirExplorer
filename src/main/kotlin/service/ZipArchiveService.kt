@@ -6,6 +6,7 @@ import model.ZipArchive
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import state.AppState
+import state.Settings
 import view.popupwindows.showErrorDialog
 import java.io.IOException
 import java.nio.file.*
@@ -30,6 +31,7 @@ import kotlin.coroutines.CoroutineContext
  * mutable list to remove all temporary directories when the session is complete.
  */
 class ZipArchiveService(private val zipEntity: ZipArchive): CoroutineScope {
+    private var bundle = ResourceBundle.getBundle(Constants.LANGUAGE_BUNDLE_PATH, Settings.language.getLocale())
     private val job = Job()
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.IO + job
@@ -110,7 +112,6 @@ class ZipArchiveService(private val zipEntity: ZipArchive): CoroutineScope {
                             // increase delay by 20% after each refresh
                             // so that I don't get system overloaded on big archives
                             refreshDelay = (refreshDelay * 1.2).toLong()
-                            println("Applying refresh delay of $refreshDelay")
                         }
                     }
                 }
@@ -119,7 +120,7 @@ class ZipArchiveService(private val zipEntity: ZipArchive): CoroutineScope {
                 println("Failed to extract zip file due to: ${e.message}")
                 extractionStatus.value = ZipExtractionStatus.FAILED
                 SwingUtilities.invokeLater {
-                    showErrorDialog("Failed to extract zip file due to: ${e.message}")
+                    showErrorDialog("${bundle.getString("FailedToExtractDueTo")} ${e.message}")
                 }
             } finally {
                 AppState.refreshCurrentDirectory()
