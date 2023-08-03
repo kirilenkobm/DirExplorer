@@ -97,6 +97,9 @@ object Utils {
      * In case filename is too long, I'd like to shorten
      * it in the icon view, replacing part of the name
      * with ellipsis.
+     *
+     * Function still can be improved in terms of the ... and
+     * the line break positioning.
     */
     fun getFilenameForIcon(filename: String): String {
         if (filename.isEmpty()) {
@@ -132,7 +135,6 @@ object Utils {
             // first, check how many characters to replace with ...
             val firstChar = secondLineRaw[0]
             val lastPart = secondLineRaw.substring(secondLineRaw.length - maxOneLine + 1)
-            // TODO: ideally, we could select a place for ... better
             return "$firstChar...$lastPart"
         }
 

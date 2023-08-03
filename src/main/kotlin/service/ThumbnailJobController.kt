@@ -11,11 +11,14 @@ import view.iconviews.FileIconView
  */
 object ThumbnailJobController {
     private val fileIconViews = mutableListOf<FileIconView>()
+    // private val fileIconViews = CopyOnWriteArrayList<FileIconView>()
 
+    @Synchronized
     fun addFileIconView(view: FileIconView) {
         fileIconViews.add(view)
     }
 
+    @Synchronized
     fun cancelThumbnailGenerationTasks() {
         fileIconViews.forEach { it.dispose() }
         fileIconViews.clear()

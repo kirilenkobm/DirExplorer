@@ -2,10 +2,7 @@ package model
 
 import DirExplorerTestUtil
 import kotlinx.coroutines.runBlocking
-import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
-
-import org.junit.jupiter.api.BeforeEach
 import java.nio.file.Path
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -28,19 +25,4 @@ class ExplorerDirectoryTest {
         assertTrue(emptyDirectory.isEmpty)
         DirExplorerTestUtil.teardownTestDirectory()
     }
-//    @Test
-//    fun getItemsCount() {
-//    }
-//
-//    @Test
-//    fun getTotalSize() {
-//    }
-//
-//    @Test
-//    fun invalidateCache() {
-//    }
-//
-//    @Test
-//    fun getPath() {
-//    }
 }

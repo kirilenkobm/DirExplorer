@@ -53,7 +53,6 @@
 
 # Nice to have
 
-
 * ~~Status bar: shows whether hidden files are shown and whether inside a zip~~
 * ~~Dark and light theme~~
 
@@ -63,3 +62,11 @@
 * Hotkeys ??
 * Mouseover hints
 * If open in external app - warn about it?
+
+# First round of revision
+
+* Zip archives showing content only after re-entry
+* Keeping tests in order
+* ~~The scroll position does not change when switching directories~~
+* ~~java.util.ConcurrentModificationException in ThumbnailJobController~~
+* ~~Fix build.gradle~~

@@ -162,8 +162,8 @@ class ThumbnailGenerationService(
                 lines.take(Constants.TEXT_PREVIEW_NUM_LINES_TO_TAKE).joinToString("\n")
             }
         } catch (e: Exception) {
-            // TODO: if could not read a text file: must be something wrong with it
-            // show some alert icon instead?
+            // must be something wrong with this text file
+            // for example, it's not a text file at all
             null
         }
     }
@@ -178,10 +178,10 @@ class ThumbnailGenerationService(
         }
     }
 
+    // TODO: either fix or wipe out
     internal fun createImageThumbnail(): Icon? {
         try {
             val file = File(fileEntity.path)
-            // TODO: probably, this idea did not work out
             // but worth trying to implement for overall improvement
             // For metadata extractor, it's easier to provide file
 //                val includedThumbnail = extractImageThumbnailIfExists(file)

@@ -14,5 +14,5 @@ interface SettingsObserver {
     fun onViewModeChanged(newViewMode: ViewMode)
     fun onColorThemeChanged(newColorTheme: ColorTheme)
     fun onLanguageChanged(newLanguage: Language)
-    // TODO: check whether other methods needed
+    // fill other settings if need be
 }
