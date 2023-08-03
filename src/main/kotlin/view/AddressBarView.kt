@@ -1,5 +1,6 @@
 package view
 
+import Constants
 import model.DirectoryObserver
 import model.ExplorerDirectory
 import state.AppState
@@ -8,6 +9,7 @@ import state.ColorTheme
 import state.Settings
 import util.IconManager
 import java.awt.*
+import java.awt.event.ActionListener
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
 import java.io.File
@@ -15,6 +17,7 @@ import java.nio.file.Path
 import java.nio.file.Paths
 import javax.swing.BorderFactory
 import javax.swing.Box
+import javax.swing.Icon
 import javax.swing.JButton
 import javax.swing.JLabel
 import javax.swing.JMenuItem
@@ -49,8 +52,8 @@ class AddressBarView: DirectoryObserver {
 
     // Address bar buttons indicate parts of the current path separated by > character
     // Click on it triggers the AppState change.
-    private fun createAddressBarButton(partName: String, newPath: Path): JButton {
-        return JButton(partName).apply {
+    private fun createButton(text: String? = null, icon: Icon? = null, action: ActionListener? = null): JButton {
+        return JButton(text, icon).apply {
             isContentAreaFilled = false  // transparent button
             isBorderPainted = false // remove stroke
             isFocusPainted = false // remove focus highlight
@@ -63,14 +66,35 @@ class AddressBarView: DirectoryObserver {
             }
             font = Font("Arial", Font.PLAIN, 14)
             cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)  // hover cursor
-            addActionListener {
-                AppStateUpdater.updateDirectory(ExplorerDirectory(newPath.toString()))
-            }
+            action?.let { addActionListener(it) }
         }
     }
 
-    private fun createDropDownForWindows() {
+    private fun createAddressBarButton(partName: String, newPath: Path): JButton {
+        val action = ActionListener {
+            AppStateUpdater.updateDirectory(ExplorerDirectory(newPath.toString()))
+        }
+        return createButton(partName, action = action)
+    }
 
+    private fun createDriveMenuForWindows(button: JButton) {
+        val driveMenu = JPopupMenu()
+        File.listRoots().forEach { drive ->
+            val driveItem = JMenuItem(drive.absolutePath)
+            driveItem.addActionListener {
+                AppStateUpdater.updateDirectory(ExplorerDirectory(drive.absolutePath))
+            }
+            driveMenu.add(driveItem)
+        }
+        button.addMouseListener(object : MouseAdapter() {
+            override fun mousePressed(e: MouseEvent) {
+                driveMenu.show(e.component, e.x, e.y)
+            }
+        })
+    }
+
+    private fun createWindowsThisPCButton(): JButton {
+        return createButton(icon = IconManager.windowsThisPCIcon)
     }
 
     fun updateView() {
@@ -81,28 +105,19 @@ class AddressBarView: DirectoryObserver {
         // hold the buttons and separators
         val components = ArrayList<Component>()
 
+        // On Windows, add a computer icon button that shows a dropdown menu of drives
+        if (Settings.isWindows) {
+            val computerButton = createWindowsThisPCButton()
+            val separatorLabel = JLabel(IconManager.chevronRightIcon)
+            createDriveMenuForWindows(computerButton)
+            components.add(computerButton)
+            components.add(separatorLabel)
+        }
+
         val path = Paths.get(AppState.currentExplorerDirectory.path)
         val rootPath = path.root
         var currentPath = rootPath // start with the root of the path
         val rootButton = createAddressBarButton(rootPath.toString(), rootPath)
-
-        // On Windows, add a dropdown menu to the root button that lists all drives
-        // TODO: refactor if works
-        if (System.getProperty("os.name").startsWith("Windows")) {
-            val driveMenu = JPopupMenu()
-            File.listRoots().forEach { drive ->
-                val driveItem = JMenuItem(drive.absolutePath)
-                driveItem.addActionListener {
-                    AppStateUpdater.updateDirectory(ExplorerDirectory(drive.absolutePath))
-                }
-                driveMenu.add(driveItem)
-            }
-            rootButton.addMouseListener(object : MouseAdapter() {
-                override fun mousePressed(e: MouseEvent) {
-                    driveMenu.show(e.component, e.x, e.y)
-                }
-            })
-        }
 
         components.add(rootButton)
         constraints.weightx = 0.0 // set weightx to 0 for buttons
@@ -129,13 +144,14 @@ class AddressBarView: DirectoryObserver {
         val addressBarWidth = addressBar.width
         // Had to add addressBarWidth > 0 bc at start it's 0
         if (addressBarWidth in 1..<totalWidth) {
-            // if it's too wide, keep the first and last few components as buttons,
-            // and replace the middle components with ...
-            val numStartComponents = 6
-            val numEndComponents = 6
+
+            var prefferedStartComponentsNum = Constants.ADDRESS_BAR_PREFERRED_NUM_START_ELEMS
+            if (Settings.isWindows) {
+                prefferedStartComponentsNum += 2
+            }
 
             // Safer number of items
-            for (i in 0..<min(numStartComponents, components.size)) {
+            for (i in 0..<min(prefferedStartComponentsNum, components.size)) {
                 addressBar.add(components[i], constraints)
             }
             // val middleComponents = components.subList(numStartComponents, components.size - numEndComponents)
@@ -143,7 +159,8 @@ class AddressBarView: DirectoryObserver {
             addressBar.add(ellipsisLabel)
 
             // Safely add components to the end of the address bar
-            for (i in max(0, components.size - numEndComponents)..<components.size) {
+            for (i in max(0, components.size - Constants.ADDRESS_BAR_PREFERRED_NUM_END_ELEMS)..<components.size)
+            {
                 addressBar.add(components[i], constraints)
             }
         } else {
