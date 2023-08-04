@@ -1,7 +1,7 @@
 package model
 
 /**
- * Service entity serves for cases where a entity-like object is needed,
+ * Service entity serves for cases where an entity-like object is needed,
  * but does not represent any actual file system entity.
  * For example, needed to show the zip unpacking spinner.
  */

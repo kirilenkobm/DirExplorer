@@ -145,7 +145,7 @@ class ZipArchiveService(private val zipEntity: ZipArchive): CoroutineScope {
 
         val cleanupJob = Job()  // create a new job for the cleanup operation
         AppState.markObserverForRemoval(observer)
-        println("Cleaning up cleanup $tempDirName")
+        println("Cleaning up $tempDirName")
         // Launch a new coroutine on the IO dispatcher
         // Delete the temp directory -> to be called once I left a zip file
         return async(Dispatchers.IO + cleanupJob) {

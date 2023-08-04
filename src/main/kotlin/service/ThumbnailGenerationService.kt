@@ -169,8 +169,15 @@ class ThumbnailGenerationService(
         }
     }
 
+    /**
+     * Loading massive images into RAM to produce thumbnails affects the performance.
+     * Given the longest image dimension, this function returns a down-sampling coefficient.
+     * Therefore, the program creates previews for massive images quickly.
+     * Given that the thumbnail size is no bigger than 72x72 in the current version,
+     * such a down-sampling is quite appropriate.
+     */
     private fun getSubsamplingValue(maxDimension: Int): Int {
-        return  when {
+        return when {
             maxDimension <= 1200 -> 1
             maxDimension <= 2200 -> 2
             maxDimension <= 3400 -> 3

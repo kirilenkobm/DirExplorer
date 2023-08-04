@@ -116,7 +116,7 @@ class AddressBarView: DirectoryObserver {
         }
 
         val path = Paths.get(AppState.currentExplorerDirectory.path)
-        val rootPath = SystemRelatedValues.rootDir
+        val rootPath = SystemRelatedValues.rootDir()
         var currentPath = rootPath // start with the root of the path
         val rootButton = createAddressBarButton(rootPath.toString(), rootPath)
 

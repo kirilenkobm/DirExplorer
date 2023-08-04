@@ -1,5 +1,6 @@
 package util
 
+import Constants
 import model.ExplorerDirectory
 import state.*
 import java.awt.AlphaComposite
@@ -118,22 +119,12 @@ object IconManager: SettingsObserver {
      * Based on the file's MIME type, return an appropriate icon.
      */
     fun getIconForFileType(fileType: String): ImageIcon {
-        val archiveTypes = setOf(
-            "application/x-freearc",
-            "application/x-bzip",
-            "application/x-bzip2",
-            "application/x-tar",
-            "application/x-7z-compressed",
-            "application/gzip",
-            // "application/zip"  // in fact, zip is handled by ZipArchive entity
-        )
-
         return when {
             fileType.startsWith("image/") -> imageIcon
             fileType.startsWith("video/") -> movieIcon
             fileType == "application/pdf" -> pdfIcon
             fileType.startsWith("audio/") -> audioFileIcon
-            archiveTypes.contains(fileType) -> folderArchiveIcon
+            Constants.archiveTypes.contains(fileType) -> folderArchiveIcon
             fileType.startsWith("application/x-") -> binaryIcon
             else -> fileIcon
         }

@@ -20,7 +20,7 @@ fun performClosingOperations() {
     Settings.saveSettings()
     // call blocking cleanup to a separate coroutine context that doesn't block the EDT
     // so that the popup "wait please" window is shown; since this is used only to
-    // close the app, I beleive GlobalScore.launch is appropriate here
+    // close the app, I believe GlobalScore.launch is appropriate here
     GlobalScope.launch {
         // cleanup temp directories created to look at the zip archives content (if any left)
         AppState.cleanupAllZipArchives()

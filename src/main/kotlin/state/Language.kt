@@ -13,12 +13,12 @@ enum class Language(private val code: String) {
     },
     RUSSIAN("ru") {
         override fun toString(): String {
-            return "Russian"
+            return "Русский"
         }
     },
     GERMAN("de") {
         override fun toString(): String {
-            return "German"
+            return "Deutsch"
         }
     };
 

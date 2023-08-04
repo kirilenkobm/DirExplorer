@@ -69,7 +69,7 @@ object Constants {
     const val TEXT_PREVIEW_LINES_INTERVAL = 7
     const val TEXT_PREVIEW_NUM_LINES_TO_TAKE = 10
 
-    // File extension related
+    // File extension and type related
     const val ZIP_EXTENSION = ".zip"
     val textFileExtensionsNotInMime = setOf(
         "java", "py", "kt", "js",
@@ -79,5 +79,15 @@ object Constants {
         "kts", "csh", "sh", "fasta",
         "fa", "fastq", "nf", "json",
         "swift", ".s"
+    )
+
+    val archiveTypes = setOf(
+        "application/x-freearc",
+        "application/x-bzip",
+        "application/x-bzip2",
+        "application/x-tar",
+        "application/x-7z-compressed",
+        "application/gzip",
+        // "application/zip"  // in fact, zip is handled by ZipArchive entity
     )
 }

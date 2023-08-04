@@ -28,7 +28,7 @@ import java.util.concurrent.CopyOnWriteArrayList
  */
 object AppState {
 
-    var currentExplorerDirectory: ExplorerDirectory = ExplorerDirectory(System.getProperty("user.home"))
+    var currentExplorerDirectory: ExplorerDirectory = ExplorerDirectory(SystemRelatedValues.homeDirectory)
         set(value) {
             field = value
             value.invalidateCache()
@@ -57,7 +57,7 @@ object AppState {
     val zipPathToTempDir = ConcurrentHashMap<String, Path>()
 
     fun goHome() {
-        AppStateUpdater.updateDirectory(ExplorerDirectory(System.getProperty("user.home")))
+        AppStateUpdater.updateDirectory(ExplorerDirectory(SystemRelatedValues.homeDirectory))
     }
 
     fun goUp() {
@@ -79,7 +79,8 @@ object AppState {
             AppStateUpdater.updateDirectory(
                 newExplorerDirectory,
                 clearForwardStack = false,
-                addingToBackStack = false)
+                addingToBackStack = false
+            )
         }
     }
 
@@ -104,14 +105,6 @@ object AppState {
     fun getFilterList(): List<String> {
         return currentExtensionFilter.split(",")
     }
-
-    /**
-     * Go through the current path and check whether it includes zip files or not.
-     */
-//    fun insideZip(): Boolean {
-//        val path = Paths.get(currentExplorerDirectory.path)
-//        return path.any { tempZipDirToNameMapping[it.toString()] != null }
-//    }
 
     /**
      * Return the respective ZipArchiveService for the current directory if exists.
@@ -165,9 +158,9 @@ object AppState {
         // to avoid ConcurrentModificationException
         val zipArchivesCopy = ArrayList(zipServices)
         runBlocking {
-            println("Run blocking")
+            // this method is only called at shutdown
+            // runBlocking to wait until all cleanup processes are done
             zipArchivesCopy.forEach {
-                println("Called cleanup for object: ${it.tempDirName}")
                 val cleanupDeferred = it.cleanup()
                 cleanupDeferred.await()
             }
@@ -180,9 +173,12 @@ object AppState {
      * The service dir always returns empty list on the getContents()
      */
     fun sendToVoid() {
-        currentExplorerDirectory = ServiceDir(SystemRelatedValues.rootDir.toString())
+        currentExplorerDirectory = ServiceDir(SystemRelatedValues.rootDir().toString())
     }
 
+    /**
+     * Receive a signal that directory's content updated and refresh the UI.
+     */
     fun refreshCurrentDirectory() {
         currentExplorerDirectory.invalidateCache()
         notifyDirectoryObservers(currentExplorerDirectory)
