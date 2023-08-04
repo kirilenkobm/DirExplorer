@@ -84,7 +84,7 @@ class StatusBarView : JPanel(), CoroutineScope, DirectoryObserver, SettingsObser
             statusLabel.text = "${bundle.getString("Loading")}..."
         } else if (itemsCount == 0) {
             statusLabel.text = bundle.getString("Empty")
-        } else if (itemsCount < 0 || totalSize < 0){
+        } else if ((itemsCount < 0) || (totalSize < 0)){
             statusLabel.text = bundle.getString("Unknown")
         } else {
             val itemsLabel = bundle.getString("Items")

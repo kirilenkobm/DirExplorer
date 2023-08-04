@@ -47,6 +47,7 @@ class AddressBarView: DirectoryObserver {
 
     init {
         AppState.addDirectoryObserver(this)
+        addressBarPanel.border = null
         addressBarPanel.add(addressBar, BorderLayout.NORTH)
         updateView()
     }
@@ -101,6 +102,7 @@ class AddressBarView: DirectoryObserver {
     fun updateView() {
         addressBar.removeAll()
         addressBar.layout = GridBagLayout()
+        addressBar.border = null
         val constraints = GridBagConstraints()
 
         // hold the buttons and separators
